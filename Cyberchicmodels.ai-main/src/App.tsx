@@ -11,7 +11,7 @@ import { AboutPage } from './components/AboutPage';
 import { ContactPage } from './components/ContactPage';
 import { CartPage } from './components/CartPage';
 import { FavoritesPage } from './components/FavoritesPage';
-import { SimpleModelsCheck } from './components/SimpleModelsCheck';
+
 import { HeroCarousel } from './components/HeroCarousel';
 import { Footer } from './components/Footer';
 import { ModelCard } from './components/ModelCard';
@@ -345,7 +345,7 @@ function App() {
           <Route path="/cart" element={<CartPage />} />
           <Route path="/favorites" element={<FavoritesPage />} />
    
-          <Route path="/check-models" element={<SimpleModelsCheck />} />
+          
         </Routes>
         {selectedModel && (
           <ModelDetailModal
