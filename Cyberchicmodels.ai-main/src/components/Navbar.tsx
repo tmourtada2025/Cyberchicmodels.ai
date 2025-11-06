@@ -3,7 +3,8 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, ShoppingCart } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
-import { CartIcon } from './CartIcon'
+import { CartIcon } from './CartIcon';
+
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
