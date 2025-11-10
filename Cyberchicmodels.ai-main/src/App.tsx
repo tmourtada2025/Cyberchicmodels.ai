@@ -21,6 +21,7 @@ import { supabase } from './lib/supabase';
 import { getStorageUrl } from './lib/storage';
 import type { Model, Style } from './lib/supabase';
 
+// Local fallback styles used when Supabase credentials are missing
 const fallbackStyles = [
   {
     id: "ST126",
@@ -129,7 +130,8 @@ function App() {
             specialties: model.specialties, // New array field
             bio: model.bio,
             hobbies: model.hobbies,
-            image: model.thumbnail_path ? getStorageUrl('models', model.thumbnail_path) : '',
+            // Use the new model-thumbnails bucket for thumbnail images
+            image: model.thumbnail_path ? getStorageUrl('model-thumbnails', model.thumbnail_path) : '',
             video: '',
             isPopular: model.is_popular,
             isNew: model.is_new,
@@ -286,7 +288,7 @@ function App() {
                         </div>
                       </div>
                     </div>
-
+                    
                     {/* Style Pack */}
                     <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6">
                       <h3 className="text-xl font-serif mb-4 flex items-center">
@@ -344,8 +346,7 @@ function App() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/favorites" element={<FavoritesPage />} />
-   
-          
+    
         </Routes>
         {selectedModel && (
           <ModelDetailModal
