@@ -1,70 +1,65 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Download, ChevronDown } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronDown, Download, ChevronRight as ChevronRightIcon } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { getStorageUrl } from '../lib/storage';
-import type { HeroSlide } from '../lib/supabase';
+import type { HeroImage } from '../lib/supabase';
 
-interface HeroCarouselProps {}
-
+/**
+ * HeroCarousel fetches hero images from the `hero_images` table and displays
+ * them in a full-screen carousel. It falls back to default images when
+ * Supabase isn't configured or there is an error fetching data.
+ */
 export function HeroCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showScrollCue, setShowScrollCue] = useState(true);
-  const [slides, setSlides] = useState<HeroSlide[]>([]);
+  const [slides, setSlides] = useState<HeroImage[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Fetch hero slides from Supabase
   useEffect(() => {
-    const fetchHeroSlides = async () => {
+    const fetchHeroImages = async () => {
       try {
-        // Check if Supabase is properly configured
+        // Fallback to defaults if supabase isn't configured
         if (!supabase) {
-          console.warn('Supabase client not configured, using fallback slides');
-          setSlides(getDefaultSlides());
+          console.warn('Supabase client not configured, using fallback images');
+          setSlides(getDefaultImages());
           setLoading(false);
           return;
         }
 
         const { data, error } = await supabase
-          .from('hero_slides')
+          .from('hero_images')
           .select('*')
-          .eq('is_active', true)
-          .order('sort_order', { ascending: true });
+          .order('display_order', { ascending: true });
 
         if (error) {
-          console.warn('Error fetching hero slides, using fallback:', error.message);
-          // Fallback to default slides if fetch fails
-          setSlides(getDefaultSlides());
+          console.warn('Error fetching hero images, using fallback:', error.message);
+          setSlides(getDefaultImages());
         } else {
-          setSlides(data && data.length > 0 ? data : getDefaultSlides());
+          setSlides((data && data.length > 0) ? data : getDefaultImages());
         }
-      } catch (error) {
-        console.warn('Network error fetching hero slides, using fallback:', error);
-        setSlides(getDefaultSlides());
+      } catch (err) {
+        console.warn('Network error fetching hero images, using fallback:', err);
+        setSlides(getDefaultImages());
       } finally {
         setLoading(false);
       }
     };
 
-    fetchHeroSlides();
+    fetchHeroImages();
   }, []);
 
   useEffect(() => {
     if (slides.length === 0) return;
-
     const timer = setInterval(() => {
-      setCurrentIndex((current) => (current + 1) % slides.length);
+      setCurrentIndex(current => (current + 1) % slides.length);
     }, 10000);
 
     const handleScroll = () => {
-      if (window.scrollY > 100) {
-        setShowScrollCue(false);
-      } else {
-        setShowScrollCue(true);
-      }
+      if (window.scrollY > 100) setShowScrollCue(false);
+      else setShowScrollCue(true);
     };
-
     window.addEventListener('scroll', handleScroll);
     return () => {
       clearInterval(timer);
@@ -72,64 +67,42 @@ export function HeroCarousel() {
     };
   }, [slides.length]);
 
-  // Fallback slides if Supabase fetch fails
-  const getDefaultSlides = (): HeroSlide[] => [
+  const getDefaultImages = (): HeroImage[] => [
     {
       id: '1',
-      title: 'AI Fashion Models for a Digital World',
-      subtitle: 'Digital Innovation',
-      description: 'Browse and download ready-to-use model packs — for campaigns, content, or training your own AI.',
-      background_image_path: null,
-      button_text: 'Browse Models',
-      button_link: '/models',
-      sort_order: 1,
-      is_active: true,
+      path: null,
+      alt_text: 'AI Fashion Models for a Digital World',
+      display_order: 1,
       created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     },
     {
       id: '2',
-      title: 'Download-Ready Model Packs',
-      subtitle: 'Complete Packages',
-      description: 'Each pack includes 30+ images and short videos — perfect for AI training, mockups, or content creation.',
-      background_image_path: null,
-      button_text: 'Browse Models',
-      button_link: '/models',
-      sort_order: 2,
-      is_active: true,
+      path: null,
+      alt_text: 'Download-Ready Model Packs',
+      display_order: 2,
       created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     },
     {
       id: '3',
-      title: 'Built for Creators, Brands & AI Developers',
-      subtitle: 'Professional Tools',
-      description: 'From designers to marketers, anyone can train or feature their own AI model using our stylish assets.',
-      background_image_path: null,
-      button_text: 'Browse Models',
-      button_link: '/models',
-      sort_order: 3,
-      is_active: true,
+      path: null,
+      alt_text: 'Built for Creators, Brands & AI Developers',
+      display_order: 3,
       created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     },
     {
       id: '4',
-      title: 'A Continuously Evolving Model Roster',
-      subtitle: 'Always Fresh',
-      description: 'We\'re adding new AI-generated models weekly — across categories, ethnicities, and moods.',
-      background_image_path: null,
-      button_text: 'Browse Models',
-      button_link: '/models',
-      sort_order: 4,
-      is_active: true,
+      path: null,
+      alt_text: 'A Continuously Evolving Model Roster',
+      display_order: 4,
       created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    }
+      updated_at: new Date().toISOString(),
+    },
   ];
-  const goToSlide = (index: number) => {
-    setCurrentIndex(index);
-  };
+
+  const goToSlide = (index: number) => setCurrentIndex(index);
 
   const handleDownloadDemo = () => {
     alert('Demo pack download will be implemented soon!');
@@ -142,36 +115,11 @@ export function HeroCarousel() {
     }
   };
 
-  const getImageUrl = (slide: HeroSlide) => {
-    if (!slide.background_image_path) return '';
-    
-    // If it's already a full URL, use it as is
-    if (slide.background_image_path.startsWith('http')) {
-      return slide.background_image_path;
-    }
-    
-    // Otherwise, get it from Supabase storage
-    return getStorageUrl('hero', slide.background_image_path);
+  const getImageUrl = (slide: HeroImage) => {
+    if (!slide.path) return '';
+    if (typeof slide.path === 'string' && slide.path.startsWith('http')) return slide.path;
+    return getStorageUrl('hero', slide.path);
   };
-
-  const renderButtons = () => (
-    <div className="flex justify-center space-x-6">
-      <button
-        onClick={() => navigate('/models')}
-        className="bg-white text-black px-8 py-3 rounded-full hover:bg-opacity-90 transition flex items-center"
-      >
-        Browse Models
-        <ChevronRight className="ml-2 h-5 w-5" />
-      </button>
-      <button
-        onClick={handleDownloadDemo}
-        className="bg-transparent border-2 border-white text-white px-8 py-3 rounded-full hover:bg-white/10 transition flex items-center"
-      >
-        <Download className="mr-2 h-5 w-5" />
-        Download Demo
-      </button>
-    </div>
-  );
 
   if (loading) {
     return (
@@ -188,7 +136,7 @@ export function HeroCarousel() {
     return (
       <div className="relative h-screen flex items-center justify-center bg-gray-100">
         <div className="text-center">
-          <p className="text-gray-600">No hero slides available</p>
+          <p className="text-gray-600">No hero images available</p>
         </div>
       </div>
     );
@@ -199,30 +147,39 @@ export function HeroCarousel() {
       <div className="relative h-full overflow-hidden">
         <div
           className="absolute w-full h-full transition-transform duration-500 ease-out"
-          style={{
-            transform: `translateX(${-currentIndex * 100}%)`,
-          }}
+          style={{ transform: `translateX(${-currentIndex * 100}%)` }}
         >
           {slides.map((slide, index) => (
-            <div 
-              key={index} 
-              className="absolute w-full h-full"
-              style={{ left: `${index * 100}%` }}
-            >
+            <div key={slide.id} className="absolute w-full h-full" style={{ left: `${index * 100}%` }}>
               <div className="h-full flex items-center justify-center">
                 <div
                   className="absolute inset-0 w-full h-full"
                   style={{
                     backgroundImage: `url("${getImageUrl(slide)}")`,
                     backgroundSize: 'cover',
-                    backgroundPosition: 'center'
+                    backgroundPosition: 'center',
                   }}
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-40" />
                 <div className="relative text-center text-white px-4 max-w-4xl mx-auto">
-                  <h2 className="text-6xl font-serif mb-6">{slide.title}</h2>
-                  <p className="text-xl mb-12">{slide.description || slide.subtitle}</p>
-                  {renderButtons()}
+                  <h2 className="text-6xl font-serif mb-6">{slide.alt_text || 'CyberChic Models'}</h2>
+                  <p className="text-xl mb-12">{slide.alt_text || 'Discover our latest AI fashion models'}</p>
+                  <div className="flex justify-center space-x-6">
+                    <button
+                      onClick={() => navigate('/models')}
+                      className="bg-white text-black px-8 py-3 rounded-full hover:bg-opacity-90 transition flex items-center"
+                    >
+                      Browse Models
+                      <ChevronRightIcon className="ml-2 h-5 w-5" />
+                    </button>
+                    <button
+                      onClick={handleDownloadDemo}
+                      className="bg-transparent border-2 border-white text-white px-8 py-3 rounded-full hover:bg-white/10 transition flex items-center"
+                    >
+                      <Download className="mr-2 h-5 w-5" />
+                      Download Demo
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -255,8 +212,7 @@ export function HeroCarousel() {
         ))}
       </div>
 
-      {/* Scroll Cue */}
-      <div 
+      <div
         className={`absolute bottom-8 left-1/2 -translate-x-1/2 transition-opacity duration-500 ${
           showScrollCue ? 'opacity-100' : 'opacity-0'
         }`}
