@@ -230,24 +230,4 @@ export type Style = {
 };
 
 // Added: HeroImage type for the new hero_images table
-export type HeroImage = {
-  id: string;
-  path: string | null;
-  alt_text?: string | null;
-  display_order?: number | null;
-  created_at: string;
-  updated_at: string;
-};
-
-/**
- * Fetch hero images from the new `hero_images` table. Returns images
- * ordered by display_order.
- */
-export async function fetchHeroImages() {
-  const { data, error } = await supabase
-    .from("hero_images")
-    .select("id, path, alt_text, display_order, created_at, updated_at")
-    .order("display_order", { ascending: true });
-  if (error) throw error;
-  return (data ?? []) as HeroImage[];
-}
+// Removed duplicate HeroImage type and fetchHeroImages definition. See earlier definitions above.
