@@ -1,7 +1,10 @@
-// src/lib/supabase.ts
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 /** ---- Client ---- */
+// Grab the Supabase URL and anon key from Vite's environment variables.  These
+// should be defined in your `.env` file or in your deployment environment
+// (e.g. Vercel).  If they aren't set, the Supabase client will not be
+// initialized and the application will fall back to local placeholder data.
 const VITE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const VITE_ANON = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
 
@@ -14,21 +17,29 @@ if (!VITE_URL || !VITE_ANON || VITE_ANON.includes('REPLACE_WITH_YOUR_ACTUAL')) {
 }
 
 // Only create client if we have valid credentials
-export const supabase: SupabaseClient = VITE_URL && VITE_ANON && !VITE_ANON.includes('REPLACE_WITH_YOUR_ACTUAL') 
+export const supabase: SupabaseClient = VITE_URL && VITE_ANON && !VITE_ANON.includes('REPLACE_WITH_YOUR_ACTUAL')
   ? createClient(VITE_URL, VITE_ANON, {
-  auth: { 
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true
-  },
-}) 
+    auth: {
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: true
+    },
+  })
   : null as any; // This will cause errors if used, which is what we want for debugging
 
 /** ---- Buckets ---- */
+//
+// Buckets configuration
+//
+// To align with the new database schema, the storage buckets have been renamed.
+// - `model-thumbnails`: stores the small images used on the models overview page.
+// - `model-collections`: stores images belonging to each model and their collections.
+// - `styles`: stores the primary images for styles and garments.
+// - `hero`: stores the images used in the hero carousel.
 export const BUCKETS = {
-  MODELS: "models",
+  MODELS: "model-thumbnails",
   STYLES: "styles",
-  COLLECTIONS: "collections",
+  COLLECTIONS: "model-collections",
   HERO: "hero",
 } as const;
 
@@ -46,7 +57,7 @@ export type Model = {
   age_group?: string | null;
   height?: string | null;
   weight?: string | null;
-  thumbnail_path?: string | null; // storage path
+  thumbnail_path?: string | null; // storage path for the overview thumbnail
   is_featured?: boolean | null;
   is_new?: boolean | null;
   is_popular?: boolean | null;
@@ -65,17 +76,64 @@ export type ModelCollection = {
   id: string | number;
   model_id: string | number;
   slug: string;
-  title: string;
-  cover_path?: string | null; // storage path
-  sort_order?: number | null;
+  /**
+   * Name of the collection (e.g. "Editorial", "Runway").  In the previous
+   * schema this was stored in `title`.  The new schema uses `name` and a
+   * numeric `display_order` to control the ordering of the pill tabs.
+   */
+  name: string;
+  /**
+   * Display order for the pill/tab.  Lower numbers appear first.  This
+   * replaces `sort_order` from the old schema.
+   */
+  display_order?: number | null;
 };
 
 export type ModelPhoto = {
   id: string | number;
-  collection_id: string | number;
-  storage_path: string; // storage path
+  /**
+   * Optional model identifier.  Included for convenience when querying
+   * images across a whole model (including those without an associated
+   * collection).
+   */
+  model_id?: string | number;
+  /**
+   * Collection identifier.  Can be null if the image belongs to the model
+   * but not to a specific collection.
+   */
+  collection_id: string | number | null;
+  /**
+   * Relative path within the `model-collections` bucket.  This replaces
+   * `storage_path` from the old schema.
+   */
+  path: string;
+  /**
+   * Optional caption/alt text for the photo.
+   */
   caption?: string | null;
-  sort_order?: number | null;
+  /**
+   * Display order for the photo.  Lower numbers appear first.  This
+   * replaces `sort_order` from the old schema.
+   */
+  display_order?: number | null;
+};
+
+/**
+ * Represents a single hero image used in the hero carousel.  The new
+ * `hero_images` table stores only the storage path and optional alt text.
+ * Additional metadata like title and button labels are added at the
+ * presentation layer.
+ */
+export type HeroImage = {
+  id: string;
+  /** Relative path within the `hero` storage bucket */
+  path: string;
+  /** Optional alt text or description for accessibility */
+  alt_text?: string | null;
+  /** Defines the order in which the images appear */
+  display_order?: number | null;
+  created_at: string;
+  updated_at: string;
 };
 
 /** ---- Optional: tiny fetch helpers ---- */
@@ -105,24 +163,43 @@ export async function fetchModelByIdOrSlug(idOrSlug: string) {
 
 export async function fetchCollectionsForModel(modelId: string | number) {
   const { data, error } = await supabase
-    .from("collections")
-    .select("id,model_id,slug,title,cover_path,sort_order")
+    .from("model_collections")
+    .select("id, model_id, slug, name, display_order")
     .eq("model_id", modelId)
-    .order("sort_order", { ascending: true });
+    .order("display_order", { ascending: true });
   if (error) throw error;
   return (data ?? []) as ModelCollection[];
 }
 
 export async function fetchPhotosForCollection(collectionId: string | number) {
   const { data, error } = await supabase
-    .from("photos")
-    .select("id,collection_id,storage_path,caption,sort_order")
+    .from("model_collection_images")
+    .select("id, model_id, collection_id, path, caption, display_order")
     .eq("collection_id", collectionId)
-    .order("sort_order", { ascending: true });
+    .order("display_order", { ascending: true });
   if (error) throw error;
   return (data ?? []) as ModelPhoto[];
 }
 
+/**
+ * Fetch all hero images from the `hero_images` table.  The results are
+ * ordered by `display_order` so they appear in the intended sequence.
+ */
+export async function fetchHeroImages() {
+  const { data, error } = await supabase
+    .from("hero_images")
+    .select("id, path, alt_text, display_order, created_at, updated_at")
+    .order("display_order", { ascending: true });
+  if (error) throw error;
+  return (data ?? []) as HeroImage[];
+}
+
+/**
+ * HeroSlide and Style types remain for backward compatibility with existing
+ * components.  While the new schema simplifies hero images to only
+ * include a `path` and `display_order`, the front-end can still use
+ * these types by supplying default text.
+ */
 export type HeroSlide = {
   id: string;
   title: string;
@@ -151,3 +228,26 @@ export type Style = {
   description?: string | null;
   created_at: string;
 };
+
+// Added: HeroImage type for the new hero_images table
+export type HeroImage = {
+  id: string;
+  path: string | null;
+  alt_text?: string | null;
+  display_order?: number | null;
+  created_at: string;
+  updated_at: string;
+};
+
+/**
+ * Fetch hero images from the new `hero_images` table. Returns images
+ * ordered by display_order.
+ */
+export async function fetchHeroImages() {
+  const { data, error } = await supabase
+    .from("hero_images")
+    .select("id, path, alt_text, display_order, created_at, updated_at")
+    .order("display_order", { ascending: true });
+  if (error) throw error;
+  return (data ?? []) as HeroImage[];
+}
