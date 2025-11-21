@@ -125,7 +125,7 @@ function App() {
         const { data: modelsData } = await supabase
           .from('models')
           .select('*')
-          .or('is_new.eq.true,is_popular.eq.true,is_coming_soon.eq.true')
+          .or('is_new.eq.true,is_popular.eq.true,is_coming_soon.eq.true,is_published.eq.true')
           .order('created_at', { ascending: false })
           .limit(50);
 
