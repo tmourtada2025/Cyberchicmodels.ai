@@ -96,6 +96,8 @@ const transformModelData = (model: any) => ({
 
 function App() {
   const [featuredModels, setFeaturedModels] = useState<any[]>([]);
+  const [newModels, setNewModels] = useState<any[]>([]);
+  const [popularModels, setPopularModels] = useState<any[]>([]);
   const [featuredStyles, setFeaturedStyles] = useState<any[]>([]);
   const [selectedModel, setSelectedModel] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -121,13 +123,29 @@ function App() {
       }
 
       try {
-        // Fetch all models that are New, Popular, or Coming Soon
-        const { data: modelsData } = await supabase
+        // Fetch Featured models
+        const { data: featuredData } = await supabase
           .from('models')
           .select('*')
-          .or('is_new.eq.true,is_popular.eq.true,is_coming_soon.eq.true,is_published.eq.true')
+          .eq('is_featured', true)
           .order('created_at', { ascending: false })
-          .limit(50);
+          .limit(3);
+
+        // Fetch New models
+        const { data: newData } = await supabase
+          .from('models')
+          .select('*')
+          .eq('is_new', true)
+          .order('created_at', { ascending: false })
+          .limit(3);
+
+        // Fetch Popular models
+        const { data: popularData } = await supabase
+          .from('models')
+          .select('*')
+          .eq('is_popular', true)
+          .order('created_at', { ascending: false })
+          .limit(3);
 
         // Fetch featured styles
         const { data: stylesData, error: stylesError } = await supabase
@@ -135,7 +153,9 @@ function App() {
           .select('*')
           .limit(6);
 
-        setFeaturedModels((modelsData || []).map(transformModelData));
+        setFeaturedModels((featuredData || []).map(transformModelData));
+        setNewModels((newData || []).map(transformModelData));
+        setPopularModels((popularData || []).map(transformModelData));
 
         if (stylesError) {
           console.error('Error fetching featured styles:', stylesError);
@@ -158,6 +178,8 @@ function App() {
       } catch (error) {
         console.error('Error fetching featured content:', error);
         setFeaturedModels([]);
+        setNewModels([]);
+        setPopularModels([]);
         // Use fallback styles on error
         setFeaturedStyles(fallbackStyles.slice(0, 6).map(style => ({
           id: style.id,
@@ -231,11 +253,25 @@ function App() {
                 </div>
               </div>
 
-              {/* Featured Models Section (Consolidated) */}
+              {/* Featured Models Section */}
               <ModelSection 
                 title="Featured Models" 
                 models={featuredModels} 
                 linkText="View All Models" 
+              />
+
+              {/* New Models Section */}
+              <ModelSection 
+                title="New Additions" 
+                models={newModels} 
+                linkText="Discover New Models" 
+              />
+
+              {/* Popular Models Section */}
+              <ModelSection 
+                title="Most Popular" 
+                models={popularModels} 
+                linkText="See Popular Models" 
               />
 
               {/* Featured Styles Section */}
@@ -318,6 +354,23 @@ function App() {
                       </div>
                     </div>
                   </div>
+                </div>
+              </div>
+
+              {/* New Models Weekly Section */}
+              <div className="py-12 px-4">
+                <div className="max-w-4xl mx-auto text-center">
+                  <h2 className="text-3xl font-serif mb-4">New Models Weekly</h2>
+                  <p className="text-lg text-gray-600 mb-8">
+                    We're adding new digital influencers weekly. Come back often to explore fresh faces.
+                  </p>
+                  <Link 
+                    to="/models"
+                    className="inline-flex items-center text-black hover:text-rose-500 transition"
+                  >
+                    Browse All Models
+                    <ChevronRight className="ml-2 h-5 w-5" />
+                  </Link>
                 </div>
               </div>
 
