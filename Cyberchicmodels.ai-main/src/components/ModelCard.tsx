@@ -56,7 +56,7 @@ export function ModelCard({ model, onModelClick }: ModelCardProps) {
 
   return (
     <div
-      className="relative w-full h-[700px] group cursor-pointer"
+      className="relative w-full aspect-[4/5] group cursor-pointer"
       onClick={handleCardClick}
     >
       <div className="absolute top-0 left-0 z-10 flex flex-col gap-2 transform -translate-x-2 -translate-y-2">

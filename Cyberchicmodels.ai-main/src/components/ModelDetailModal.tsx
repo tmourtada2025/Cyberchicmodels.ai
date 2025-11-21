@@ -259,7 +259,8 @@ export function ModelDetailModal({ model, allModels = [], onClose, onModelChange
           <X className="w-6 h-6" />
         </button>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
-          <div className="p-6 border-r border-gray-200 flex flex-col">
+          {/* Image and collections - NOW ON LEFT */}
+          <div className="p-6 border-r border-gray-200 flex flex-col order-2 md:order-1">
             <h2 className="text-2xl font-serif mb-2">{model.name}</h2>
             <p className="text-sm text-gray-600 mb-4">{model.tagline}</p>
             <div className="flex space-x-4 mb-4">
@@ -347,8 +348,8 @@ export function ModelDetailModal({ model, allModels = [], onClose, onModelChange
               </button>
             </div>
           </div>
-          {/* Image and collections */}
-          <div className="p-6">
+          {/* Details - NOW ON RIGHT */}
+          <div className="p-6 flex flex-col order-1 md:order-2">
             {loading ? (
               <div className="h-96 flex items-center justify-center bg-gray-50 rounded-lg">
                 <div className="text-center">
