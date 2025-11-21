@@ -321,22 +321,7 @@ function App() {
                 </div>
               </div>
 
-              {/* New Models Weekly Section (Removed - now part of Featured) */}
-              <div className="py-12 px-4">
-                <div className="max-w-4xl mx-auto text-center">
-                  <h2 className="text-3xl font-serif mb-4">New Models Weekly</h2>
-                  <p className="text-lg text-gray-600 mb-8">
-                    We're adding new digital influencers weekly. Come back often to explore fresh faces.
-                  </p>
-                  <Link 
-                    to="/models"
-                    className="inline-flex items-center text-black hover:text-rose-500 transition"
-                  >
-                    Browse All Models
-                    <ChevronRight className="ml-2 h-5 w-5" />
-                  </Link>
-                </div>
-              </div>
+
 
               <Footer />
             </div>
