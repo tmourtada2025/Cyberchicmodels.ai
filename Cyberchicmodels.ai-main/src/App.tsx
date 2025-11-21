@@ -69,8 +69,35 @@ const fallbackStyles = [
   }
 ];
 
+// Helper function to transform model data
+const transformModelData = (model: any) => ({
+  id: model.id,
+  slug: model.slug,
+  name: model.name,
+  tagline: model.tagline,
+  age: model.age,
+  nationality: model.nationality,
+  ethnicity: model.ethnicity,
+  gender: model.gender,
+  height: model.height,
+  weight: model.weight,
+  specialty: model.specialty,
+  specialties: model.specialties,
+  bio: model.bio,
+  hobbies: model.hobbies,
+  // Use the new model-thumbnails bucket for thumbnail images
+  image: model.thumbnail_path ? getStorageUrl('model-thumbnails', model.thumbnail_path) : '',
+  video: '',
+  isPopular: model.is_popular,
+  isNew: model.is_new,
+  isComingSoon: model.is_coming_soon,
+  isFeatured: model.is_featured
+});
+
 function App() {
   const [featuredModels, setFeaturedModels] = useState<any[]>([]);
+  const [newModels, setNewModels] = useState<any[]>([]);
+  const [popularModels, setPopularModels] = useState<any[]>([]);
   const [featuredStyles, setFeaturedStyles] = useState<any[]>([]);
   const [selectedModel, setSelectedModel] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -78,7 +105,6 @@ function App() {
   // Fetch featured content from Supabase
   useEffect(() => {
     const fetchFeaturedContent = async () => {
-      // Check if Supabase is properly configured
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
       
@@ -97,13 +123,29 @@ function App() {
       }
 
       try {
-        // Fetch featured models
-        const { data: modelsData, error: modelsError } = await supabase
+        // Fetch Featured models
+        const { data: featuredData } = await supabase
           .from('models')
           .select('*')
-          .or('is_new.eq.true,is_popular.eq.true,is_coming_soon.eq.true,is_featured.eq.true')
+          .eq('is_featured', true)
           .order('created_at', { ascending: false })
-          .limit(50);
+          .limit(3);
+
+        // Fetch New models
+        const { data: newData } = await supabase
+          .from('models')
+          .select('*')
+          .eq('is_new', true)
+          .order('created_at', { ascending: false })
+          .limit(3);
+
+        // Fetch Popular models
+        const { data: popularData } = await supabase
+          .from('models')
+          .select('*')
+          .eq('is_popular', true)
+          .order('created_at', { ascending: false })
+          .limit(3);
 
         // Fetch featured styles
         const { data: stylesData, error: stylesError } = await supabase
@@ -111,34 +153,9 @@ function App() {
           .select('*')
           .limit(6);
 
-        if (modelsError) {
-          console.error('Error fetching featured models:', modelsError);
-          setFeaturedModels([]);
-        } else {
-          setFeaturedModels((modelsData || []).map(model => ({
-            id: model.id,
-            slug: model.slug,
-            name: model.name,
-            tagline: model.tagline,
-            age: model.age,
-            nationality: model.nationality,
-            ethnicity: model.ethnicity,
-            gender: model.gender,
-            height: model.height,
-            weight: model.weight,
-            specialty: model.specialty, // Keep for backward compatibility
-            specialties: model.specialties, // New array field
-            bio: model.bio,
-            hobbies: model.hobbies,
-            // Use the new model-thumbnails bucket for thumbnail images
-            image: model.thumbnail_path ? getStorageUrl('model-thumbnails', model.thumbnail_path) : '',
-            video: '',
-            isPopular: model.is_popular,
-            isNew: model.is_new,
-            isComingSoon: model.is_coming_soon,
-            isFeatured: model.is_featured
-          })));
-        }
+        setFeaturedModels((featuredData || []).map(transformModelData));
+        setNewModels((newData || []).map(transformModelData));
+        setPopularModels((popularData || []).map(transformModelData));
 
         if (stylesError) {
           console.error('Error fetching featured styles:', stylesError);
@@ -161,6 +178,8 @@ function App() {
       } catch (error) {
         console.error('Error fetching featured content:', error);
         setFeaturedModels([]);
+        setNewModels([]);
+        setPopularModels([]);
         // Use fallback styles on error
         setFeaturedStyles(fallbackStyles.slice(0, 6).map(style => ({
           id: style.id,
@@ -185,6 +204,35 @@ function App() {
     setSelectedModel(null);
   };
 
+  // Component to render a model section
+  const ModelSection = ({ title, models, linkText }: { title: string, models: any[], linkText: string }) => {
+    if (models.length === 0) return null;
+
+    return (
+      <div className="py-12 px-4">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-3xl font-serif mb-8 text-center">{title}</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {models.slice(0, 3).map(model => (
+              <button key={model.id} onClick={() => handleModelClick(model)} className="text-left">
+                <ModelCard model={model} />
+              </button>
+            ))}
+          </div>
+          <div className="mt-6 text-center">
+            <Link 
+              to="/models"
+              className="inline-flex items-center text-black hover:text-rose-500 transition"
+            >
+              {linkText}
+              <ChevronRight className="ml-2 h-5 w-5" />
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <Router>
       <div className="min-h-screen bg-white">
@@ -206,34 +254,25 @@ function App() {
               </div>
 
               {/* Featured Models Section */}
-              <div className="py-12 px-4">
-                <div className="max-w-7xl mx-auto">
-                  <h2 className="text-3xl font-serif mb-8 text-center">Featured Models</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {featuredModels.slice(0, 3).map(model => (
-                      <ModelCard 
-                        key={model.id} 
-                        model={model} 
-                        onModelClick={handleModelClick}
-                      />
-                    ))}
-                  </div>
-                  <div className="mt-6 text-center">
-                    <Link 
-                      to="/models"
-                      className="inline-flex items-center text-black hover:text-rose-500 transition"
-                    >
-                      View All Models
-                      <ChevronRight className="ml-2 h-5 w-5" />
-                    </Link>
-                  </div>
-                  {featuredModels.length === 0 && !loading && (
-                    <div className="text-center py-8">
-                      <p className="text-gray-600">No featured models found</p>
-                    </div>
-                  )}
-                </div>
-              </div>
+              <ModelSection 
+                title="Featured Models" 
+                models={featuredModels} 
+                linkText="View All Models" 
+              />
+
+              {/* New Models Section */}
+              <ModelSection 
+                title="New Additions" 
+                models={newModels} 
+                linkText="Discover New Models" 
+              />
+
+              {/* Popular Models Section */}
+              <ModelSection 
+                title="Most Popular" 
+                models={popularModels} 
+                linkText="See Popular Models" 
+              />
 
               {/* Featured Styles Section */}
               <div className="py-12 bg-black">
