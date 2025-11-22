@@ -377,7 +377,7 @@ export function ModelDetailModal({ model, allModels = [], onClose, onModelChange
                 )}
                 {/* Selected collection view */}
                 {currentCollection === -1 ? (
-                  <div className="relative aspect-[3/4] bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden">
+                  <div className="relative aspect-[4/5] bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden">
                     <img
                       src={model.image}
                       alt={model.name}
@@ -386,7 +386,7 @@ export function ModelDetailModal({ model, allModels = [], onClose, onModelChange
                   </div>
                 ) : (
                   <div className="relative">
-                    <div className="relative aspect-[3/4] bg-gray-50 rounded-lg overflow-hidden">
+                    <div className="relative aspect-[4/5] bg-gray-50 rounded-lg overflow-hidden">
                       <div className="absolute inset-0 flex items-center justify-center">
                         {(() => {
                           const photos = collections[currentCollection]?.photos || [];
