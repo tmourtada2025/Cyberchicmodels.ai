@@ -89,11 +89,7 @@ export function ModelCard({ model, onModelClick }: ModelCardProps) {
         <div className="absolute bottom-0 left-0 right-0 p-4">
           <h3 className="text-white text-xl font-serif mb-2 leading-tight">{model.name}</h3>
           <p className="text-white/90 text-sm mb-1 leading-tight">
-            {model.tagline || 
-             (model.specialties && model.specialties.length > 0 
-               ? model.specialties.slice(0, 2).join(', ') + (model.specialties.length > 2 ? '...' : '')
-               : model.specialty)
-            }
+            {model.tagline || model.specialty}
           </p>
           <p className="text-white/70 text-sm leading-tight">{model.nationality} • {model.age} years</p>
         </div>
