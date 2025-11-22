@@ -6,6 +6,7 @@ import { addToCart } from '../store/cartSlice';
 import { addLike } from '../store/likesSlice';
 import { toggleFavorite } from '../store/favoritesSlice';
 import { RootState } from '../store/store';
+import { publicUrl } from "../lib/supabase"
 import { supabase } from '../lib/supabase';
 import { getStorageUrl } from '../lib/storage';
 import type { ModelCollection, ModelPhoto } from '../lib/supabase';
@@ -40,7 +41,7 @@ export function ModelDetailModal({ model, allModels = [], onClose, onModelChange
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [collections, setCollections] = useState<Collection[]>([]);
-  const [currentCollection, setCurrentCollection] = useState(-1);
+  const [currentCollection, setCurrentCollection] = useState(0);
   const [currentPhoto, setCurrentPhoto] = useState(0);
   const [modelPhotos, setModelPhotos] = useState<ModelPhoto[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,33 +55,33 @@ export function ModelDetailModal({ model, allModels = [], onClose, onModelChange
   // Fetch model collections and their associated photos
   useEffect(() => {
     const fetchModelData = async () => {
-      // Start with no collection selected
+      // Start with thumbnail view (no collection selected)
       setCurrentCollection(-1);
       setCurrentPhoto(0);
       
       try {
-        // Fetch all images for this model (both collection images and default images)
+        // Fetch all photos for this model
         const { data: photosData, error: photosError } = await supabase
-          .from('model_collection_images')
+          .from('model_photos')
           .select('*')
           .eq('model_id', model.id)
-          .order('display_order');
+          .order('sort_order');
 
         // Fetch collections (if any)
         const { data: collectionsData, error: collectionsError } = await supabase
           .from('model_collections')
-          .select('id, name, slug, display_order')
+          .select('id, name, description, cover_image_path')
           .eq('model_id', model.id)
-          .order('display_order');
+          .order('sort_order');
 
         if (photosError) {
           console.error('Error fetching photos:', photosError);
         } else {
           const processedPhotos = (photosData || []).map(photo => ({
             ...photo,
-            image_path: photo.path && photo.path.startsWith('http') 
-              ? photo.path
-              : getStorageUrl('model-collections', photo.path)
+            image_path: photo.image_path.startsWith('http') 
+              ? photo.image_path 
+              : getStorageUrl('models', photo.image_path)
           }));
           setModelPhotos(processedPhotos);
         }
@@ -91,53 +92,46 @@ export function ModelDetailModal({ model, allModels = [], onClose, onModelChange
 
         // If we have photos from the database, use them
         if (photosData && photosData.length > 0) {
-          // If there are no collections, group all photos into a single pack
-          if (!collectionsData || collectionsData.length === 0) {
-            setCollections([{ 
-              id: 'photos',
-              name: 'Photo Pack',
-              description: `${photosData.length} professional photos`,
-              photos: (photosData || []).map(photo => ({
-                ...photo,
-                image_path: photo.path && photo.path.startsWith('http')
-                  ? photo.path
-                  : getStorageUrl('model-collections', photo.path)
-              }))
-            }]);
-          } else {
-            // Group photos by collection_id; if collection_id is null, group under 'default'
-            const collectionsMap: Record<string, ModelPhoto[]> = {};
-            (photosData || []).forEach(photo => {
-              const key = photo.collection_id || 'default';
-              if (!collectionsMap[key]) collectionsMap[key] = [];
-              collectionsMap[key].push(photo);
-            });
-            const processedCollections = collectionsData.map(collection => ({
-              id: collection.id,
-              name: collection.name,
-              description: `${collectionsMap[collection.id]?.length || 0} photos`,
-              photos: (collectionsMap[collection.id] || []).map(photo => ({
-                ...photo,
-                image_path: photo.path && photo.path.startsWith('http')
-                  ? photo.path
-                  : getStorageUrl('model-collections', photo.path)
-              }))
-            }));
-            // Add any default (non-collection) photos as a separate entry
-            if (collectionsMap['default']) {
-              processedCollections.unshift({
-                id: 'default',
-                name: 'General',
-                description: `${collectionsMap['default'].length} photos`,
-                photos: collectionsMap['default'].map(photo => ({
+          setCollections([{
+            id: 'photos',
+            name: 'Photo Pack',
+            description: `${photosData.length} professional photos`,
+            photos: (photosData || []).map(photo => ({
+              ...photo,
+              image_path: photo.image_path.startsWith('http') 
+                ? photo.image_path 
+                : getStorageUrl('models', photo.image_path)
+            }))
+          }]);
+        } else if (collectionsData && collectionsData.length > 0) {
+          // Fallback to collections if no direct photos
+          const { data: allPhotos, error: allPhotosError } = await supabase
+            .from('model_photos')
+          .select('*')
+          .eq('model_id', model.id)
+          .order('sort_order');
+
+          if (!allPhotosError && allPhotos && allPhotos.length > 0) {
+            // Process collections with photos
+            const collectionsWithPhotos = collectionsData.map((collection, index) => {
+              const photosPerCollection = Math.floor(allPhotos.length / collectionsData.length);
+              const extraPhotos = allPhotos.length % collectionsData.length;
+              const startIndex = index * photosPerCollection + Math.min(index, extraPhotos);
+              const endIndex = startIndex + photosPerCollection + (index < extraPhotos ? 1 : 0);
+              
+              return {
+                id: collection.id,
+                name: collection.name,
+                description: collection.description || `${collection.name} collection`,
+                photos: allPhotos.slice(startIndex, endIndex).map(photo => ({
                   ...photo,
-                  image_path: photo.path && photo.path.startsWith('http')
-                    ? photo.path
-                    : getStorageUrl('model-collections', photo.path)
+                  image_path: photo.image_path.startsWith('http') 
+                    ? photo.image_path 
+                    : getStorageUrl('models', photo.image_path)
                 }))
-              });
-            }
-            setCollections(processedCollections);
+              };
+            });
+            setCollections(collectionsWithPhotos);
           }
         } else {
           // No photos found, use model thumbnail as fallback
@@ -149,12 +143,13 @@ export function ModelDetailModal({ model, allModels = [], onClose, onModelChange
               photos: [{
                 id: 'default-photo',
                 model_id: model.id,
-                collection_id: null,
-                path: '',
                 image_path: model.image,
                 caption: model.name,
-                display_order: 0
-              } as any]
+                is_thumbnail: true,
+                is_featured: false,
+                sort_order: 0,
+                created_at: new Date().toISOString()
+              }]
             }]);
           } else {
             setCollections([]);
@@ -185,42 +180,48 @@ export function ModelDetailModal({ model, allModels = [], onClose, onModelChange
 
   const handlePrevPhoto = () => {
     if (currentCollection === -1) return; // Can't navigate from main photo
+    
     const currentCollectionPhotos = collections[currentCollection]?.photos || [];
+    
     if (currentPhoto === -1) {
+      // Can't go back from collection thumbnail
       return;
     } else if (currentPhoto === 0) {
+      // Go back to collection thumbnail
       setCurrentPhoto(-1);
     } else {
+      // Go to previous photo in same collection
       setCurrentPhoto(currentPhoto - 1);
     }
   };
 
   const handleNextPhoto = () => {
-    if (currentCollection === -1) return;
+    if (currentCollection === -1) return; // Can't navigate from main photo
+    
     const currentCollectionPhotos = collections[currentCollection]?.photos || [];
+    
     if (currentPhoto === -1) {
-      if (currentCollectionPhotos.length > 0) setCurrentPhoto(0);
+      // Go from collection thumbnail to first photo
+      setCurrentPhoto(0);
     } else if (currentPhoto < currentCollectionPhotos.length - 1) {
+      // Go to next photo in same collection
       setCurrentPhoto(currentPhoto + 1);
-    } else {
-      const nextCollectionIndex = (currentCollection + 1) % collections.length;
-      setCurrentCollection(nextCollectionIndex);
-      setCurrentPhoto(-1);
     }
+    // Stop at last photo of collection - don't go to next collection
   };
 
-  const handleCollectionClick = (index: number) => {
+  const handleCollectionChange = (index: number) => {
     setCurrentCollection(index);
-    setCurrentPhoto(-1);
+    setCurrentPhoto(-1); // Start with collection thumbnail view
   };
 
   const handleAddToCart = () => {
     dispatch(addToCart({
       id: model.id,
       name: model.name,
-      price: 1.99,
+      price: 99.00,
       image: model.image,
-      description: model.tagline || ''
+      specialty: model.specialty
     }));
     setIsAdded(true);
   };
@@ -237,215 +238,246 @@ export function ModelDetailModal({ model, allModels = [], onClose, onModelChange
       id: model.id,
       name: model.name,
       image: model.image,
-      description: model.tagline || ''
+      specialty: model.specialty
     }));
   };
 
-  const navigateToModel = (direction: 'prev' | 'next') => {
-    if (!allModels || allModels.length === 0) return;
-    const currentIndex = allModels.findIndex((m) => m.id === model.id);
-    if (currentIndex === -1) return;
-    const nextIndex = direction === 'prev' ? (currentIndex - 1 + allModels.length) % allModels.length : (currentIndex + 1) % allModels.length;
-    onModelChange && onModelChange(allModels[nextIndex]);
+  const handleBackToModels = () => {
+    onClose();
+    navigate('/models');
   };
 
+  const handleNavigateModel = (direction: 'previous' | 'next') => {
+    if (allModels.length === 0) return;
+    
+    const currentIndex = allModels.findIndex(m => m.id === model.id);
+    if (currentIndex === -1) return;
+    
+    let nextIndex;
+    if (direction === 'previous') {
+      nextIndex = currentIndex === 0 ? allModels.length - 1 : currentIndex - 1;
+    } else {
+      nextIndex = currentIndex === allModels.length - 1 ? 0 : currentIndex + 1;
+    }
+    
+    const nextModel = allModels[nextIndex];
+    if (nextModel && onModelChange) {
+      onModelChange(nextModel);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
+        <div className="bg-white rounded-lg p-8">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading model details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const currentCollectionData = collections[currentCollection];
+  const currentPhotoData = currentCollectionData?.photos[currentPhoto];
+  
+  // Determine which image to display
+  const currentImage = currentCollection === -1 
+    ? model.image // Main model thumbnail
+    : currentPhoto === -1 
+    ? (currentCollectionData?.photos[0]?.image_path || model.image) // Collection thumbnail (first photo)
+    : (currentPhotoData?.image_path || model.image); // Specific photo in collection
+  
+  // Show thumbnail first, then collection photos
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="relative bg-white max-w-5xl w-full mx-4 md:mx-8 rounded-lg overflow-hidden shadow-lg">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
+      <div className="relative w-full max-w-[95vw] h-[95vh] bg-white rounded-2xl shadow-2xl overflow-hidden">
+        {/* Close Button */}
         <button
-          className="absolute top-4 right-4 text-gray-500 hover:text-black focus:outline-none"
           onClick={onClose}
+          className="absolute top-6 right-6 z-20 bg-black/80 backdrop-blur-sm p-3 rounded-full hover:bg-black transition-all duration-200 group"
         >
-          <X className="w-6 h-6" />
+          <X className="h-6 w-6 text-white group-hover:scale-110 transition-transform" />
         </button>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
-          {/* Image and collections - NOW ON LEFT */}
-          <div className="p-6 border-r border-gray-200 flex flex-col order-2 md:order-1">
-            <h2 className="text-2xl font-serif mb-2">{model.name}</h2>
-            <p className="text-sm text-gray-600 mb-4">{model.tagline}</p>
-            <div className="flex space-x-4 mb-4">
-              <div className="flex-1">
-                <p className="text-xs text-gray-500">Height</p>
-                <p className="font-medium">{model.height || 'N/A'}</p>
-              </div>
-              <div className="flex-1">
-                <p className="text-xs text-gray-500">Weight</p>
-                <p className="font-medium">{model.weight || 'N/A'}</p>
-              </div>
-              <div className="flex-1">
-                <p className="text-xs text-gray-500">Age</p>
-                <p className="font-medium">{model.age || 'N/A'}</p>
-              </div>
+
+        {/* Navigation Pills - Top center of image area */}
+        <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20 flex space-x-4">
+          <button
+            onClick={() => handleNavigateModel('previous')}
+            className="bg-white/90 backdrop-blur-sm px-3 py-2 rounded-full hover:bg-white transition-all duration-200 flex items-center text-gray-800 shadow-lg hover:shadow-xl text-sm"
+          >
+            <ChevronLeft className="h-4 w-4 mr-1" />
+            Previous Model
+          </button>
+          <button
+            onClick={() => handleNavigateModel('next')}
+            className="bg-white/90 backdrop-blur-sm px-3 py-2 rounded-full hover:bg-white transition-all duration-200 flex items-center text-gray-800 shadow-lg hover:shadow-xl text-sm"
+          >
+            Next Model
+            <ChevronRight className="h-4 w-4 ml-1" />
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 h-full">
+          {/* Image Section */}
+          <div className="lg:col-span-2 relative bg-gray-50 flex items-center justify-center p-6">
+            <div className="w-full h-full flex items-center justify-center max-h-[85vh]">
+              <img
+                src={currentImage}
+                alt={currentCollectionData ? `${model.name} - ${currentCollectionData.name}` : model.name}
+                className="max-w-[90%] max-h-[75vh] object-contain rounded-lg shadow-lg"
+              />
             </div>
-            <div className="flex space-x-4 mb-4">
-              <div className="flex-1">
-                <p className="text-xs text-gray-500">Nationality</p>
-                <p className="font-medium">{model.nationality || 'N/A'}</p>
+
+            {/* Navigation Arrows */}
+            <button
+              onClick={handlePrevPhoto}
+              className="absolute left-6 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-sm p-2 rounded-full hover:bg-white transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-110"
+              disabled={currentCollection === -1 || currentPhoto <= -1}
+            >
+              <ChevronLeft className="h-4 w-4 text-gray-800" />
+            </button>
+            <button
+              onClick={handleNextPhoto}
+              className="absolute right-6 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-sm p-2 rounded-full hover:bg-white transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-110"
+              disabled={currentCollection === -1 || currentPhoto === (currentCollectionData?.photos.length || 1) - 1}
+            >
+              <ChevronRight className="h-4 w-4 text-gray-800" />
+            </button>
+
+            {/* Photo Counter */}
+            {currentCollection >= 0 && currentPhoto >= 0 && currentCollectionData && (currentCollectionData?.photos.length || 0) > 1 && (
+              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white/95 backdrop-blur-sm px-5 py-3 rounded-full text-gray-800 text-sm shadow-lg font-medium">
+                {currentPhoto + 1} / {currentCollectionData?.photos.length || 1}
               </div>
-              <div className="flex-1">
-                <p className="text-xs text-gray-500">Ethnicity</p>
-                <p className="font-medium">{model.ethnicity || 'N/A'}</p>
-              </div>
-              <div className="flex-1">
-                <p className="text-xs text-gray-500">Specialty</p>
-                <p className="font-medium">{model.specialty || 'N/A'}</p>
-              </div>
-            </div>
-            <div className="space-y-4 mb-4">
-              <p className="text-sm text-gray-500">{model.hobbies || ''}</p>
-            </div>
-            <div className="flex items-center space-x-4 mb-4">
+            )}
+
+            {/* Action Buttons */}
+            <div className="absolute top-20 right-6 flex space-x-3">
               <button
                 onClick={handleLike}
-                className={`flex items-center space-x-1 text-gray-600 hover:text-red-500 ${hasLiked ? 'text-red-500' : ''}`}
+                className={`bg-white/95 backdrop-blur-sm p-3 rounded-full transition-all duration-200 flex items-center shadow-lg hover:shadow-xl hover:scale-110 ${
+                  hasLiked ? 'cursor-default' : 'hover:bg-white'
+                }`}
+                disabled={hasLiked}
               >
-                <Heart className={`h-5 w-5 ${hasLiked ? 'fill-red-500' : ''}`} />
-                <span>{likes}</span>
+                <Heart className={`h-5 w-5 ${hasLiked ? 'text-red-500 fill-red-500' : 'text-gray-800'}`} />
+                <span className="ml-1 text-gray-800">{likes}</span>
               </button>
               <button
                 onClick={handleToggleFavorite}
-                className={`flex items-center space-x-1 ${isFavorite ? 'text-yellow-600' : 'text-gray-600 hover:text-yellow-600'}`}
+                className="bg-white/95 backdrop-blur-sm p-3 rounded-full hover:bg-white transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-110"
               >
-                <Star className={`h-5 w-5 ${isFavorite ? 'fill-yellow-600' : ''}`} />
-                <span>{isFavorite ? 'Favorited' : 'Favorite'}</span>
-              </button>
-            </div>
-            <div className="flex space-x-4 mb-6">
-              {!isAdded ? (
-                <button
-                  onClick={handleAddToCart}
-                  className="flex-1 bg-black text-white py-2 rounded-full hover:bg-opacity-90 transition"
-                >
-                  <Download className="h-4 w-4 mr-1" />
-                  Add to Cart – $1.99
-                </button>
-              ) : (
-                <div className="flex-1 flex space-x-3">
-                  <button
-                    onClick={() => navigate('/models')}
-                    className="flex-1 bg-gray-100 text-gray-800 py-2 rounded-full hover:bg-gray-200 transition"
-                  >
-                    Continue Shopping
-                  </button>
-                  <button
-                    onClick={() => navigate('/cart')}
-                    className="flex-1 bg-black text-white py-2 rounded-full hover:bg-opacity-90 transition"
-                  >
-                    View Cart
-                  </button>
-                </div>
-              )}
-            </div>
-            <div className="flex items-center space-x-4 text-sm text-gray-600">
-              <button onClick={() => navigateToModel('prev')} className="flex items-center space-x-1 hover:text-black">
-                <ArrowLeft className="h-4 w-4" />
-                <span>Prev</span>
-              </button>
-              <span>•</span>
-              <button onClick={() => navigateToModel('next')} className="flex items-center space-x-1 hover:text-black">
-                <span>Next</span>
-                <ArrowLeft className="h-4 w-4 rotate-180" />
+                <Star className={`h-5 w-5 ${isFavorite ? 'text-yellow-400 fill-yellow-400' : 'text-gray-800'}`} />
               </button>
             </div>
           </div>
-          {/* Details - NOW ON RIGHT */}
-          <div className="p-6 flex flex-col order-1 md:order-2">
-            {loading ? (
-              <div className="h-96 flex items-center justify-center bg-gray-50 rounded-lg">
-                <div className="text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto mb-2"></div>
-                  <p className="text-gray-600">Loading images...</p>
+
+          {/* Details Section */}
+          <div className="p-8 overflow-y-auto">
+            <div className="space-y-6">
+              <div>
+                <h1 className="text-3xl font-serif mb-2">{model.name}</h1>
+                <p className="text-lg text-gray-600 mb-4">{model.tagline || model.specialty}</p>
+                <div className="space-y-2 text-sm text-gray-600">
+                  <p><span className="font-medium">Age:</span> {model.age}</p>
+                  <p><span className="font-medium">Nationality:</span> {model.nationality}</p>
+                  <p><span className="font-medium">Height:</span> {model.height}</p>
+                  <p><span className="font-medium">Weight:</span> {model.weight}</p>
                 </div>
               </div>
-            ) : (
-              <div>
-                {/* Collections list */}
-                {collections.length > 1 && (
-                  <div className="flex space-x-2 overflow-x-auto mb-4">
+
+              {/* Collections Tabs */}
+              {collections.length > 0 && (
+                <div>
+                  <h3 className="font-medium mb-3">
+                    Photo Collections 
+                    {modelPhotos.length > 0 && (
+                      <span className="text-sm text-gray-500 ml-2">
+                        ({modelPhotos.length} photos total)
+                      </span>
+                    )}
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={() => setCurrentCollection(-1)}
+                      className={`px-4 py-2 rounded-full text-sm transition ${
+                        currentCollection === -1
+                          ? 'bg-black text-white'
+                          : 'bg-gray-100 hover:bg-gray-200'
+                      }`}
+                    >
+                      Main Photo
+                    </button>
                     {collections.map((collection, index) => (
                       <button
                         key={collection.id}
-                        onClick={() => handleCollectionClick(index)}
-                        className={`px-4 py-2 rounded-full whitespace-nowrap text-sm transition ${
-                          index === currentCollection ? 'bg-black text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        onClick={() => handleCollectionChange(index)}
+                        className={`px-4 py-2 rounded-full text-sm transition ${
+                          currentCollection === index
+                            ? 'bg-black text-white'
+                            : 'bg-gray-100 hover:bg-gray-200'
                         }`}
                       >
-                        {collection.name}
+                        {collection.name} ({collection.photos.length})
                       </button>
                     ))}
                   </div>
-                )}
-                {/* Selected collection view */}
-                {currentCollection === -1 ? (
-                  <div className="relative aspect-[4/5] bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden">
-                    <img
-                      src={model.image}
-                      alt={model.name}
-                      className="max-w-full max-h-full object-contain"
-                    />
-                  </div>
-                ) : (
-                  <div className="relative">
-                    <div className="relative aspect-[4/5] bg-gray-50 rounded-lg overflow-hidden">
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        {(() => {
-                          const photos = collections[currentCollection]?.photos || [];
-                          if (currentPhoto === -1) {
-                            return (
-                              <img
-                                src={collections[currentCollection]?.photos?.[0]?.image_path || ''}
-                                alt={collections[currentCollection]?.name}
-                                className="max-w-full max-h-full object-contain" />
-                            );
-                          }
-                          const photo = photos[currentPhoto];
-                          return (
-                            <img
-                              src={photo?.image_path || ''}
-                              alt={photo?.caption || ''}
-                              className="max-w-full max-h-full object-contain"
-                            />
-                          );
-                        })()}
-                      </div>
-                    </div>
-                    {/* Navigation arrows */}
-                    <button
-                      onClick={handlePrevPhoto}
-                      className="absolute top-1/2 left-2 -translate-y-1/2 p-2 bg-white/50 hover:bg-white rounded-full"
-                    >
-                      <ChevronLeft className="h-5 w-5" />
-                    </button>
-                    <button
-                      onClick={handleNextPhoto}
-                      className="absolute top-1/2 right-2 -translate-y-1/2 p-2 bg-white/50 hover:bg-white rounded-full"
-                    >
-                      <ChevronRight className="h-5 w-5" />
-                    </button>
-                  </div>
-                )}
-                {/* Thumbnails within collection */}
-                {currentCollection !== -1 && collections[currentCollection]?.photos?.length > 1 && (
-                  <div className="flex space-x-2 mt-2 overflow-x-auto p-1 bg-gray-50 rounded-lg">
-                    {collections[currentCollection].photos.map((photo, index) => (
-                      <div
-                        key={photo.id}
-                        onClick={() => setCurrentPhoto(index)}
-                        className={`w-16 h-16 flex-shrink-0 rounded overflow-hidden border cursor-pointer ${
-                          index === currentPhoto ? 'border-black' : 'border-transparent'
-                        }`}
-                      >
-                        <img
-                          src={photo.image_path || ''}
-                          alt={photo.caption || ''}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
+                  {currentCollection === -1 ? (
+                    <p className="text-sm text-gray-600 mt-2">Main profile photo</p>
+                  ) : currentPhoto === -1 ? (
+                    <p className="text-sm text-gray-600 mt-2">{currentCollectionData?.name} collection overview</p>
+                  ) : currentCollectionData?.description && (
+                    <p className="text-sm text-gray-600 mt-2">{currentCollectionData.description}</p>
+                  )}
+                  {currentCollection >= 0 && currentPhoto >= 0 && currentPhotoData?.caption && (
+                    <p className="text-sm text-gray-500 mt-2 italic">{currentPhotoData.caption}</p>
+                  )}
+                </div>
+              )}
+
+              {/* Bio */}
+              {model.bio && (
+                <div>
+                  <h3 className="font-medium mb-2">About</h3>
+                  <p className="text-gray-600 text-sm">{model.bio}</p>
+                </div>
+              )}
+
+              {/* Hobbies */}
+              <div>
+                <h3 className="font-medium mb-2">Interests</h3>
+                <p className="text-gray-600 text-sm">{model.hobbies}</p>
               </div>
-            )}
+
+              {/* Hire Button */}
+              <div className="space-y-3 pt-4 border-t">
+                {!isAdded ? (
+                  <button
+                    onClick={handleAddToCart}
+                    className="w-full bg-rose-300 text-white py-3 rounded-full hover:bg-rose-400 transition flex items-center justify-center"
+                  >
+                    <Download className="h-5 w-5 mr-2" />
+                    Hire Me – $99.00
+                  </button>
+                ) : (
+                  <div className="text-center">
+                    <p className="text-green-600 mb-2">Added to cart!</p>
+                    <button
+                      onClick={onClose}
+                      className="w-full bg-gray-200 text-gray-800 py-3 rounded-full hover:bg-gray-300 transition"
+                    >
+                      Continue Browsing
+                    </button>
+                  </div>
+                )}
+                <div className="text-center">
+                  <p className="text-xs text-gray-500">
+                    Includes {modelPhotos.length > 0 ? `${modelPhotos.length}` : '30+'} HD images & commercial license
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
