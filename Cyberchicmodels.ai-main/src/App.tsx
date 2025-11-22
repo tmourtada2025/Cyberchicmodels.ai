@@ -212,7 +212,7 @@ function App() {
       <div className="py-12 px-4">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl font-serif mb-8 text-center">{title}</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8">
             {models.slice(0, 3).map(model => (
               <button key={model.id} onClick={() => handleModelClick(model)} className="text-left">
                 <ModelCard model={model} />
