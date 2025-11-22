@@ -11,7 +11,6 @@ import { AboutPage } from './components/AboutPage';
 import { ContactPage } from './components/ContactPage';
 import { CartPage } from './components/CartPage';
 import { FavoritesPage } from './components/FavoritesPage';
-
 import { HeroCarousel } from './components/HeroCarousel';
 import { Footer } from './components/Footer';
 import { ModelCard } from './components/ModelCard';
@@ -94,21 +93,21 @@ const transformModelData = (model: any) => ({
 });
 
 function App() {
-  const [featuredModels, setFeaturedModels] = useState<any[]>([]);
+  const [allModels, setAllModels] = useState<any[]>([]);
   const [featuredStyles, setFeaturedStyles] = useState<any[]>([]);
   const [selectedModel, setSelectedModel] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch featured content from Supabase
+  // Fetch all published models and featured styles
   useEffect(() => {
-    const fetchFeaturedContent = async () => {
+    const fetchContent = async () => {
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
       
       if (!supabaseUrl || !supabaseKey || supabaseKey.includes('REPLACE_WITH_YOUR_ACTUAL')) {
         console.warn('Supabase not configured properly. Using fallback data.');
-        setFeaturedModels([]);
+        setAllModels([]);
         setFeaturedStyles(fallbackStyles.slice(0, 6).map(style => ({
           id: style.id,
           name: style.name,
@@ -121,14 +120,12 @@ function App() {
       }
 
       try {
-        // Fetch featured models (first 6 with is_featured=true)
+        // Fetch all published models
         const { data: modelsData, error: modelsError } = await supabase
           .from('models')
           .select('*')
-          .eq('is_featured', true)
           .eq('is_published', true)
-          .order('created_at', { ascending: false })
-          .limit(6);
+          .order('created_at', { ascending: false });
 
         // Fetch featured styles
         const { data: stylesData, error: stylesError } = await supabase
@@ -137,10 +134,10 @@ function App() {
           .limit(6);
 
         if (modelsError) {
-          console.error('Error fetching featured models:', modelsError);
-          setFeaturedModels([]);
+          console.error('Error fetching models:', modelsError);
+          setAllModels([]);
         } else {
-          setFeaturedModels((modelsData || []).map(transformModelData));
+          setAllModels((modelsData || []).map(transformModelData));
         }
 
         if (stylesError) {
@@ -162,9 +159,9 @@ function App() {
           })));
         }
       } catch (err) {
-        console.error('Error fetching featured content:', err);
+        console.error('Error fetching content:', err);
         setError('Failed to load content');
-        setFeaturedModels([]);
+        setAllModels([]);
         setFeaturedStyles(fallbackStyles.slice(0, 6).map(style => ({
           id: style.id,
           name: style.name,
@@ -177,7 +174,7 @@ function App() {
       }
     };
 
-    fetchFeaturedContent();
+    fetchContent();
   }, []);
 
   const handleModelClick = (model: any) => {
@@ -208,7 +205,7 @@ function App() {
                 </div>
               </div>
 
-              {/* Featured Models Section */}
+              {/* Featured Models Grid - Single Row */}
               <div className="py-12 px-4">
                 <div className="max-w-7xl mx-auto">
                   <h2 className="text-3xl font-serif mb-8 text-center">Featured Models</h2>
@@ -222,19 +219,36 @@ function App() {
                       <p className="text-gray-600 mb-4">Unable to load models at the moment</p>
                       <p className="text-sm text-gray-500">Please check back later</p>
                     </div>
-                  ) : featuredModels.length > 0 ? (
+                  ) : allModels.length > 0 ? (
                     <>
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {featuredModels.slice(0, 3).map(model => (
+                      {/* First Row - 3 Models */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+                        {allModels.slice(0, 3).map(model => (
                           <button 
                             key={model.id} 
                             onClick={() => handleModelClick(model)} 
                             className="text-left hover:opacity-90 transition"
                           >
-                            <ModelCard model={model} />
+                            <ModelCard model={model} onModelClick={handleModelClick} />
                           </button>
                         ))}
                       </div>
+
+                      {/* Additional Models Grid (if more than 3) */}
+                      {allModels.length > 3 && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                          {allModels.slice(3).map(model => (
+                            <button 
+                              key={model.id} 
+                              onClick={() => handleModelClick(model)} 
+                              className="text-left hover:opacity-90 transition"
+                            >
+                              <ModelCard model={model} onModelClick={handleModelClick} />
+                            </button>
+                          ))}
+                        </div>
+                      )}
+
                       <div className="mt-6 text-center">
                         <Link 
                           to="/models"
@@ -247,7 +261,7 @@ function App() {
                     </>
                   ) : (
                     <div className="text-center py-12">
-                      <p className="text-gray-600 mb-4">No featured models available</p>
+                      <p className="text-gray-600 mb-4">No models available</p>
                       <p className="text-sm text-gray-500">New models coming soon!</p>
                     </div>
                   )}
@@ -375,12 +389,11 @@ function App() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/favorites" element={<FavoritesPage />} />
-
         </Routes>
         {selectedModel && (
           <ModelDetailModal
             model={selectedModel}
-            allModels={featuredModels}
+            allModels={allModels}
             onClose={handleCloseModal}
             onModelChange={handleModelClick}
           />
