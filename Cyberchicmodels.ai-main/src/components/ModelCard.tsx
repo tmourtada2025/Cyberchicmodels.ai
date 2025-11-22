@@ -56,7 +56,7 @@ export function ModelCard({ model, onModelClick }: ModelCardProps) {
 
   return (
     <div
-      className="relative w-full aspect-[5/4] group cursor-pointer"
+      className="relative w-full aspect-[3/4] group cursor-pointer"
       onClick={handleCardClick}
     >
       <div className="absolute top-0 left-0 z-10 flex flex-col gap-2 transform -translate-x-2 -translate-y-2">
@@ -81,7 +81,7 @@ export function ModelCard({ model, onModelClick }: ModelCardProps) {
         <img 
           src={model.image}
           alt={model.name}
-          className="w-full h-full object-contain"
+          className="w-full h-full object-cover rounded-lg"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
         
@@ -89,7 +89,11 @@ export function ModelCard({ model, onModelClick }: ModelCardProps) {
         <div className="absolute bottom-0 left-0 right-0 p-4">
           <h3 className="text-white text-xl font-serif mb-2 leading-tight">{model.name}</h3>
           <p className="text-white/90 text-sm mb-1 leading-tight">
-            {model.tagline || model.specialty}
+            {model.tagline || 
+             (model.specialties && model.specialties.length > 0 
+               ? model.specialties.slice(0, 2).join(', ') + (model.specialties.length > 2 ? '...' : '')
+               : model.specialty)
+            }
           </p>
           <p className="text-white/70 text-sm leading-tight">{model.nationality} • {model.age} years</p>
         </div>
@@ -115,7 +119,7 @@ export function ModelCard({ model, onModelClick }: ModelCardProps) {
         </div>
 
         {/* Hover Overlay */}
-        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
       </div>
     </div>
   );
