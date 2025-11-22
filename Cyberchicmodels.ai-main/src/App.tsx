@@ -11,7 +11,8 @@ import { AboutPage } from './components/AboutPage';
 import { ContactPage } from './components/ContactPage';
 import { CartPage } from './components/CartPage';
 import { FavoritesPage } from './components/FavoritesPage';
-
+import { AdminPage } from './components/AdminPage';
+import { SimpleModelsCheck } from './components/SimpleModelsCheck';
 import { HeroCarousel } from './components/HeroCarousel';
 import { Footer } from './components/Footer';
 import { ModelCard } from './components/ModelCard';
@@ -19,7 +20,6 @@ import { ModelDetailModal } from './components/ModelDetailModal';
 import { StylesCarousel } from './components/StylesCarousel';
 import { supabase } from './lib/supabase';
 import { getStorageUrl } from './lib/storage';
-import type { Model, Style } from './lib/supabase';
 
 // Local fallback styles used when Supabase credentials are missing
 const fallbackStyles = [
@@ -85,7 +85,7 @@ const transformModelData = (model: any) => ({
   specialties: model.specialties,
   bio: model.bio,
   hobbies: model.hobbies,
-  // Use the new model-thumbnails bucket for thumbnail images
+  // Use the model-thumbnails bucket for thumbnail images
   image: model.thumbnail_path ? getStorageUrl('model-thumbnails', model.thumbnail_path) : '',
   video: '',
   isPopular: model.is_popular,
@@ -96,11 +96,10 @@ const transformModelData = (model: any) => ({
 
 function App() {
   const [featuredModels, setFeaturedModels] = useState<any[]>([]);
-  const [newModels, setNewModels] = useState<any[]>([]);
-  const [popularModels, setPopularModels] = useState<any[]>([]);
   const [featuredStyles, setFeaturedStyles] = useState<any[]>([]);
   const [selectedModel, setSelectedModel] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Fetch featured content from Supabase
   useEffect(() => {
@@ -123,29 +122,14 @@ function App() {
       }
 
       try {
-        // Fetch Featured models
-        const { data: featuredData } = await supabase
+        // Fetch featured models (first 6 with is_featured=true)
+        const { data: modelsData, error: modelsError } = await supabase
           .from('models')
           .select('*')
           .eq('is_featured', true)
+          .eq('is_published', true)
           .order('created_at', { ascending: false })
-          .limit(3);
-
-        // Fetch New models
-        const { data: newData } = await supabase
-          .from('models')
-          .select('*')
-          .eq('is_new', true)
-          .order('created_at', { ascending: false })
-          .limit(3);
-
-        // Fetch Popular models
-        const { data: popularData } = await supabase
-          .from('models')
-          .select('*')
-          .eq('is_popular', true)
-          .order('created_at', { ascending: false })
-          .limit(3);
+          .limit(6);
 
         // Fetch featured styles
         const { data: stylesData, error: stylesError } = await supabase
@@ -153,9 +137,12 @@ function App() {
           .select('*')
           .limit(6);
 
-        setFeaturedModels((featuredData || []).map(transformModelData));
-        setNewModels((newData || []).map(transformModelData));
-        setPopularModels((popularData || []).map(transformModelData));
+        if (modelsError) {
+          console.error('Error fetching featured models:', modelsError);
+          setFeaturedModels([]);
+        } else {
+          setFeaturedModels((modelsData || []).map(transformModelData));
+        }
 
         if (stylesError) {
           console.error('Error fetching featured styles:', stylesError);
@@ -175,12 +162,10 @@ function App() {
             description: style.description
           })));
         }
-      } catch (error) {
-        console.error('Error fetching featured content:', error);
+      } catch (err) {
+        console.error('Error fetching featured content:', err);
+        setError('Failed to load content');
         setFeaturedModels([]);
-        setNewModels([]);
-        setPopularModels([]);
-        // Use fallback styles on error
         setFeaturedStyles(fallbackStyles.slice(0, 6).map(style => ({
           id: style.id,
           name: style.name,
@@ -204,35 +189,6 @@ function App() {
     setSelectedModel(null);
   };
 
-  // Component to render a model section
-  const ModelSection = ({ title, models, linkText }: { title: string, models: any[], linkText: string }) => {
-    if (models.length === 0) return null;
-
-    return (
-      <div className="py-12 px-4">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl font-serif mb-8 text-center">{title}</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8">
-            {models.slice(0, 3).map(model => (
-              <button key={model.id} onClick={() => handleModelClick(model)} className="text-left">
-                <ModelCard model={model} />
-              </button>
-            ))}
-          </div>
-          <div className="mt-6 text-center">
-            <Link 
-              to="/models"
-              className="inline-flex items-center text-black hover:text-rose-500 transition"
-            >
-              {linkText}
-              <ChevronRight className="ml-2 h-5 w-5" />
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   return (
     <Router>
       <div className="min-h-screen bg-white">
@@ -254,25 +210,50 @@ function App() {
               </div>
 
               {/* Featured Models Section */}
-              <ModelSection 
-                title="Featured Models" 
-                models={featuredModels} 
-                linkText="View All Models" 
-              />
-
-              {/* New Models Section */}
-              <ModelSection 
-                title="New Additions" 
-                models={newModels} 
-                linkText="Discover New Models" 
-              />
-
-              {/* Popular Models Section */}
-              <ModelSection 
-                title="Most Popular" 
-                models={popularModels} 
-                linkText="See Popular Models" 
-              />
+              <div className="py-12 px-4">
+                <div className="max-w-7xl mx-auto">
+                  <h2 className="text-3xl font-serif mb-8 text-center">Featured Models</h2>
+                  
+                  {loading ? (
+                    <div className="flex justify-center items-center py-12">
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-500"></div>
+                    </div>
+                  ) : error ? (
+                    <div className="text-center py-12">
+                      <p className="text-gray-600 mb-4">Unable to load models at the moment</p>
+                      <p className="text-sm text-gray-500">Please check back later</p>
+                    </div>
+                  ) : featuredModels.length > 0 ? (
+                    <>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {featuredModels.slice(0, 3).map(model => (
+                          <button 
+                            key={model.id} 
+                            onClick={() => handleModelClick(model)} 
+                            className="text-left hover:opacity-90 transition"
+                          >
+                            <ModelCard model={model} />
+                          </button>
+                        ))}
+                      </div>
+                      <div className="mt-6 text-center">
+                        <Link 
+                          to="/models"
+                          className="inline-flex items-center text-black hover:text-rose-500 transition"
+                        >
+                          View All Models
+                          <ChevronRight className="ml-2 h-5 w-5" />
+                        </Link>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-center py-12">
+                      <p className="text-gray-600 mb-4">No featured models available</p>
+                      <p className="text-sm text-gray-500">New models coming soon!</p>
+                    </div>
+                  )}
+                </div>
+              </div>
 
               {/* Featured Styles Section */}
               <div className="py-12 bg-black">
@@ -280,16 +261,26 @@ function App() {
                   <div className="flex flex-col items-center mb-8">
                     <h2 className="text-3xl font-serif text-white text-center mb-4">Featured Styles & Digital Couture</h2>
                   </div>
-                  <StylesCarousel styles={featuredStyles} />
-                  <div className="mt-8 text-center">
-                    <Link
-                      to="/styles"
-                      className="inline-flex items-center justify-center px-8 py-3 bg-white text-black rounded-full hover:bg-opacity-90 transition-colors"
-                    >
-                      Explore All Styles
-                      <ChevronRight className="ml-2 h-5 w-5" />
-                    </Link>
-                  </div>
+                  
+                  {featuredStyles.length > 0 ? (
+                    <>
+                      <StylesCarousel styles={featuredStyles} />
+                      <div className="mt-8 text-center">
+                        <Link
+                          to="/styles"
+                          className="inline-flex items-center justify-center px-8 py-3 bg-white text-black rounded-full hover:bg-opacity-90 transition-colors"
+                        >
+                          Explore All Styles
+                          <ChevronRight className="ml-2 h-5 w-5" />
+                        </Link>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-center py-12">
+                      <p className="text-white mb-4">No styles available</p>
+                      <p className="text-sm text-gray-300">New styles coming soon!</p>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -327,7 +318,7 @@ function App() {
                         </div>
                       </div>
                     </div>
-                    
+
                     {/* Style Pack */}
                     <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6">
                       <h3 className="text-xl font-serif mb-4 flex items-center">
@@ -385,7 +376,8 @@ function App() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/favorites" element={<FavoritesPage />} />
-    
+          <Route path="/admin" element={<AdminPage />} />
+          <Route path="/check-models" element={<SimpleModelsCheck />} />
         </Routes>
         {selectedModel && (
           <ModelDetailModal
