@@ -263,7 +263,6 @@ export function ModelsPage() {
                       <option value="">All Genders</option>
                       <option value="Female">Female</option>
                       <option value="Male">Male</option>
-                      <option value="Non-binary">Non-binary</option>
                     </select>
                   </div>
 
@@ -297,6 +296,8 @@ export function ModelsPage() {
                     >
                       <option value="">All Ethnicities</option>
                       <option value="African">African</option>
+                      <option value="North American">North American</option>
+                      <option value="Scandinavian">Scandinavian</option>
                       <option value="Asian">Asian</option>
                       <option value="European">European</option>
                       <option value="Indian">Indian</option>
