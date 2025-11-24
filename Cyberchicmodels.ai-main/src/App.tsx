@@ -39,7 +39,12 @@ function App() {
           apiService.getStyles({ limit: 6 }).catch(() => [])
         ]);
 
-        setFeaturedModels(modelsData);
+        // Filter to show only tagged models (is_new, is_popular, or is_coming_soon)
+        const taggedModels = modelsData.filter(model => 
+          model.isNew || model.isPopular || model.isComingSoon
+        );
+
+        setFeaturedModels(taggedModels);
         setFeaturedStyles(stylesData);
 
       } catch (err) {
@@ -101,7 +106,7 @@ function App() {
                   ) : featuredModels.length > 0 ? (
                     <>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {featuredModels.map(model => (
+                        {featuredModels.length > 0 ? featuredModels.map(model => (
                           <button 
                             key={model.id} 
                             onClick={() => handleModelClick(model)} 
@@ -112,7 +117,11 @@ function App() {
                               onModelClick={handleModelClick}
                             />
                           </button>
-                        ))}
+                        )) : (
+                          <div className="col-span-full text-center py-12">
+                            <p className="text-gray-600">No featured models at the moment</p>
+                          </div>
+                        )}
                       </div>
                       <div className="mt-6 text-center">
                         <Link 
