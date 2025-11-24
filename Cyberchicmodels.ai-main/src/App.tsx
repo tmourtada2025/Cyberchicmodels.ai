@@ -205,7 +205,7 @@ function App() {
                 </div>
               </div>
 
-              {/* Featured Models Grid - Single Row */}
+              {/* Featured Models Grid - Single Grid with All Models */}
               <div className="py-12 px-4">
                 <div className="max-w-7xl mx-auto">
                   <h2 className="text-3xl font-serif mb-8 text-center">Featured Models</h2>
@@ -221,9 +221,9 @@ function App() {
                     </div>
                   ) : allModels.length > 0 ? (
                     <>
-                      {/* First Row - 3 Models */}
+                      {/* Single Grid - Display All Models with Tags */}
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
-                        {allModels.slice(0, 3).map(model => (
+                        {allModels.map(model => (
                           <button 
                             key={model.id} 
                             onClick={() => handleModelClick(model)} 
@@ -233,21 +233,6 @@ function App() {
                           </button>
                         ))}
                       </div>
-
-                      {/* Additional Models Grid (if more than 3) */}
-                      {allModels.length > 3 && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                          {allModels.slice(3).map(model => (
-                            <button 
-                              key={model.id} 
-                              onClick={() => handleModelClick(model)} 
-                              className="text-left hover:opacity-90 transition"
-                            >
-                              <ModelCard model={model} onModelClick={handleModelClick} />
-                            </button>
-                          ))}
-                        </div>
-                      )}
 
                       <div className="mt-6 text-center">
                         <Link 
