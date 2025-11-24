@@ -63,31 +63,12 @@ export function ModelCard({ model, onModelClick }: ModelCardProps) {
   };
 
   return (
-    <div className="w-full">
-      {/* Status Tags - Outside/Above Image */}
-      <div className="flex flex-col gap-1 mb-2">
-        {isNew && (
-          <span className="bg-black text-white text-xs font-bold px-2 py-1 w-fit rounded">
-            New Additions
-          </span>
-        )}
-        {isPopular && (
-          <span className="bg-rose-500 text-white text-xs font-bold px-2 py-1 w-fit rounded">
-            Popular
-          </span>
-        )}
-        {isComingSoon && (
-          <span className="bg-gray-600 text-white text-xs font-bold px-2 py-1 w-fit rounded">
-            Coming Soon
-          </span>
-        )}
-      </div>
-
-      {/* Card Container */}
-      <div
-        className="relative w-full aspect-[3/4] group cursor-pointer overflow-hidden rounded-lg"
-        onClick={handleCardClick}
-      >
+    <div
+      className="relative w-full aspect-[3/4] group cursor-pointer overflow-visible"
+      onClick={handleCardClick}
+    >
+      {/* Card Container with overflow-hidden for image */}
+      <div className="relative w-full h-full overflow-hidden rounded-lg">
         {/* Image */}
         <img 
           src={model.image}
@@ -100,6 +81,27 @@ export function ModelCard({ model, onModelClick }: ModelCardProps) {
 
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+
+        {/* Status Tag - Fixed Size at Top-Left Corner */}
+        {(isNew || isPopular || isComingSoon) && (
+          <div className="absolute top-2 left-2 z-20">
+            {isNew && (
+              <span className="inline-flex items-center justify-center w-24 h-6 bg-black text-white text-xs font-bold rounded whitespace-nowrap">
+                New Additions
+              </span>
+            )}
+            {isPopular && (
+              <span className="inline-flex items-center justify-center w-24 h-6 bg-rose-500 text-white text-xs font-bold rounded whitespace-nowrap">
+                Popular
+              </span>
+            )}
+            {isComingSoon && (
+              <span className="inline-flex items-center justify-center w-24 h-6 bg-gray-600 text-white text-xs font-bold rounded whitespace-nowrap">
+                Coming Soon
+              </span>
+            )}
+          </div>
+        )}
 
         {/* Action Icons - Top Right */}
         <div className="absolute top-3 right-3 flex gap-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
