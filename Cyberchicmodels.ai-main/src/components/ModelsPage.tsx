@@ -261,9 +261,9 @@ export function ModelsPage() {
                       className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent"
                     >
                       <option value="">All Genders</option>
-                      {getUniqueValues('gender').map(gender => (
-                        <option key={gender} value={gender}>{gender}</option>
-                      ))}
+                      <option value="Female">Female</option>
+                      <option value="Male">Male</option>
+                      <option value="Non-binary">Non-binary</option>
                     </select>
                   </div>
 
@@ -296,9 +296,14 @@ export function ModelsPage() {
                       className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent"
                     >
                       <option value="">All Ethnicities</option>
-                      {getUniqueValues('ethnicity').map(ethnicity => (
-                        <option key={ethnicity} value={ethnicity}>{ethnicity}</option>
-                      ))}
+                      <option value="African">African</option>
+                      <option value="Asian">Asian</option>
+                      <option value="European">European</option>
+                      <option value="Indian">Indian</option>
+                      <option value="Latino">Latino</option>
+                      <option value="Middle Eastern">Middle Eastern</option>
+                      <option value="Persian">Persian</option>
+                      <option value="Slavic">Slavic</option>
                     </select>
                   </div>
 
