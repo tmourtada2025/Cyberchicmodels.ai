@@ -16,167 +16,47 @@ import { Footer } from './components/Footer';
 import { ModelCard } from './components/ModelCard';
 import { ModelDetailModal } from './components/ModelDetailModal';
 import { StylesCarousel } from './components/StylesCarousel';
-import { supabase } from './lib/supabase';
-import { getStorageUrl } from './lib/storage';
-
-// Fallback styles
-const fallbackStyles = [
-  {
-    id: "ST126",
-    slug: 'emerald-green-satin-dress',
-    name: "Emerald Green Satin Dress",
-    price_usd: 1.99,
-    image_path: null,
-    description: "A glamorous emerald green satin dress with a sleek silhouette",
-    created_at: new Date().toISOString()
-  },
-  {
-    id: "ST119",
-    name: "White Tank & Short Jeans",
-    price_usd: 1.99,
-    image_path: null,
-    description: "A casual white tank top paired with denim shorts"
-  },
-  {
-    id: "ST120",
-    name: "White Wide-Leg Jumpsuit",
-    price_usd: 1.99,
-    image_path: null,
-    description: "A white wide-leg jumpsuit with modern cut"
-  },
-  {
-    id: "ST118",
-    name: "White Pleated Café Dress",
-    price_usd: 1.99,
-    image_path: null,
-    description: "A casual white pleated dress perfect for café outings"
-  },
-  {
-    id: "ST111",
-    name: "Black Faux-Leather Mini Dress",
-    price_usd: 1.99,
-    image_path: null,
-    description: "A stylish black faux-leather mini dress"
-  },
-  {
-    id: "ST122",
-    name: "Burnt Orange Boho Maxi Dress",
-    price_usd: 1.99,
-    image_path: null,
-    description: "A burnt orange maxi dress with boho vibes"
-  }
-];
-
-// Transform model data from database
-const transformModelData = (model: any) => ({
-  id: model.id,
-  slug: model.slug,
-  name: model.name,
-  tagline: model.tagline,
-  age: model.age,
-  nationality: model.nationality,
-  ethnicity: model.ethnicity,
-  gender: model.gender,
-  height: model.height,
-  weight: model.weight,
-  specialty: model.specialty,
-  specialties: model.specialties,
-  bio: model.bio,
-  hobbies: model.hobbies,
-  image: model.thumbnail_path ? getStorageUrl('model-thumbnails', model.thumbnail_path) : '',
-  video: '',
-  isNew: model.is_new || false,
-  isPopular: model.is_popular || false,
-  isComingSoon: model.is_coming_soon || false,
-  isFeatured: model.is_featured || false
-});
+import { apiService } from './lib/api';
+import type { Model, Style } from './lib/api';
 
 function App() {
-  const [allModels, setAllModels] = useState<any[]>([]);
-  const [featuredStyles, setFeaturedStyles] = useState<any[]>([]);
-  const [selectedModel, setSelectedModel] = useState<any>(null);
+  const [featuredModels, setFeaturedModels] = useState<Model[]>([]);
+  const [featuredStyles, setFeaturedStyles] = useState<Style[]>([]);
+  const [selectedModel, setSelectedModel] = useState<Model | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch all published models
+  // Fetch featured content from API
   useEffect(() => {
-    const fetchContent = async () => {
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-      
-      if (!supabaseUrl || !supabaseKey || supabaseKey.includes('REPLACE_WITH_YOUR_ACTUAL')) {
-        console.warn('Supabase not configured. Using fallback data.');
-        setAllModels([]);
-        setFeaturedStyles(fallbackStyles.slice(0, 6).map(style => ({
-          id: style.id,
-          name: style.name,
-          price: style.price_usd || 1.99,
-          image: style.image_path || '',
-          description: style.description || ''
-        })));
-        setLoading(false);
-        return;
-      }
-
+    const fetchFeaturedContent = async () => {
       try {
-        // Fetch all published models
-        const { data: modelsData, error: modelsError } = await supabase
-          .from('models')
-          .select('*')
-          .eq('is_published', true)
-          .order('created_at', { ascending: false });
+        setLoading(true);
+        setError(null);
 
-        if (modelsError) {
-          console.error('Error fetching models:', modelsError);
-          setAllModels([]);
-        } else {
-          setAllModels((modelsData || []).map(transformModelData));
-        }
+        // Fetch all published models and styles in parallel
+        const [modelsData, stylesData] = await Promise.all([
+          apiService.getModels({ limit: 100 }).catch(() => []),
+          apiService.getStyles({ limit: 6 }).catch(() => [])
+        ]);
 
-        // Fetch featured styles
-        const { data: stylesData, error: stylesError } = await supabase
-          .from('styles')
-          .select('*')
-          .limit(6);
+        setFeaturedModels(modelsData);
+        setFeaturedStyles(stylesData);
 
-        if (stylesError) {
-          console.error('Error fetching styles:', stylesError);
-          setFeaturedStyles(fallbackStyles.map(style => ({
-            id: style.id,
-            name: style.name,
-            price: style.price_usd,
-            image: style.image_path,
-            description: style.description
-          })));
-        } else {
-          setFeaturedStyles((stylesData || []).map(style => ({
-            id: style.id,
-            name: style.name,
-            price: style.price_usd,
-            image: style.image_path,
-            description: style.description
-          })));
-        }
       } catch (err) {
-        console.error('Error fetching content:', err);
+        console.error('Error fetching featured content:', err);
         setError('Failed to load content');
-        setAllModels([]);
-        setFeaturedStyles(fallbackStyles.slice(0, 6).map(style => ({
-          id: style.id,
-          name: style.name,
-          price: style.price_usd || 1.99,
-          image: style.image_path || '',
-          description: style.description || ''
-        })));
+        // Set empty arrays as fallback
+        setFeaturedModels([]);
+        setFeaturedStyles([]);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchContent();
+    fetchFeaturedContent();
   }, []);
 
-  const handleModelClick = (model: any) => {
+  const handleModelClick = (model: Model) => {
     setSelectedModel(model);
   };
 
@@ -204,7 +84,7 @@ function App() {
                 </div>
               </div>
 
-              {/* Featured Models - Single Grid Display */}
+              {/* Featured Models Section - Single Grid with All Models */}
               <div className="py-12 px-4">
                 <div className="max-w-7xl mx-auto">
                   <h2 className="text-3xl font-serif mb-8 text-center">Featured Models</h2>
@@ -218,21 +98,22 @@ function App() {
                       <p className="text-gray-600 mb-4">Unable to load models at the moment</p>
                       <p className="text-sm text-gray-500">Please check back later</p>
                     </div>
-                  ) : allModels.length > 0 ? (
+                  ) : featuredModels.length > 0 ? (
                     <>
-                      {/* Grid: All Models with Tags */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
-                        {allModels.map(model => (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {featuredModels.map(model => (
                           <button 
                             key={model.id} 
                             onClick={() => handleModelClick(model)} 
                             className="text-left hover:opacity-90 transition"
                           >
-                            <ModelCard model={model} onModelClick={handleModelClick} />
+                            <ModelCard 
+                              model={model} 
+                              onModelClick={handleModelClick}
+                            />
                           </button>
                         ))}
                       </div>
-
                       <div className="mt-6 text-center">
                         <Link 
                           to="/models"
@@ -245,7 +126,7 @@ function App() {
                     </>
                   ) : (
                     <div className="text-center py-12">
-                      <p className="text-gray-600 mb-4">No models available</p>
+                      <p className="text-gray-600 mb-4">No featured models available</p>
                       <p className="text-sm text-gray-500">New models coming soon!</p>
                     </div>
                   )}
@@ -377,7 +258,7 @@ function App() {
         {selectedModel && (
           <ModelDetailModal
             model={selectedModel}
-            allModels={allModels}
+            allModels={featuredModels}
             onClose={handleCloseModal}
             onModelChange={handleModelClick}
           />
