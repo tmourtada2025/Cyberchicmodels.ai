@@ -80,8 +80,8 @@ export function ModelCard({ model, onModelClick }: ModelCardProps) {
       {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
 
-      {/* Status Tags - Top Left Corner */}
-      <div className="absolute top-3 left-3 flex flex-col gap-2 z-20">
+      {/* Status Tags - Top Left Corner (Inside Image) */}
+      <div className="absolute top-2 left-2 flex flex-col gap-2 z-20">
         {isNew && (
           <span className="bg-black text-white text-xs font-bold px-2.5 py-1.5 rounded">
             New Additions
