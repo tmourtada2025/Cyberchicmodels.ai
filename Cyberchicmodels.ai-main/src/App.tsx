@@ -19,7 +19,7 @@ import { StylesCarousel } from './components/StylesCarousel';
 import { supabase } from './lib/supabase';
 import { getStorageUrl } from './lib/storage';
 
-// Local fallback styles used when Supabase credentials are missing
+// Fallback styles
 const fallbackStyles = [
   {
     id: "ST126",
@@ -67,7 +67,7 @@ const fallbackStyles = [
   }
 ];
 
-// Helper function to transform model data
+// Transform model data from database
 const transformModelData = (model: any) => ({
   id: model.id,
   slug: model.slug,
@@ -83,13 +83,12 @@ const transformModelData = (model: any) => ({
   specialties: model.specialties,
   bio: model.bio,
   hobbies: model.hobbies,
-  // Use the model-thumbnails bucket for thumbnail images
   image: model.thumbnail_path ? getStorageUrl('model-thumbnails', model.thumbnail_path) : '',
   video: '',
-  isPopular: model.is_popular,
-  isNew: model.is_new,
-  isComingSoon: model.is_coming_soon,
-  isFeatured: model.is_featured
+  isNew: model.is_new || false,
+  isPopular: model.is_popular || false,
+  isComingSoon: model.is_coming_soon || false,
+  isFeatured: model.is_featured || false
 });
 
 function App() {
@@ -99,14 +98,14 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch all published models and featured styles
+  // Fetch all published models
   useEffect(() => {
     const fetchContent = async () => {
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
       
       if (!supabaseUrl || !supabaseKey || supabaseKey.includes('REPLACE_WITH_YOUR_ACTUAL')) {
-        console.warn('Supabase not configured properly. Using fallback data.');
+        console.warn('Supabase not configured. Using fallback data.');
         setAllModels([]);
         setFeaturedStyles(fallbackStyles.slice(0, 6).map(style => ({
           id: style.id,
@@ -127,12 +126,6 @@ function App() {
           .eq('is_published', true)
           .order('created_at', { ascending: false });
 
-        // Fetch featured styles
-        const { data: stylesData, error: stylesError } = await supabase
-          .from('styles')
-          .select('*')
-          .limit(6);
-
         if (modelsError) {
           console.error('Error fetching models:', modelsError);
           setAllModels([]);
@@ -140,8 +133,14 @@ function App() {
           setAllModels((modelsData || []).map(transformModelData));
         }
 
+        // Fetch featured styles
+        const { data: stylesData, error: stylesError } = await supabase
+          .from('styles')
+          .select('*')
+          .limit(6);
+
         if (stylesError) {
-          console.error('Error fetching featured styles:', stylesError);
+          console.error('Error fetching styles:', stylesError);
           setFeaturedStyles(fallbackStyles.map(style => ({
             id: style.id,
             name: style.name,
@@ -205,7 +204,7 @@ function App() {
                 </div>
               </div>
 
-              {/* Featured Models Grid - Single Grid with All Models */}
+              {/* Featured Models - Single Grid Display */}
               <div className="py-12 px-4">
                 <div className="max-w-7xl mx-auto">
                   <h2 className="text-3xl font-serif mb-8 text-center">Featured Models</h2>
@@ -221,7 +220,7 @@ function App() {
                     </div>
                   ) : allModels.length > 0 ? (
                     <>
-                      {/* Single Grid - Display All Models with Tags */}
+                      {/* Grid: All Models with Tags */}
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
                         {allModels.map(model => (
                           <button 
