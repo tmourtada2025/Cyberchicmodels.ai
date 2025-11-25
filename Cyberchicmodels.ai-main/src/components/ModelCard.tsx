@@ -62,29 +62,37 @@ export function ModelCard({ model, onModelClick }: ModelCardProps) {
     onModelClick(model);
   };
 
+  // Disable right-click context menu on image
+  const handleImageContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    return false;
+  };
+
   return (
     <div
-      className="relative w-full aspect-[3/4] group cursor-pointer overflow-visible"
+      className="relative w-full aspect-[3/4] group cursor-pointer"
       onClick={handleCardClick}
     >
-      {/* Card Container with overflow-hidden for image */}
+      {/* Card Container */}
       <div className="relative w-full h-full overflow-hidden rounded-lg">
         {/* Image */}
         <img 
           src={model.image}
           alt={model.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 select-none"
+          onContextMenu={handleImageContextMenu}
           onError={(e) => {
             e.currentTarget.src = 'https://via.placeholder.com/300x400?text=Model+Image';
           }}
+          draggable={false}
         />
 
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
 
-        {/* Status Tag - Fixed Size at Top-Left Corner */}
+        {/* Status Tag - Floating on Top-Left Corner */}
         {(isNew || isPopular || isComingSoon) && (
-          <div className="absolute top-2 left-2 z-20">
+          <div className="absolute -top-1 -left-1 z-20">
             {isNew && (
               <span className="inline-flex items-center justify-center w-24 h-6 bg-black text-white text-xs font-bold rounded whitespace-nowrap">
                 New Additions
