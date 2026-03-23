@@ -380,32 +380,19 @@ Respond ONLY with valid JSON, no preamble, no markdown, exactly this structure:
   }
 }`;
 
-      const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY as string;
-      if (!apiKey) throw new Error("VITE_ANTHROPIC_API_KEY not set in environment");
-
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
+      const response = await fetch("/api/generate-persona", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": apiKey,
-          "anthropic-version": "2023-06-01",
-          "anthropic-dangerous-direct-browser-access": "true",
-        },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-5-20251001",
-          max_tokens: 1000,
-          messages: [{ role: "user", content: prompt }],
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt }),
       });
 
       if (!response.ok) {
-        const errText = await response.text();
-        console.error("Anthropic API error:", response.status, errText);
-        throw new Error(`API error ${response.status}`);
+        const errData = await response.json().catch(() => ({}));
+        console.error("Proxy error:", response.status, errData);
+        throw new Error(`API error ${response.status}: ${errData.error || "unknown"}`);
       }
 
-      const apiData = await response.json();
-      const text = apiData.content?.map((b: { type: string; text?: string }) => b.type === "text" ? b.text : "").join("") || "";
+      const { text } = await response.json();
       const clean = text.replace(/```json|```/g, "").trim();
       const parsed = JSON.parse(clean);
 
