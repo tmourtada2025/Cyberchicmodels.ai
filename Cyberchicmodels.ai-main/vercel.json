@@ -1,8 +1,7 @@
 {
   "framework": "vite",
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "installCommand": "npm install",
+  "buildCommand": "cd Cyberchicmodels.ai-main && npm install && npm run build",
+  "outputDirectory": "Cyberchicmodels.ai-main/dist",
   "rewrites": [
     {
       "source": "/api/(.*)",
