@@ -7,13 +7,13 @@
  *   <Route path="/admin" element={<AdminPage />} />
  *
  * Requires: VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your .env
- * Auth: Supabase email/password â only your admin account can log in
+ * Auth: Supabase email/password Ã¢ÂÂ only your admin account can log in
  */
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { createClient, SupabaseClient, User } from "@supabase/supabase-js";
 
-// âââ Supabase client (isolated from app client to avoid any auth conflicts) âââ
+// Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ Supabase client (isolated from app client to avoid any auth conflicts) Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 const supabase: SupabaseClient = createClient(
   import.meta.env.VITE_SUPABASE_URL as string,
   import.meta.env.VITE_SUPABASE_ANON_KEY as string,
@@ -27,7 +27,7 @@ const BUCKETS = {
   HERO: "hero",
 };
 
-// âââ Types âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ Types Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 interface Model {
   id: string;
   name: string;
@@ -78,7 +78,7 @@ interface Style {
 
 type Tab = "models" | "styles" | "hero";
 
-// âââ Helpers âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ Helpers Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 function publicUrl(bucket: string, path: string | null | undefined): string {
   if (!path) return "";
   if (path.startsWith("http")) return path;
@@ -89,7 +89,7 @@ function slugify(name: string): string {
   return name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
 }
 
-// âââ Sub-components âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ Sub-components Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 
 function Toast({ message, type }: { message: string; type: "success" | "error" }) {
   return (
@@ -110,7 +110,7 @@ function Toast({ message, type }: { message: string; type: "success" | "error" }
         maxWidth: 320,
       }}
     >
-      {type === "success" ? "â " : "â "}{message}
+      {type === "success" ? "Ã¢ÂÂ " : "Ã¢ÂÂ "}{message}
     </div>
   );
 }
@@ -157,7 +157,7 @@ function ImageUploader({
         disabled={uploading}
         style={btnStyle("secondary")}
       >
-        {uploading ? "Uploadingâ¦" : label}
+        {uploading ? "UploadingÃ¢ÂÂ¦" : label}
       </button>
       <input ref={inputRef} type="file" accept="image/*,video/*" onChange={handleUpload} style={{ display: "none" }} />
     </div>
@@ -212,19 +212,19 @@ function MultiImageUploader({
                 background: "#ef4444", border: "none", color: "#fff",
                 cursor: "pointer", fontSize: 12, lineHeight: "20px", padding: 0,
               }}
-            >Ã</button>
+            >ÃÂ</button>
           </div>
         ))}
       </div>
       <button type="button" onClick={() => inputRef.current?.click()} disabled={uploading} style={btnStyle("secondary")}>
-        {uploading ? "Uploadingâ¦" : "ï¼ Add Images"}
+        {uploading ? "UploadingÃ¢ÂÂ¦" : "Ã¯Â¼Â Add Images"}
       </button>
       <input ref={inputRef} type="file" accept="image/*,video/*" multiple onChange={handleUpload} style={{ display: "none" }} />
     </div>
   );
 }
 
-// âââ Style helpers ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ Style helpers Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 const colors = {
   bg: "#0d0d0d",
   surface: "#161616",
@@ -295,7 +295,7 @@ function Toggle({ label, checked, onChange }: { label: string; checked: boolean;
   );
 }
 
-// âââ Model Form âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ Model Form Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 const emptyModel = (): Partial<Model> => ({
   name: "", slug: "", nationality: "", ethnicity: "", gender: "female",
   age_group: "", height: "", weight: "", specialty: "", hobbies: "",
@@ -360,7 +360,7 @@ function CollectionsEditor({ modelId, modelSlug }: { modelId: string; modelSlug:
     loadImages(img.collection_id);
   };
 
-  if (loading) return <div style={{ color: colors.muted, fontSize: 13 }}>Loading collectionsâ¦</div>;
+  if (loading) return <div style={{ color: colors.muted, fontSize: 13 }}>Loading collectionsÃ¢ÂÂ¦</div>;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
@@ -391,7 +391,7 @@ function CollectionsEditor({ modelId, modelSlug }: { modelId: string; modelSlug:
             <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
               <span style={{ fontSize: 11, color: colors.muted }}>{images[coll.id]?.length ?? "?"} images</span>
               <button type="button" onClick={e => { e.stopPropagation(); deleteCollection(coll); }} style={{ ...btnStyle("danger"), padding: "4px 10px", fontSize: 12 }}>Delete</button>
-              <span style={{ color: colors.muted, fontSize: 16 }}>{expanded === coll.id ? "â²" : "â¼"}</span>
+              <span style={{ color: colors.muted, fontSize: 16 }}>{expanded === coll.id ? "Ã¢ÂÂ²" : "Ã¢ÂÂ¼"}</span>
             </div>
           </div>
 
@@ -540,7 +540,7 @@ function ModelForm({
               value={form.bio || ""}
               onChange={e => set("bio", e.target.value)}
               style={{ ...inputStyle(), minHeight: 80, resize: "vertical" }}
-              placeholder="Short model biographyâ¦"
+              placeholder="Short model biographyÃ¢ÂÂ¦"
             />
           </Field>
 
@@ -579,7 +579,7 @@ function ModelForm({
         <button type="button" onClick={onCancel} style={btnStyle("ghost")}>Cancel</button>
         {tab === "details" && (
           <button type="button" onClick={save} disabled={saving} style={btnStyle("primary")}>
-            {saving ? "Savingâ¦" : isEdit ? "Save Changes" : "Create Model"}
+            {saving ? "SavingÃ¢ÂÂ¦" : isEdit ? "Save Changes" : "Create Model"}
           </button>
         )}
       </div>
@@ -587,7 +587,7 @@ function ModelForm({
   );
 }
 
-// âââ Style Form âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ Style Form Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 const emptyStyle = (): Partial<Style> => ({ name: "", slug: "", description: "", thumbnail_path: "" });
 
 function StyleForm({ initial, onSaved, onCancel }: { initial?: Partial<Style>; onSaved: () => void; onCancel: () => void }) {
@@ -628,19 +628,20 @@ function StyleForm({ initial, onSaved, onCancel }: { initial?: Partial<Style>; o
       <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", paddingTop: 8 }}>
         <button type="button" onClick={onCancel} style={btnStyle("ghost")}>Cancel</button>
         <button type="button" onClick={save} disabled={saving} style={btnStyle("primary")}>
-          {saving ? "Savingâ¦" : isEdit ? "Save Changes" : "Create Style"}
+          {saving ? "SavingÃ¢ÂÂ¦" : isEdit ? "Save Changes" : "Create Style"}
         </button>
       </div>
     </div>
   );
 }
 
-// âââ Models Panel âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ Models Panel Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 function ModelsPanel() {
   const [models, setModels] = useState<Model[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<Partial<Model> | null>(null);
   const [creating, setCreating] = useState(false);
+  const [wizarding, setWizarding] = useState(false);
   const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
 
   const showToast = (msg: string, type: "success" | "error" = "success") => {
@@ -655,6 +656,30 @@ function ModelsPanel() {
     setLoading(false);
   }, []);
 
+  const handleWizardComplete = async (name: string, json: string, specialty: string, nationality: string) => {
+    try {
+      const parsed = JSON.parse(json);
+      const v = parsed.visual_traits || {};
+      const m = parsed.measurements || {};
+      const slug = name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+      await supabase.from("models").insert({
+        name, slug, nationality, specialty,
+        ethnicity: nationality,
+        gender: parsed.identity?.gender || "Female",
+        height: m.height_cm ? `${m.height_cm}cm` : "",
+        bio: JSON.stringify(parsed.identity?.personality || []),
+        measurements: JSON.stringify(m),
+        is_published: false,
+        is_new: true,
+      });
+      setWizarding(false);
+      load();
+      showToast(`${name} created via wizard!`);
+    } catch {
+      showToast("Failed to save model", "error");
+    }
+  };
+
   useEffect(() => { load(); }, [load]);
 
   const deleteModel = async (m: Model) => {
@@ -666,11 +691,15 @@ function ModelsPanel() {
     load();
   };
 
+  if (wizarding) {
+    return <ModelWizard onComplete={handleWizardComplete} onCancel={() => setWizarding(false)} />;
+  }
+
   if (creating || editing) {
     return (
       <div style={{ height: "calc(100vh - 120px)", display: "flex", flexDirection: "column" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-          <button type="button" onClick={() => { setCreating(false); setEditing(null); }} style={{ background: "none", border: "none", color: colors.muted, cursor: "pointer", fontSize: 18 }}>â</button>
+          <button type="button" onClick={() => { setCreating(false); setEditing(null); }} style={{ background: "none", border: "none", color: colors.muted, cursor: "pointer", fontSize: 18 }}>Ã¢ÂÂ</button>
           <h2 style={{ margin: 0, fontSize: 18, color: colors.text }}>{editing ? `Edit: ${editing.name}` : "New Model"}</h2>
         </div>
         <div style={{ flex: 1, overflowY: "auto" }}>
@@ -689,11 +718,11 @@ function ModelsPanel() {
       {toast && <Toast message={toast.msg} type={toast.type} />}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
         <h2 style={{ margin: 0, fontSize: 18, color: colors.text }}>Models <span style={{ color: colors.muted, fontSize: 14, fontWeight: 400 }}>({models.length})</span></h2>
-        <button type="button" onClick={() => setCreating(true)} style={btnStyle("primary")}>ï¼ New Model</button>
+        <button type="button" onClick={() => setCreating(true)} style={btnStyle("primary")}>Ã¯Â¼Â New Model</button>
       </div>
 
       {loading ? (
-        <div style={{ color: colors.muted, textAlign: "center", padding: 40 }}>Loadingâ¦</div>
+        <div style={{ color: colors.muted, textAlign: "center", padding: 40 }}>LoadingÃ¢ÂÂ¦</div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {models.map(m => (
@@ -711,7 +740,7 @@ function ModelsPanel() {
                   {m.is_new && <span style={{ fontSize: 10, padding: "2px 6px", background: "rgba(201,169,110,0.15)", color: colors.accent, borderRadius: 4 }}>NEW</span>}
                   {m.is_popular && <span style={{ fontSize: 10, padding: "2px 6px", background: "rgba(239,68,68,0.15)", color: colors.danger, borderRadius: 4 }}>POPULAR</span>}
                 </div>
-                <div style={{ fontSize: 12, color: colors.muted, marginTop: 2 }}>{m.nationality} Â· {m.specialty || "No specialty set"}</div>
+                <div style={{ fontSize: 12, color: colors.muted, marginTop: 2 }}>{m.nationality} ÃÂ· {m.specialty || "No specialty set"}</div>
               </div>
               <div style={{ display: "flex", gap: 6 }}>
                 <button type="button" onClick={() => setEditing(m)} style={btnStyle("secondary")}>Edit</button>
@@ -725,7 +754,7 @@ function ModelsPanel() {
   );
 }
 
-// âââ Styles Panel âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ Styles Panel Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 function StylesPanel() {
   const [styles, setStyles] = useState<Style[]>([]);
   const [loading, setLoading] = useState(true);
@@ -758,7 +787,7 @@ function StylesPanel() {
     return (
       <div>
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-          <button type="button" onClick={() => { setCreating(false); setEditing(null); }} style={{ background: "none", border: "none", color: colors.muted, cursor: "pointer", fontSize: 18 }}>â</button>
+          <button type="button" onClick={() => { setCreating(false); setEditing(null); }} style={{ background: "none", border: "none", color: colors.muted, cursor: "pointer", fontSize: 18 }}>Ã¢ÂÂ</button>
           <h2 style={{ margin: 0, fontSize: 18, color: colors.text }}>{editing ? `Edit: ${editing.name}` : "New Style"}</h2>
         </div>
         <StyleForm
@@ -775,10 +804,10 @@ function StylesPanel() {
       {toast && <Toast message={toast.msg} type={toast.type} />}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
         <h2 style={{ margin: 0, fontSize: 18, color: colors.text }}>Styles <span style={{ color: colors.muted, fontSize: 14, fontWeight: 400 }}>({styles.length})</span></h2>
-        <button type="button" onClick={() => setCreating(true)} style={btnStyle("primary")}>ï¼ New Style</button>
+        <button type="button" onClick={() => setCreating(true)} style={btnStyle("primary")}>Ã¯Â¼Â New Style</button>
       </div>
       {loading ? (
-        <div style={{ color: colors.muted, textAlign: "center", padding: 40 }}>Loadingâ¦</div>
+        <div style={{ color: colors.muted, textAlign: "center", padding: 40 }}>LoadingÃ¢ÂÂ¦</div>
       ) : (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 12 }}>
           {styles.map(s => (
@@ -790,10 +819,10 @@ function StylesPanel() {
               />
               <div style={{ padding: 12 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: colors.text, marginBottom: 4 }}>{s.name}</div>
-                <div style={{ fontSize: 11, color: colors.muted, marginBottom: 10 }}>{s.description?.slice(0, 60) || "No description"}{(s.description?.length || 0) > 60 ? "â¦" : ""}</div>
+                <div style={{ fontSize: 11, color: colors.muted, marginBottom: 10 }}>{s.description?.slice(0, 60) || "No description"}{(s.description?.length || 0) > 60 ? "Ã¢ÂÂ¦" : ""}</div>
                 <div style={{ display: "flex", gap: 6 }}>
                   <button type="button" onClick={() => setEditing(s)} style={{ ...btnStyle("secondary"), flex: 1 }}>Edit</button>
-                  <button type="button" onClick={() => deleteStyle(s)} style={btnStyle("danger")}>â</button>
+                  <button type="button" onClick={() => deleteStyle(s)} style={btnStyle("danger")}>Ã¢ÂÂ</button>
                 </div>
               </div>
             </div>
@@ -804,7 +833,7 @@ function StylesPanel() {
   );
 }
 
-// âââ Hero Panel âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ Hero Panel Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 function HeroPanel() {
   const [images, setImages] = useState<{ id: string; path: string; display_order: number }[]>([]);
   const [loading, setLoading] = useState(true);
@@ -850,10 +879,10 @@ function HeroPanel() {
       {toast && <Toast message={toast.msg} type={toast.type} />}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
         <h2 style={{ margin: 0, fontSize: 18, color: colors.text }}>Hero Images <span style={{ color: colors.muted, fontSize: 14, fontWeight: 400 }}>({images.length})</span></h2>
-        <ImageUploader bucket={BUCKETS.HERO} folder="hero" onUploaded={addImage} label="ï¼ Upload Hero Image" />
+        <ImageUploader bucket={BUCKETS.HERO} folder="hero" onUploaded={addImage} label="Ã¯Â¼Â Upload Hero Image" />
       </div>
       {loading ? (
-        <div style={{ color: colors.muted, textAlign: "center", padding: 40 }}>Loadingâ¦</div>
+        <div style={{ color: colors.muted, textAlign: "center", padding: 40 }}>LoadingÃ¢ÂÂ¦</div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {images.map((img, idx) => (
@@ -861,7 +890,7 @@ function HeroPanel() {
               <img src={publicUrl(BUCKETS.HERO, img.path)} alt="" style={{ width: 120, height: 60, objectFit: "cover", borderRadius: 6 }} />
               <div style={{ flex: 1, fontSize: 12, color: colors.muted, fontFamily: "monospace" }}>{img.path}</div>
               <div style={{ display: "flex", gap: 6 }}>
-                <button type="button" onClick={() => moveUp(idx)} disabled={idx === 0} style={{ ...btnStyle("ghost"), padding: "6px 10px" }}>â</button>
+                <button type="button" onClick={() => moveUp(idx)} disabled={idx === 0} style={{ ...btnStyle("ghost"), padding: "6px 10px" }}>Ã¢ÂÂ</button>
                 <button type="button" onClick={() => deleteImage(img.id)} style={btnStyle("danger")}>Remove</button>
               </div>
             </div>
@@ -873,7 +902,7 @@ function HeroPanel() {
   );
 }
 
-// âââ Login ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ Login Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 function LoginScreen({ onLogin }: { onLogin: () => void }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -911,7 +940,7 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
           {error && <div style={{ fontSize: 12, color: colors.danger, textAlign: "center" }}>{error}</div>}
 
           <button type="button" onClick={login} disabled={loading} style={{ ...btnStyle("primary"), width: "100%", padding: "10px", marginTop: 8, fontSize: 14 }}>
-            {loading ? "Signing inâ¦" : "Sign In"}
+            {loading ? "Signing inÃ¢ÂÂ¦" : "Sign In"}
           </button>
         </div>
       </div>
@@ -919,7 +948,7 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
   );
 }
 
-// âââ Main Admin Shell âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ Main Admin Shell Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 export default function AdminPage() {
   const [user, setUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
@@ -937,7 +966,7 @@ export default function AdminPage() {
   }, []);
 
   if (authLoading) {
-    return <div style={{ minHeight: "100vh", background: colors.bg, display: "flex", alignItems: "center", justifyContent: "center", color: colors.muted, fontFamily: "monospace" }}>Loadingâ¦</div>;
+    return <div style={{ minHeight: "100vh", background: colors.bg, display: "flex", alignItems: "center", justifyContent: "center", color: colors.muted, fontFamily: "monospace" }}>LoadingÃ¢ÂÂ¦</div>;
   }
 
   if (!user) {
