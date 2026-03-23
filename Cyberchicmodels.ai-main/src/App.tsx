@@ -12,6 +12,7 @@ import { ContactPage } from './components/ContactPage';
 import { CartPage } from './components/CartPage';
 import { FavoritesPage } from './components/FavoritesPage';
 import { HeroCarousel } from './components/HeroCarousel';
+import AdminPage from './pages/Admin';
 import { Footer } from './components/Footer';
 import { ModelCard } from './components/ModelCard';
 import { ModelDetailModal } from './components/ModelDetailModal';
@@ -176,7 +177,7 @@ function App() {
                 <div className="max-w-7xl mx-auto px-4">
                   <h2 className="text-3xl font-serif mb-4 text-center">What's Included in a Pack</h2>
                   <p className="text-lg text-center text-gray-300 mb-10 max-w-3xl mx-auto">
-                    Explore our premium downloads — each pack is crafted for creators, developers, and digital stylists.
+                    Explore our premium downloads â each pack is crafted for creators, developers, and digital stylists.
                   </p>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -263,6 +264,7 @@ function App() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/favorites" element={<FavoritesPage />} />
+          <Route path="/admin" element={<AdminPage />} />
         </Routes>
         {selectedModel && (
           <ModelDetailModal
