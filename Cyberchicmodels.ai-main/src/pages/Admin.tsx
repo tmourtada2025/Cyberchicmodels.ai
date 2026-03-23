@@ -296,7 +296,6 @@ function ModelWizard({
   const [generating, setGenerating] = useState(false);
   const [result, setResult] = useState<{ name: string; json: string; prompts: Record<string, string> } | null>(null);
   const [error, setError] = useState("");
-  const [countrySearch, setCountrySearch] = useState("");
 
   const set = (key: keyof WizardData, val: string) => setData(prev => ({ ...prev, [key]: val }));
 
@@ -313,9 +312,6 @@ function ModelWizard({
     }));
   };
 
-  const filteredCountries = ALL_COUNTRIES.filter(c =>
-    c.toLowerCase().includes(countrySearch.toLowerCase())
-  );
 
   const canAdvance = () => {
     if (step === 0) return !!(data.gender && data.age_group && data.nationality);
@@ -384,15 +380,29 @@ Respond ONLY with valid JSON, no preamble, no markdown, exactly this structure:
   }
 }`;
 
+      const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY as string;
+      if (!apiKey) throw new Error("VITE_ANTHROPIC_API_KEY not set in environment");
+
       const response = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": apiKey,
+          "anthropic-version": "2023-06-01",
+          "anthropic-dangerous-direct-browser-access": "true",
+        },
         body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
+          model: "claude-sonnet-4-5-20251001",
           max_tokens: 1000,
           messages: [{ role: "user", content: prompt }],
         }),
       });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        console.error("Anthropic API error:", response.status, errText);
+        throw new Error(`API error ${response.status}`);
+      }
 
       const apiData = await response.json();
       const text = apiData.content?.map((b: { type: string; text?: string }) => b.type === "text" ? b.text : "").join("") || "";
@@ -416,19 +426,27 @@ Respond ONLY with valid JSON, no preamble, no markdown, exactly this structure:
     onComplete(result.name, result.json, data.specialty, data.nationality);
   };
 
-  const selectStyle = (selected: boolean): React.CSSProperties => ({
-    padding: "8px 14px",
-    borderRadius: 6,
-    border: `1px solid ${selected ? colors.accent : colors.border}`,
-    background: selected ? colors.accentDim : "transparent",
-    color: selected ? colors.accent : colors.muted,
-    cursor: "pointer",
-    fontSize: 12,
-    fontFamily: "inherit",
-    transition: "all 0.15s",
-    textAlign: "left" as const,
-    whiteSpace: "nowrap" as const,
-  });
+  const ddStyle: React.CSSProperties = {
+    width: "100%", padding: "9px 36px 9px 12px", borderRadius: 6,
+    background: "#1e1e1e", border: `1px solid ${colors.border}`,
+    color: colors.text, fontSize: 13, fontFamily: "inherit",
+    outline: "none", boxSizing: "border-box" as const, cursor: "pointer",
+    appearance: "none" as const,
+    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C%2Fsvg%3E")`,
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "right 12px center",
+  };
+
+  const DD = ({ label, value, options, onChange }: {
+    label: string; value: string; options: string[]; onChange: (v: string) => void;
+  }) => (
+    <Field label={label}>
+      <select value={value} onChange={e => onChange(e.target.value)} style={ddStyle}>
+        <option value="" disabled>Select {label.toLowerCase()}...</option>
+        {options.map(o => <option key={o} value={o}>{o}</option>)}
+      </select>
+    </Field>
+  );
 
   // ── Result screen ──
   if (result) {
@@ -491,48 +509,30 @@ Respond ONLY with valid JSON, no preamble, no markdown, exactly this structure:
       {/* Step 0 — Identity */}
       {step === 0 && (
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-          <Field label="Gender">
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-              {GENDERS.map(g => (
-                <button key={g} type="button" onClick={() => set("gender", g)} style={selectStyle(data.gender === g)}>{g}</button>
-              ))}
-            </div>
-          </Field>
-
-          <Field label="Age Group">
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-              {AGE_GROUPS.map(a => (
-                <button key={a} type="button" onClick={() => set("age_group", a)} style={selectStyle(data.age_group === a)}>{a}</button>
-              ))}
-            </div>
-          </Field>
-
+          <DD label="Gender" value={data.gender} options={GENDERS} onChange={v => set("gender", v)} />
+          <DD label="Age Group" value={data.age_group} options={AGE_GROUPS} onChange={v => set("age_group", v)} />
           <Field label="Nationality">
-            <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
-              <input
-                value={countrySearch}
-                onChange={e => setCountrySearch(e.target.value)}
-                placeholder="Search country..."
-                style={{ ...inputStyle(), flex: 1 }}
-              />
+            <div style={{ display: "flex", gap: 8 }}>
+              <select
+                value={data.nationality}
+                onChange={e => set("nationality", e.target.value)}
+                style={ddStyle}
+              >
+                <option value="" disabled>Select nationality...</option>
+                {ALL_COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
               {data.nationality && (
-                <button
-                  type="button"
-                  onClick={applyArchetype}
-                  style={{ ...btnStyle("primary"), whiteSpace: "nowrap", fontSize: 12 }}
-                >✦ Archetype</button>
+                <button type="button" onClick={applyArchetype}
+                  style={{ ...btnStyle("primary"), whiteSpace: "nowrap", fontSize: 12, flexShrink: 0 }}>
+                  ✦ Archetype
+                </button>
               )}
             </div>
-            {data.nationality && (
-              <div style={{ fontSize: 12, color: colors.accent, marginBottom: 8, padding: "6px 10px", background: colors.accentDim, borderRadius: 6 }}>
-                Selected: {data.nationality}
+            {data.nationality && ARCHETYPES[data.nationality] && (
+              <div style={{ fontSize: 12, color: colors.accent, marginTop: 8, padding: "6px 10px", background: colors.accentDim, borderRadius: 6 }}>
+                {ARCHETYPES[data.nationality].distinctive}
               </div>
             )}
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, maxHeight: 220, overflowY: "auto", padding: 4 }}>
-              {filteredCountries.map(c => (
-                <button key={c} type="button" onClick={() => set("nationality", c)} style={selectStyle(data.nationality === c)}>{c}</button>
-              ))}
-            </div>
           </Field>
         </div>
       )}
@@ -542,64 +542,30 @@ Respond ONLY with valid JSON, no preamble, no markdown, exactly this structure:
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           {data.nationality && ARCHETYPES[data.nationality] && (
             <div style={{ padding: "10px 14px", background: colors.accentDim, borderRadius: 8, fontSize: 12, color: colors.accent }}>
-              <strong>Archetype active:</strong> {data.nationality} — {ARCHETYPES[data.nationality].distinctive}
+              <strong>Archetype active:</strong> {data.nationality} — fields pre-filled with typical traits. Edit below if needed.
             </div>
           )}
-          <Field label="Skin Tone">
-            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-              {SKIN_TONES.map(s => <button key={s} type="button" onClick={() => set("skin_tone", s)} style={selectStyle(data.skin_tone === s)}>{s}</button>)}
-            </div>
-          </Field>
-          <Field label="Eye Color">
-            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-              {EYE_COLORS.map(e => <button key={e} type="button" onClick={() => set("eye_color", e)} style={selectStyle(data.eye_color === e)}>{e}</button>)}
-            </div>
-          </Field>
-          <Field label="Hair Color">
-            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-              {HAIR_COLORS.map(h => <button key={h} type="button" onClick={() => set("hair_color", h)} style={selectStyle(data.hair_color === h)}>{h}</button>)}
-            </div>
-          </Field>
-          <Field label="Hair Texture">
-            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-              {HAIR_TEXTURES.map(h => <button key={h} type="button" onClick={() => set("hair_texture", h)} style={selectStyle(data.hair_texture === h)}>{h}</button>)}
-            </div>
-          </Field>
-          <Field label="Body Type">
-            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-              {BODY_TYPES.map(b => <button key={b} type="button" onClick={() => set("body_type", b)} style={selectStyle(data.body_type === b)}>{b}</button>)}
-            </div>
-          </Field>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+            <DD label="Skin Tone" value={data.skin_tone} options={SKIN_TONES} onChange={v => set("skin_tone", v)} />
+            <DD label="Eye Color" value={data.eye_color} options={EYE_COLORS} onChange={v => set("eye_color", v)} />
+            <DD label="Hair Color" value={data.hair_color} options={HAIR_COLORS} onChange={v => set("hair_color", v)} />
+            <DD label="Hair Texture" value={data.hair_texture} options={HAIR_TEXTURES} onChange={v => set("hair_texture", v)} />
+          </div>
+          <DD label="Body Type" value={data.body_type} options={BODY_TYPES} onChange={v => set("body_type", v)} />
         </div>
       )}
 
       {/* Step 2 — Specialty */}
       {step === 2 && (
-        <Field label="Specialty / Market">
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            {SPECIALTIES.map(s => <button key={s} type="button" onClick={() => set("specialty", s)} style={selectStyle(data.specialty === s)}>{s}</button>)}
-          </div>
-        </Field>
+        <DD label="Specialty / Market" value={data.specialty} options={SPECIALTIES} onChange={v => set("specialty", v)} />
       )}
 
       {/* Step 3 — Style */}
       {step === 3 && (
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <Field label="Wardrobe Style">
-            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-              {WARDROBE_STYLES.map(w => <button key={w} type="button" onClick={() => set("wardrobe_style", w)} style={selectStyle(data.wardrobe_style === w)}>{w}</button>)}
-            </div>
-          </Field>
-          <Field label="Pose Style">
-            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-              {POSE_STYLES.map(p => <button key={p} type="button" onClick={() => set("pose_style", p)} style={selectStyle(data.pose_style === p)}>{p}</button>)}
-            </div>
-          </Field>
-          <Field label="Lighting">
-            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-              {LIGHTING_STYLES.map(l => <button key={l} type="button" onClick={() => set("lighting", l)} style={selectStyle(data.lighting === l)}>{l}</button>)}
-            </div>
-          </Field>
+          <DD label="Wardrobe Style" value={data.wardrobe_style} options={WARDROBE_STYLES} onChange={v => set("wardrobe_style", v)} />
+          <DD label="Pose Style" value={data.pose_style} options={POSE_STYLES} onChange={v => set("pose_style", v)} />
+          <DD label="Lighting" value={data.lighting} options={LIGHTING_STYLES} onChange={v => set("lighting", v)} />
         </div>
       )}
 
