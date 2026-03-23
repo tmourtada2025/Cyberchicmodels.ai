@@ -1,18 +1,18 @@
 {
   "version": 2,
-  "installCommand": "cd 'Cyberchicmodels.ai-main' && npm install",
-  "buildCommand": "cd 'Cyberchicmodels.ai-main' && npm run build",
-  "outputDirectory": "Cyberchicmodels.ai-main/dist",
-  "framework": null,
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "installCommand": "npm install",
+  "framework": "vite",
   "functions": {
-    "Cyberchicmodels.ai-main/api/*.ts": {
+    "api/*.ts": {
       "runtime": "nodejs20.x"
     }
   },
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/Cyberchicmodels.ai-main/api/$1"
+      "destination": "/api/$1"
     },
     {
       "source": "/((?!api/).*)",
