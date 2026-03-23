@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "installCommand": "cd Cyberchicmodels.ai-main && npm install",
-  "buildCommand": "cd Cyberchicmodels.ai-main && npm run build",
+  "installCommand": "cd 'Cyberchicmodels.ai-main' && npm install",
+  "buildCommand": "cd 'Cyberchicmodels.ai-main' && npm run build",
   "outputDirectory": "Cyberchicmodels.ai-main/dist",
   "framework": null,
   "functions": {
