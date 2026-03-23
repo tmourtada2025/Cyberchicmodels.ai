@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "buildCommand": "cd Cyberchicmodels.ai-main && npm install && npm run build",
+  "outputDirectory": "Cyberchicmodels.ai-main/dist",
+  "framework": null,
+  "functions": {
+    "Cyberchicmodels.ai-main/api/*.ts": {
+      "runtime": "nodejs20.x"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/Cyberchicmodels.ai-main/api/$1"
+    },
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/index.html"
+    }
+  ]
+}
