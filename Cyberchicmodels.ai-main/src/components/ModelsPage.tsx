@@ -197,7 +197,7 @@ export function ModelsPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <div className="py-12 px-4 bg-gradient-to-b from-rose-50 to-white">
+      <div className="pt-24 pb-12 px-4 bg-gradient-to-b from-rose-50 to-white">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center mb-6">
             <Link 
