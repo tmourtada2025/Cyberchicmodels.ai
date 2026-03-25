@@ -147,7 +147,13 @@ Return ONLY valid JSON. No markdown, no backticks, no explanation outside the JS
 // ── Component ────────────────────────────────────────────────────────────────
 
 export default function StudioPage() {
-  const [model, setModel] = useState<ModelProfile | null>(null);
+  const [model, setModel] = useState<ModelProfile | null>(() => {
+    try {
+      const stored = sessionStorage.getItem("studioModel");
+      if (stored) { sessionStorage.removeItem("studioModel"); return JSON.parse(stored); }
+    } catch {}
+    return null;
+  });
   const [refImage, setRefImage] = useState<string | null>(null);
   const [jsonPasteOpen, setJsonPasteOpen] = useState(false);
   const [jsonPasteText, setJsonPasteText] = useState("");
@@ -441,11 +447,11 @@ export default function StudioPage() {
           {model && (
             <OutputCard badge="MODEL" badgeColor="gray" title={model.name || "Profile"}>
               <div className="grid grid-cols-2 gap-1.5">
-                {(["name","age","height","skin_tone","eye_color","hair_base","build","nationality","ethnicity","signature_look"] as const)
-                  .filter((k) => model[k])
-                  .map((k) => (
+                {Object.entries(model)
+                  .filter(([, v]) => v && String(v).trim())
+                  .map(([k, v]) => (
                     <div key={k} className="px-2 py-1 bg-[#1a1a1a] rounded border border-[#2a2a2a] text-[11px] text-gray-400">
-                      <span className="text-white font-medium capitalize">{k.replace(/_/g," ")}:</span> {String(model[k])}
+                      <span className="text-white font-medium capitalize">{k.replace(/_/g," ")}:</span> {String(v)}
                     </div>
                   ))}
               </div>
@@ -457,6 +463,18 @@ export default function StudioPage() {
             <div className="flex flex-col items-center justify-center h-80 text-gray-600 gap-3">
               <div className="w-14 h-14 rounded-full border-2 border-[#2a2a2a] flex items-center justify-center text-2xl">◎</div>
               <div className="text-sm">Load a model JSON or select a pose to begin</div>
+            </div>
+          )}
+
+          {/* Model summary in output */}
+          {model && output && (
+            <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3 mb-1">
+              <div className="text-[9px] tracking-widest text-amber-500/70 uppercase mb-2">Model</div>
+              <div className="flex flex-wrap gap-2">
+                {Object.entries(model).filter(([,v])=>v&&String(v).trim()).map(([k,v])=>(
+                  <span key={k} className="text-[11px] text-gray-400"><span className="text-amber-400/80 capitalize">{k.replace(/_/g,' ')}:</span> {String(v)}</span>
+                ))}
+              </div>
             </div>
           )}
 
