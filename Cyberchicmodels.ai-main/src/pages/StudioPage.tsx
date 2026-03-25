@@ -297,6 +297,10 @@ export default function StudioPage() {
 
       {/* Upload bar */}
       <div className="flex items-center gap-3 flex-wrap px-6 py-2 bg-[#161616] border-b border-[#2a2a2a]">
+        <a href="/admin" className="flex items-center gap-1.5 px-3 py-1.5 rounded border border-[#333] bg-[#1f1f1f] text-xs text-gray-400 hover:text-amber-400 hover:border-amber-500/50 transition-colors no-underline">
+          ← Admin
+        </a>
+        <div className="w-px h-4 bg-[#333]" />
         <label className="flex items-center gap-2 px-3 py-1.5 rounded border border-[#333] bg-[#1f1f1f] text-xs text-gray-300 cursor-pointer hover:border-amber-500/50 transition-colors">
           ⊕ Model JSON
           <input type="file" accept=".json" className="hidden" onChange={handleFileUpload} />
