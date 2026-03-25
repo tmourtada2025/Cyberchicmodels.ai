@@ -438,7 +438,7 @@ Respond ONLY with valid JSON, no preamble, no markdown, exactly this structure:
   // ── Result screen ──
   if (result) {
     return (
-      <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 20, overflowY: "auto", maxHeight: "calc(100vh - 140px)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <button type="button" onClick={() => setResult(null)} style={{ background: "none", border: "none", color: colors.muted, cursor: "pointer", fontSize: 18 }}>←</button>
           <h2 style={{ margin: 0, fontSize: 18, color: colors.text }}>✦ {result.name}</h2>
@@ -465,9 +465,9 @@ Respond ONLY with valid JSON, no preamble, no markdown, exactly this structure:
           ))}
         </div>
 
-        <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", paddingTop: 10, borderTop: `1px solid ${colors.border}` }}>
+        <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", paddingTop: 12, marginTop: 16, borderTop: `1px solid ${colors.border}`, flexShrink: 0 }}>
           <button type="button" onClick={onCancel} style={btnStyle("ghost")}>Discard</button>
-          <button type="button" onClick={handleSave} style={btnStyle("primary")}>Save to Database</button>
+          <button type="button" onClick={handleSave} style={{ ...btnStyle("primary"), minWidth: 160 }}>💾 Save to Database</button>
         </div>
       </div>
     );
@@ -1039,7 +1039,7 @@ function ModelsPanel() {
     setLoading(false);
   }, []);
 
-  const handleWizardComplete = async (name: string, json: string, specialty: string, nationality: string) => {
+  const handleWizardComplete = useCallback(async (name: string, json: string, specialty: string, nationality: string) => {
     try {
       const parsed = JSON.parse(json);
       const v = parsed.visual_traits || {};
@@ -1067,7 +1067,8 @@ function ModelsPanel() {
     } catch (e: any) {
       showToast("Failed to save: " + (e?.message || "unknown error"), "error");
     }
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [load]);
 
   useEffect(() => { load(); }, [load]);
 
