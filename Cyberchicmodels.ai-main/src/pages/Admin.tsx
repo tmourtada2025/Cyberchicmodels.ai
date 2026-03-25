@@ -1089,8 +1089,12 @@ function ModelsPanel() {
   });
 
 
-  if (wizarding) {
-    return <ModelWizard onComplete={handleWizardComplete} onCancel={() => setWizarding(false)} />;
+ if (wizarding) {
+    return (
+      <div style={{ overflowY: "auto", maxHeight: "calc(100vh - 120px)", paddingBottom: 40 }}>
+        <ModelWizard onComplete={handleWizardComplete} onCancel={() => setWizarding(false)} />
+      </div>
+    );
   }
 
   if (creating || editing) {
