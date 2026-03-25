@@ -13,6 +13,7 @@ import { CartPage } from './components/CartPage';
 import { FavoritesPage } from './components/FavoritesPage';
 import { HeroCarousel } from './components/HeroCarousel';
 import AdminPage from './pages/Admin';
+import StudioPage from './pages/StudioPage';
 import { Footer } from './components/Footer';
 import { ModelCard } from './components/ModelCard';
 import { ModelDetailModal } from './components/ModelDetailModal';
@@ -265,6 +266,7 @@ function App() {
           <Route path="/cart" element={<CartPage />} />
           <Route path="/favorites" element={<FavoritesPage />} />
           <Route path="/admin" element={<AdminPage />} />
+      <Route path="/admin/studio" element={<StudioPage />} />
         </Routes>
         {selectedModel && (
           <ModelDetailModal
