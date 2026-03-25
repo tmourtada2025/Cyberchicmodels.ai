@@ -482,10 +482,11 @@ Respond ONLY with valid JSON, no preamble, no markdown, exactly this structure:
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <button type="button" onClick={onCancel} style={{ background: "none", border: "none", color: colors.muted, cursor: "pointer", fontSize: 18 }}>←</button>
-        <div>
+        <div style={{ flex: 1 }}>
           <h2 style={{ margin: 0, fontSize: 18, color: colors.text }}>✦ AI Model Wizard</h2>
           <div style={{ fontSize: 12, color: colors.muted, marginTop: 2 }}>Step {step + 1} of {totalSteps} — {stepTitles[step]}</div>
         </div>
+        <button type="button" onClick={() => { setStep(0); setData(emptyWizard()); setError(""); }} style={{ background: "none", border: `1px solid ${colors.border}`, color: colors.muted, cursor: "pointer", fontSize: 12, padding: "4px 12px", borderRadius: 6, whiteSpace: "nowrap" }}>↺ Reset</button>
       </div>
 
       {/* Progress bar */}
@@ -1366,7 +1367,7 @@ export default function AdminPage() {
       <div style={{ position: "fixed", left: 0, top: 64, bottom: 0, width: 220, background: colors.surface, borderRight: `1px solid ${colors.border}`, display: "flex", flexDirection: "column", zIndex: 100 }}>
         <div style={{ padding: "28px 20px 20px" }}>
           <div style={{ fontSize: 10, letterSpacing: "0.3em", color: colors.accent, textTransform: "uppercase", marginBottom: 4 }}>CyberChic</div>
-          <div style={{ fontSize: 15, color: colors.text }}>Admin</div>
+          <a href="/admin" style={{ fontSize: 15, color: colors.text, textDecoration: "none", cursor: "pointer", display: "block" }}>Admin</a>
         </div>
         <nav style={{ padding: "0 12px", flex: 1 }}>
           {tabs.map(t => (
@@ -1378,6 +1379,7 @@ export default function AdminPage() {
               fontFamily: "inherit", transition: "all 0.15s", marginBottom: 2,
             }}>{t.label}</button>
           ))}
+          <a href="/admin/studio" style={{ display: "block", padding: "10px 12px", borderRadius: 8, color: colors.muted, fontSize: 13, textDecoration: "none", fontFamily: "inherit", marginBottom: 2, transition: "all 0.15s" }}>✦ Frame Studio</a>
         </nav>
         <div style={{ padding: "16px 20px", borderTop: `1px solid ${colors.border}` }}>
           <div style={{ fontSize: 11, color: colors.muted, marginBottom: 8, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.email}</div>
@@ -1388,7 +1390,7 @@ export default function AdminPage() {
       </div>
 
       {/* Main content */}
-      <div style={{ marginLeft: 220, padding: "40px", paddingTop: 40, maxWidth: 960 }}>
+      <div style={{ marginLeft: 220, padding: "40px", paddingTop: 80, maxWidth: 960 }}>
         {activeTab === "models" && <ModelsPanel />}
         {activeTab === "styles" && <StylesPanel />}
         {activeTab === "hero" && <HeroPanel />}
