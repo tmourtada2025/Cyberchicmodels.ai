@@ -1082,6 +1082,13 @@ function ModelsPanel() {
     return matchSearch && matchNat && matchSpec;
   });
 
+  const filteredModels = models.filter(m => {
+    const matchSearch = !search || m.name.toLowerCase().includes(search.toLowerCase()) || (m.nationality || "").toLowerCase().includes(search.toLowerCase());
+    const matchNat = !filterNationality || m.nationality === filterNationality;
+    const matchSpec = !filterSpecialty || (m.specialty || "").includes(filterSpecialty);
+    return matchSearch && matchNat && matchSpec;
+  });
+
   if (wizarding) {
     return <ModelWizard onComplete={handleWizardComplete} onCancel={() => setWizarding(false)} />;
   }
