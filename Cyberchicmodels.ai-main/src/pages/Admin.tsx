@@ -456,7 +456,7 @@ Respond ONLY with valid JSON, no preamble, no markdown, exactly this structure:
                 <span style={{ fontSize: 11, color: colors.accent, letterSpacing: "0.1em", textTransform: "uppercase" }}>{platform.replace("_", ".")}</span>
                 <button
                   type="button"
-                  onClick={() => navigator.clipboard.writeText(prompt)}
+                  onClick={() => { navigator.clipboard.writeText(prompt).catch(() => { const ta = document.createElement('textarea'); ta.value = prompt; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); }); }}
                   style={{ ...btnStyle("ghost"), padding: "3px 8px", fontSize: 11 }}
                 >Copy</button>
               </div>
@@ -1023,6 +1023,9 @@ function ModelsPanel() {
   const [creating, setCreating] = useState(false);
   const [wizarding, setWizarding] = useState(false);
   const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
+  const [search, setSearch] = useState("");
+  const [filterNationality, setFilterNationality] = useState("");
+  const [filterSpecialty, setFilterSpecialty] = useState("");
 
   const showToast = (msg: string, type: "success" | "error" = "success") => {
     setToast({ msg, type });
@@ -1097,7 +1100,18 @@ function ModelsPanel() {
   return (
     <div>
       {toast && <Toast message={toast.msg} type={toast.type} />}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+      {(() => {
+        const nationalities = [...new Set(models.map(m => m.nationality).filter(Boolean))].sort();
+        const specialties = [...new Set(models.map(m => m.specialty).filter(Boolean))].sort();
+        const filtered = models.filter(m => {
+          const matchSearch = !search || m.name.toLowerCase().includes(search.toLowerCase()) || (m.nationality || "").toLowerCase().includes(search.toLowerCase());
+          const matchNat = !filterNationality || m.nationality === filterNationality;
+          const matchSpec = !filterSpecialty || (m.specialty || "").includes(filterSpecialty);
+          return matchSearch && matchNat && matchSpec;
+        });
+        return null;
+      })()}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
         <h2 style={{ margin: 0, fontSize: 18, color: colors.text }}>
           Models <span style={{ color: colors.muted, fontSize: 14, fontWeight: 400 }}>({models.length})</span>
         </h2>
@@ -1106,12 +1120,40 @@ function ModelsPanel() {
           <button type="button" onClick={() => setCreating(true)} style={btnStyle("primary")}>+ New Model</button>
         </div>
       </div>
+      <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
+        <input
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="Search name or nationality…"
+          style={{ ...inputStyle(), flex: 1, minWidth: 160, fontSize: 12 }}
+        />
+        <select value={filterNationality} onChange={e => setFilterNationality(e.target.value)} style={{ ...inputStyle(), width: "auto", fontSize: 12, paddingRight: 28 }}>
+          <option value="">All nationalities</option>
+          {[...new Set(models.map(m => m.nationality).filter(Boolean))].sort().map(n => <option key={n} value={n}>{n}</option>)}
+        </select>
+        <select value={filterSpecialty} onChange={e => setFilterSpecialty(e.target.value)} style={{ ...inputStyle(), width: "auto", fontSize: 12, paddingRight: 28 }}>
+          <option value="">All specialties</option>
+          {[...new Set(models.map(m => m.specialty).filter(Boolean))].sort().map(s => <option key={s} value={s.slice(0,40)}>{s.slice(0,40)}</option>)}
+        </select>
+        {(search || filterNationality || filterSpecialty) && (
+          <button type="button" onClick={() => { setSearch(""); setFilterNationality(""); setFilterSpecialty(""); }} style={{ ...btnStyle("ghost"), fontSize: 12, padding: "6px 10px" }}>✕ Clear</button>
+        )}
+      </div>
 
       {loading ? (
         <div style={{ color: colors.muted, textAlign: "center", padding: 40 }}>Loading…</div>
       ) : (
+        {(() => {
+          const filtered = models.filter(m => {
+            const matchSearch = !search || m.name.toLowerCase().includes(search.toLowerCase()) || (m.nationality || "").toLowerCase().includes(search.toLowerCase());
+            const matchNat = !filterNationality || m.nationality === filterNationality;
+            const matchSpec = !filterSpecialty || (m.specialty || "").includes(filterSpecialty);
+            return matchSearch && matchNat && matchSpec;
+          });
+          return (
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          {models.map(m => (
+          {filtered.length === 0 && !loading && <div style={{ color: colors.muted, textAlign: "center", padding: 40, fontSize: 13 }}>No models match your filters.</div>}
+          {filtered.map(m => (
             <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 14, padding: "12px 16px", background: colors.surface, borderRadius: 10, border: `1px solid ${colors.border}` }}>
               <img
                 src={publicUrl(BUCKETS.MODELS, m.thumbnail_path) || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Crect width='48' height='48' fill='%23333'/%3E%3C/svg%3E"}
@@ -1133,13 +1175,9 @@ function ModelsPanel() {
               </div>
             </div>
           ))}
-          {models.length === 0 && (
-            <div style={{ color: colors.muted, textAlign: "center", padding: 60 }}>
-              <div style={{ fontSize: 32, marginBottom: 12 }}>✦</div>
-              <div>No models yet. Use the AI Wizard or add manually.</div>
-            </div>
-          )}
         </div>
+          );
+        })()}
       )}
     </div>
   );
