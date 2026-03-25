@@ -1044,8 +1044,9 @@ function ModelsPanel() {
       const parsed = JSON.parse(json);
       const v = parsed.visual_traits || {};
       const m = parsed.measurements || {};
-      const slug = name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
-      await supabase.from("models").insert({
+      const baseSlug = name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+      const slug = baseSlug + "-" + Date.now().toString(36);
+      const { error } = await supabase.from("models").insert({
         name, slug, nationality, specialty,
         ethnicity: parsed.identity?.ethnicity || nationality,
         gender: (parsed.identity?.gender || "Female").toLowerCase(),
@@ -1053,14 +1054,18 @@ function ModelsPanel() {
         bio: Array.isArray(parsed.identity?.personality) ? parsed.identity.personality.join(", ") : "",
         measurements: JSON.stringify(m),
         hobbies: v.distinctive_features || "",
+        skin_tone: v.skin_tone || "",
+        eye_color: v.eye_color || "",
+        age_group: parsed.identity?.age_group || "",
         is_published: false,
         is_new: true,
       });
+      if (error) throw error;
       setWizarding(false);
-      load();
-      showToast(`${name} created!`);
-    } catch {
-      showToast("Failed to save model", "error");
+      await load();
+      showToast(`${name} added to roster!`);
+    } catch (e: any) {
+      showToast("Failed to save: " + (e?.message || "unknown error"), "error");
     }
   };
 
@@ -1162,6 +1167,16 @@ function ModelsPanel() {
                 <div style={{ fontSize: 12, color: colors.muted, marginTop: 2 }}>{m.nationality} · {m.specialty || "No specialty set"}</div>
               </div>
               <div style={{ display: "flex", gap: 6 }}>
+                <button type="button" onClick={() => {
+                  const studioData = {
+                    name: m.name, age: m.age_group, height: m.height,
+                    skin_tone: m.skin_tone || "", eye_color: m.eye_color || "",
+                    hair_base: "", build: "", nationality: m.nationality,
+                    ethnicity: m.ethnicity, signature_look: m.specialty || "",
+                  };
+                  sessionStorage.setItem("studioModel", JSON.stringify(studioData));
+                  window.location.href = "/admin/studio";
+                }} style={{ ...btnStyle("secondary"), color: "#c9a96e", borderColor: "#c9a96e", fontSize: 12 }}>✦ Studio</button>
                 <button type="button" onClick={() => setEditing(m)} style={btnStyle("secondary")}>Edit</button>
                 <button type="button" onClick={() => deleteModel(m)} style={btnStyle("danger")}>Delete</button>
               </div>
