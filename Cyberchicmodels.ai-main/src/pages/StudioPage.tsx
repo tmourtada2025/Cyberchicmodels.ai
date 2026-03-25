@@ -210,6 +210,23 @@ export default function StudioPage() {
     });
   }
 
+  function handleSave() {
+    if (!output) return;
+    const session = {
+      model: model || {},
+      config: { pose, style, hair, makeup, accessories: [...accessories], platform },
+      output,
+      savedAt: new Date().toISOString(),
+    };
+    const blob = new Blob([JSON.stringify(session, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `studio-${(model?.name || 'session').replace(/\s+/g, '-').toLowerCase()}-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   async function handleGenerate() {
     if (!pose || !style) {
       setError("Please select a Pose and Style direction.");
@@ -297,6 +314,14 @@ export default function StudioPage() {
         {model && <span className="text-xs text-green-400">✓ {model.name || "Model"} loaded</span>}
         {refImage && <span className="text-xs text-green-400">✓ Image loaded</span>}
         {jsonError && <span className="text-xs text-red-400">{jsonError}</span>}
+        {output && (
+          <button
+            onClick={handleSave}
+            className="flex items-center gap-2 px-3 py-1.5 rounded border border-amber-500/40 bg-amber-500/10 text-xs text-amber-300 cursor-pointer hover:border-amber-500 transition-colors ml-auto"
+          >
+            ↓ Save session
+          </button>
+        )}
       </div>
 
       {/* Layout */}
