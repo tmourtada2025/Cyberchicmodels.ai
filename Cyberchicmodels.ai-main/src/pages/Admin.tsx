@@ -1075,6 +1075,13 @@ function ModelsPanel() {
     load();
   };
 
+  const filteredModels = models.filter(m => {
+    const matchSearch = !search || m.name.toLowerCase().includes(search.toLowerCase()) || (m.nationality || "").toLowerCase().includes(search.toLowerCase());
+    const matchNat = !filterNationality || m.nationality === filterNationality;
+    const matchSpec = !filterSpecialty || (m.specialty || "").includes(filterSpecialty);
+    return matchSearch && matchNat && matchSpec;
+  });
+
   if (wizarding) {
     return <ModelWizard onComplete={handleWizardComplete} onCancel={() => setWizarding(false)} />;
   }
@@ -1100,17 +1107,7 @@ function ModelsPanel() {
   return (
     <div>
       {toast && <Toast message={toast.msg} type={toast.type} />}
-      {(() => {
-        const nationalities = [...new Set(models.map(m => m.nationality).filter(Boolean))].sort();
-        const specialties = [...new Set(models.map(m => m.specialty).filter(Boolean))].sort();
-        const filtered = models.filter(m => {
-          const matchSearch = !search || m.name.toLowerCase().includes(search.toLowerCase()) || (m.nationality || "").toLowerCase().includes(search.toLowerCase());
-          const matchNat = !filterNationality || m.nationality === filterNationality;
-          const matchSpec = !filterSpecialty || (m.specialty || "").includes(filterSpecialty);
-          return matchSearch && matchNat && matchSpec;
-        });
-        return null;
-      })()}
+
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
         <h2 style={{ margin: 0, fontSize: 18, color: colors.text }}>
           Models <span style={{ color: colors.muted, fontSize: 14, fontWeight: 400 }}>({models.length})</span>
@@ -1143,17 +1140,11 @@ function ModelsPanel() {
       {loading ? (
         <div style={{ color: colors.muted, textAlign: "center", padding: 40 }}>Loading…</div>
       ) : (
-        {(() => {
-          const filtered = models.filter(m => {
-            const matchSearch = !search || m.name.toLowerCase().includes(search.toLowerCase()) || (m.nationality || "").toLowerCase().includes(search.toLowerCase());
-            const matchNat = !filterNationality || m.nationality === filterNationality;
-            const matchSpec = !filterSpecialty || (m.specialty || "").includes(filterSpecialty);
-            return matchSearch && matchNat && matchSpec;
-          });
-          return (
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          {filtered.length === 0 && !loading && <div style={{ color: colors.muted, textAlign: "center", padding: 40, fontSize: 13 }}>No models match your filters.</div>}
-          {filtered.map(m => (
+          {filteredModels.length === 0 && !loading && (
+            <div style={{ color: colors.muted, textAlign: "center", padding: 40, fontSize: 13 }}>No models match your filters.</div>
+          )}
+          {filteredModels.map(m => (
             <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 14, padding: "12px 16px", background: colors.surface, borderRadius: 10, border: `1px solid ${colors.border}` }}>
               <img
                 src={publicUrl(BUCKETS.MODELS, m.thumbnail_path) || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Crect width='48' height='48' fill='%23333'/%3E%3C/svg%3E"}
@@ -1176,8 +1167,6 @@ function ModelsPanel() {
             </div>
           ))}
         </div>
-          );
-        })()}
       )}
     </div>
   );
