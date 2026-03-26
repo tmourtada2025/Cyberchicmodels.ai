@@ -1,5 +1,6 @@
 /**
- * CyberChicModels Admin Panel
+ * CyberChicModels Admin Panel — Phase 1 Update
+ * Added: LoRA fields, Prompt Library, Collections Tracker, Client Requests
  * Drop this file into: src/pages/Admin.tsx
  */
 
@@ -42,6 +43,12 @@ interface Model {
   is_coming_soon: boolean;
   social_media: string;
   measurements: string;
+  // ── NEW Phase 1 fields ──
+  lora_url: string;
+  trigger_word: string;
+  training_status: string;
+  training_run_id: string;
+  dalle_prompt_pack: string;
 }
 
 interface Collection {
@@ -68,7 +75,41 @@ interface Style {
   thumbnail_path: string;
 }
 
-type Tab = "models" | "styles" | "hero";
+// ── NEW Phase 1 types ──
+interface Prompt {
+  id: string;
+  model_id: string;
+  label: string;
+  prompt_text: string;
+  platform: string;
+  works_well: boolean;
+  created_at: string;
+}
+
+interface Campaign {
+  id: string;
+  name: string;
+  description: string;
+  status: string;
+  model_ids: string[];
+  cover_image: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface ClientRequest {
+  id: string;
+  client_name: string;
+  client_email: string;
+  model_id: string;
+  request_type: string;
+  message: string;
+  budget: string;
+  status: string;
+  created_at: string;
+}
+
+type Tab = "models" | "styles" | "hero" | "prompts" | "campaigns" | "requests";
 
 // ─── Archetype Data ──────────────────────────────────────────────────────────
 interface Archetype {
@@ -102,7 +143,6 @@ const ARCHETYPES: Record<string, Archetype> = {
   "Brazilian": { skin_tone: "Golden brown", eye_color: "Brown to hazel", hair_color: "Dark brown", hair_texture: "Wavy to curly", face_shape: "Heart", height_range: "165-173cm", build: "Curvaceous", ethnicity: "Mixed European/African/Indigenous", distinctive: "Full lips, expressive eyes, natural curves" },
   "British": { skin_tone: "Fair to light", eye_color: "Blue to green", hair_color: "Brown to blonde", hair_texture: "Straight to wavy", face_shape: "Oval", height_range: "165-174cm", build: "Lean", ethnicity: "Anglo-Celtic", distinctive: "Fair English complexion, understated features" },
   "Bulgarian": { skin_tone: "Light olive", eye_color: "Brown to hazel", hair_color: "Dark brown", hair_texture: "Wavy", face_shape: "Oval", height_range: "165-174cm", build: "Medium", ethnicity: "South Slavic / Thracian", distinctive: "Prominent brow ridge, strong cheekbones" },
-  "Burkinabe": { skin_tone: "Deep brown", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Coily", face_shape: "Round", height_range: "160-170cm", build: "Slim", ethnicity: "West African", distinctive: "Symmetrical features, smooth deep skin" },
   "Cambodian": { skin_tone: "Medium golden brown", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Straight", face_shape: "Round", height_range: "155-163cm", build: "Petite", ethnicity: "Khmer", distinctive: "Soft features, wide eyes, golden undertone" },
   "Cameroonian": { skin_tone: "Medium to deep brown", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Coily", face_shape: "Oval", height_range: "163-172cm", build: "Athletic", ethnicity: "Central African", distinctive: "Defined bone structure, full lips" },
   "Canadian": { skin_tone: "Fair to medium", eye_color: "Blue to brown", hair_color: "Blonde to brown", hair_texture: "Straight to wavy", face_shape: "Oval", height_range: "166-175cm", build: "Athletic", ethnicity: "Mixed European / Indigenous", distinctive: "Healthy outdoorsy complexion, diverse features" },
@@ -110,14 +150,12 @@ const ARCHETYPES: Record<string, Archetype> = {
   "Chinese": { skin_tone: "Fair to light golden", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Straight", face_shape: "Oval to round", height_range: "160-170cm", build: "Slim, petite", ethnicity: "Han Chinese", distinctive: "Monolid or double eyelid, porcelain skin, delicate features" },
   "Colombian": { skin_tone: "Golden olive", eye_color: "Brown to hazel", hair_color: "Dark brown", hair_texture: "Wavy", face_shape: "Heart", height_range: "164-173cm", build: "Curvaceous", ethnicity: "Mixed European/Indigenous/African", distinctive: "Full lips, expressive eyes, natural warmth" },
   "Congolese": { skin_tone: "Deep brown", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Coily", face_shape: "Oval", height_range: "162-172cm", build: "Tall, lean", ethnicity: "Bantu Central African", distinctive: "Elongated features, regal bone structure" },
-  "Costa Rican": { skin_tone: "Light to medium", eye_color: "Brown", hair_color: "Dark brown", hair_texture: "Wavy", face_shape: "Oval", height_range: "162-170cm", build: "Slim", ethnicity: "Mixed European/Indigenous", distinctive: "Warm complexion, soft features" },
   "Croatian": { skin_tone: "Light olive", eye_color: "Brown to blue", hair_color: "Dark brown", hair_texture: "Wavy", face_shape: "Oval", height_range: "168-177cm", build: "Tall, athletic", ethnicity: "South Slavic", distinctive: "Tall stature, defined jaw, Mediterranean-Slavic mix" },
   "Cuban": { skin_tone: "Light to medium brown", eye_color: "Brown to hazel", hair_color: "Dark brown", hair_texture: "Wavy to curly", face_shape: "Oval", height_range: "163-172cm", build: "Curvaceous", ethnicity: "Mixed European/African", distinctive: "Warm mixed heritage features, full hair" },
   "Czech": { skin_tone: "Fair", eye_color: "Blue to grey", hair_color: "Blonde to light brown", hair_texture: "Straight", face_shape: "Oval", height_range: "167-176cm", build: "Lean", ethnicity: "West Slavic", distinctive: "High cheekbones, fair skin, light eyes" },
   "Danish": { skin_tone: "Fair", eye_color: "Blue to grey", hair_color: "Blonde", hair_texture: "Straight", face_shape: "Oval", height_range: "168-177cm", build: "Tall, lean", ethnicity: "Scandinavian", distinctive: "Golden blonde hair, blue eyes, tall frame" },
   "Dominican": { skin_tone: "Medium to caramel", eye_color: "Brown", hair_color: "Dark brown to black", hair_texture: "Curly", face_shape: "Oval", height_range: "163-172cm", build: "Curvaceous", ethnicity: "Mixed African/European/Taino", distinctive: "Rich mixed heritage, expressive features" },
   "Dutch": { skin_tone: "Fair", eye_color: "Blue to green", hair_color: "Blonde to light brown", hair_texture: "Straight", face_shape: "Oval", height_range: "170-180cm", build: "Tall, lean", ethnicity: "Northwestern European", distinctive: "Very tall, fair features, angular face" },
-  "Ecuadorian": { skin_tone: "Medium olive", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Straight", face_shape: "Round", height_range: "158-166cm", build: "Compact", ethnicity: "Indigenous / Mestizo", distinctive: "Strong indigenous features, warm complexion" },
   "Egyptian": { skin_tone: "Warm olive", eye_color: "Dark brown", hair_color: "Black to dark brown", hair_texture: "Wavy", face_shape: "Oval", height_range: "163-172cm", build: "Slim to medium", ethnicity: "North African Arab", distinctive: "Almond-shaped eyes, prominent nose, regal features" },
   "Emirati": { skin_tone: "Warm olive to medium", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Straight", face_shape: "Oval", height_range: "162-170cm", build: "Slim", ethnicity: "Gulf Arab", distinctive: "Refined features, deep kohl eyes, graceful presence" },
   "Ethiopian": { skin_tone: "Medium brown to dark", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Coily to curly", face_shape: "Narrow oval", height_range: "165-175cm", build: "Lean, statuesque", ethnicity: "Cushitic / Semitic East African", distinctive: "Narrow features, high forehead, elegant bone structure" },
@@ -128,11 +166,6 @@ const ARCHETYPES: Record<string, Archetype> = {
   "German": { skin_tone: "Fair", eye_color: "Blue to grey", hair_color: "Blonde to light brown", hair_texture: "Straight", face_shape: "Square to oval", height_range: "168-177cm", build: "Athletic, strong", ethnicity: "Germanic / Central European", distinctive: "Strong jaw, fair coloring, tall frame" },
   "Ghanaian": { skin_tone: "Rich chocolate brown", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Coily", face_shape: "Round", height_range: "162-172cm", build: "Medium to athletic", ethnicity: "Akan / West African", distinctive: "Full lips, wide nose, glowing deep complexion" },
   "Greek": { skin_tone: "Light olive", eye_color: "Brown to hazel", hair_color: "Dark brown to black", hair_texture: "Wavy", face_shape: "Oval", height_range: "165-173cm", build: "Medium, curvaceous", ethnicity: "Mediterranean", distinctive: "Olive skin, strong nose, expressive dark eyes" },
-  "Guatemalan": { skin_tone: "Medium copper", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Straight", face_shape: "Round", height_range: "155-163cm", build: "Compact", ethnicity: "Mayan / Mestizo", distinctive: "Strong indigenous bone structure, warm skin" },
-  "Guinean": { skin_tone: "Deep brown", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Coily", face_shape: "Oval", height_range: "162-172cm", build: "Lean to athletic", ethnicity: "West African", distinctive: "Smooth dark skin, graceful features" },
-  "Haitian": { skin_tone: "Medium to deep brown", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Coily", face_shape: "Oval", height_range: "162-172cm", build: "Slim to curvaceous", ethnicity: "Afro-Caribbean", distinctive: "Rich heritage features, full lips, strong presence" },
-  "Honduran": { skin_tone: "Medium olive", eye_color: "Dark brown", hair_color: "Dark brown", hair_texture: "Straight to wavy", face_shape: "Oval", height_range: "160-168cm", build: "Medium", ethnicity: "Mestizo / Indigenous", distinctive: "Warm mixed features, soft eyes" },
-  "Hungarian": { skin_tone: "Fair to light", eye_color: "Brown to grey", hair_color: "Dark brown", hair_texture: "Straight to wavy", face_shape: "Oval", height_range: "166-175cm", build: "Lean", ethnicity: "Central European / Uralic", distinctive: "High cheekbones, slightly exotic Eastern European look" },
   "Indian": { skin_tone: "Medium to warm brown", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Straight to wavy", face_shape: "Oval", height_range: "160-168cm", build: "Slim to curvaceous", ethnicity: "South Asian", distinctive: "Rich complexion, expressive large eyes, lustrous hair" },
   "Indonesian": { skin_tone: "Medium golden brown", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Straight", face_shape: "Round to oval", height_range: "158-165cm", build: "Petite to slim", ethnicity: "Austronesian / Malay", distinctive: "Warm golden skin, soft round features" },
   "Iranian": { skin_tone: "Light olive to medium", eye_color: "Brown to hazel", hair_color: "Dark brown", hair_texture: "Wavy", face_shape: "Oval", height_range: "163-172cm", build: "Slim to medium", ethnicity: "Persian", distinctive: "Defined nose, high cheekbones, intense eyes" },
@@ -143,52 +176,27 @@ const ARCHETYPES: Record<string, Archetype> = {
   "Jamaican": { skin_tone: "Medium to deep brown", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Coily", face_shape: "Oval", height_range: "165-175cm", build: "Athletic, lean", ethnicity: "Afro-Caribbean", distinctive: "Athletic build, vibrant skin, strong presence" },
   "Japanese": { skin_tone: "Fair to light golden", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Straight", face_shape: "Oval to round", height_range: "158-167cm", build: "Slim, petite", ethnicity: "Yamato Japanese", distinctive: "Porcelain skin, symmetrical refined features, monolid eyes" },
   "Jordanian": { skin_tone: "Warm olive", eye_color: "Dark brown", hair_color: "Dark brown to black", hair_texture: "Wavy", face_shape: "Oval", height_range: "162-170cm", build: "Slim to medium", ethnicity: "Levantine Arab", distinctive: "Defined brow, almond eyes, graceful features" },
-  "Kazakhstani": { skin_tone: "Light to medium", eye_color: "Dark brown", hair_color: "Black to dark brown", hair_texture: "Straight", face_shape: "Broad oval", height_range: "162-170cm", build: "Medium", ethnicity: "Kazakh / Turkic", distinctive: "Eurasian features, high broad cheekbones, almond eyes" },
   "Kenyan": { skin_tone: "Medium to deep brown", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Coily", face_shape: "Narrow oval", height_range: "165-175cm", build: "Lean, tall", ethnicity: "Nilotic / Bantu East African", distinctive: "Long limbs, defined features, runner's physique" },
   "Korean": { skin_tone: "Fair to light ivory", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Straight", face_shape: "Heart to oval", height_range: "162-170cm", build: "Slim, petite", ethnicity: "Korean", distinctive: "Glass skin complexion, delicate features, defined jaw" },
-  "Kuwaiti": { skin_tone: "Warm olive", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Straight", face_shape: "Oval", height_range: "160-168cm", build: "Slim", ethnicity: "Gulf Arab", distinctive: "Elegant refined features, kohl eyes" },
-  "Kyrgyz": { skin_tone: "Medium with golden tone", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Straight", face_shape: "Broad oval", height_range: "160-168cm", build: "Medium", ethnicity: "Turkic / Mongolic", distinctive: "Broad face, high cheekbones, Eurasian blend" },
-  "Lao": { skin_tone: "Medium golden", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Straight", face_shape: "Round", height_range: "155-163cm", build: "Petite", ethnicity: "Lao / Tai", distinctive: "Soft round features, golden warmth" },
   "Latvian": { skin_tone: "Very fair", eye_color: "Blue to grey", hair_color: "Blonde", hair_texture: "Straight", face_shape: "Oval", height_range: "168-177cm", build: "Lean, tall", ethnicity: "Baltic", distinctive: "Platinum blonde hair, icy blue eyes, tall and lean" },
   "Lebanese": { skin_tone: "Light olive", eye_color: "Green to hazel", hair_color: "Dark brown", hair_texture: "Wavy", face_shape: "Heart", height_range: "163-172cm", build: "Slim to medium", ethnicity: "Levantine Arab / Phoenician", distinctive: "High cheekbones, green or hazel eyes, defined nose, lush hair" },
-  "Libyan": { skin_tone: "Warm olive", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Wavy", face_shape: "Oval", height_range: "163-172cm", build: "Slim", ethnicity: "Arab / Berber", distinctive: "Strong features, olive glow, expressive dark eyes" },
-  "Lithuanian": { skin_tone: "Fair", eye_color: "Blue to grey", hair_color: "Blonde to light brown", hair_texture: "Straight", face_shape: "Oval", height_range: "167-176cm", build: "Lean", ethnicity: "Baltic", distinctive: "Fair skin, light eyes, straight bone structure" },
-  "Malagasy": { skin_tone: "Medium golden brown", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Wavy to coily", face_shape: "Oval", height_range: "160-168cm", build: "Slim", ethnicity: "Austronesian / Bantu mixed", distinctive: "Unique mixed island features, warm tone" },
   "Malaysian": { skin_tone: "Medium golden", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Straight", face_shape: "Oval to round", height_range: "158-166cm", build: "Slim", ethnicity: "Malay", distinctive: "Warm golden skin, soft features, glossy hair" },
   "Malian": { skin_tone: "Deep brown to ebony", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Coily", face_shape: "Oval", height_range: "165-175cm", build: "Lean, statuesque", ethnicity: "West African / Mande", distinctive: "Elongated neck, fine bone structure, radiant deep skin" },
-  "Mauritanian": { skin_tone: "Deep brown", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Coily", face_shape: "Oval", height_range: "163-172cm", build: "Slim", ethnicity: "Arab-Berber / West African", distinctive: "Refined features, deep tone, expressive eyes" },
   "Mexican": { skin_tone: "Warm golden to medium brown", eye_color: "Dark brown", hair_color: "Black to dark brown", hair_texture: "Straight to wavy", face_shape: "Oval", height_range: "160-168cm", build: "Curvaceous", ethnicity: "Mestizo / Indigenous", distinctive: "Rich heritage blend, warm glow, expressive dark eyes" },
-  "Mongolian": { skin_tone: "Light to medium with golden tone", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Straight", face_shape: "Broad round", height_range: "160-168cm", build: "Medium, sturdy", ethnicity: "Mongolic", distinctive: "Broad face, pronounced cheekbones, strong build" },
   "Moroccan": { skin_tone: "Warm olive to medium", eye_color: "Amber to dark brown", hair_color: "Dark brown to black", hair_texture: "Wavy", face_shape: "Oval", height_range: "163-172cm", build: "Slim", ethnicity: "Arab / Amazigh / Berber", distinctive: "Amber eyes, sculpted features, warm golden undertone" },
-  "Mozambican": { skin_tone: "Medium to deep brown", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Coily", face_shape: "Oval", height_range: "163-172cm", build: "Slim to athletic", ethnicity: "Bantu East African", distinctive: "High forehead, symmetrical features, smooth tone" },
-  "Myanmar": { skin_tone: "Medium golden brown", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Straight", face_shape: "Round to oval", height_range: "157-165cm", build: "Petite", ethnicity: "Bamar / Tibeto-Burman", distinctive: "Golden warm skin, soft round face" },
-  "Namibian": { skin_tone: "Deep brown", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Coily", face_shape: "Oval", height_range: "165-175cm", build: "Lean, tall", ethnicity: "San / Bantu Southern African", distinctive: "High cheekbones, statuesque frame" },
-  "Nepalese": { skin_tone: "Medium warm brown", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Straight", face_shape: "Oval to round", height_range: "158-165cm", build: "Petite", ethnicity: "Tibeto-Burman / South Asian", distinctive: "Soft Himalayan features, almond eyes" },
-  "New Zealand": { skin_tone: "Fair to medium", eye_color: "Blue to green", hair_color: "Brown to blonde", hair_texture: "Wavy", face_shape: "Oval", height_range: "166-174cm", build: "Athletic", ethnicity: "Anglo / Maori mixed", distinctive: "Outdoor-healthy glow, strong mixed heritage" },
-  "Nicaraguan": { skin_tone: "Medium olive", eye_color: "Dark brown", hair_color: "Dark brown", hair_texture: "Wavy", face_shape: "Oval", height_range: "160-168cm", build: "Medium", ethnicity: "Mestizo", distinctive: "Warm Latin features, soft expression" },
   "Nigerian": { skin_tone: "Rich chocolate to ebony", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Coily", face_shape: "Oval", height_range: "165-175cm", build: "Curvaceous", ethnicity: "Yoruba / Igbo / Hausa West African", distinctive: "Radiant deep skin, bold features, full figure" },
   "Norwegian": { skin_tone: "Very fair", eye_color: "Blue", hair_color: "Blonde", hair_texture: "Straight", face_shape: "Oval", height_range: "168-177cm", build: "Tall, athletic", ethnicity: "Nordic / Scandinavian", distinctive: "Ice-blue eyes, very fair skin, naturally blonde" },
-  "Omani": { skin_tone: "Warm olive", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Straight to wavy", face_shape: "Oval", height_range: "162-170cm", build: "Slim to medium", ethnicity: "Arab / South Asian mixed", distinctive: "Distinctive mixed Gulf-South Asian features" },
   "Pakistani": { skin_tone: "Warm medium", eye_color: "Dark brown to hazel", hair_color: "Black", hair_texture: "Wavy", face_shape: "Oval", height_range: "162-170cm", build: "Slim to medium", ethnicity: "South Asian / Indus", distinctive: "Expressive large eyes, strong brows, graceful features" },
   "Palestinian": { skin_tone: "Light to warm olive", eye_color: "Dark brown to hazel", hair_color: "Dark brown", hair_texture: "Wavy", face_shape: "Oval", height_range: "163-172cm", build: "Slim", ethnicity: "Levantine Arab", distinctive: "Defined features, olive warmth, expressive eyes" },
-  "Panamanian": { skin_tone: "Light to medium brown", eye_color: "Brown", hair_color: "Dark brown", hair_texture: "Wavy", face_shape: "Oval", height_range: "162-170cm", build: "Medium", ethnicity: "Mestizo / mixed Caribbean", distinctive: "Vibrant mixed heritage features" },
-  "Paraguayan": { skin_tone: "Medium olive", eye_color: "Dark brown", hair_color: "Dark brown", hair_texture: "Straight to wavy", face_shape: "Oval", height_range: "160-168cm", build: "Medium", ethnicity: "Mestizo / Guarani", distinctive: "Indigenous-influenced features, warm tone" },
   "Peruvian": { skin_tone: "Medium copper", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Straight", face_shape: "Oval to round", height_range: "158-166cm", build: "Compact, curvaceous", ethnicity: "Mestizo / Quechua", distinctive: "Strong indigenous features, warm copper tone" },
   "Filipino": { skin_tone: "Light to medium golden", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Straight to wavy", face_shape: "Oval", height_range: "158-165cm", build: "Petite to slim", ethnicity: "Austronesian / Malay", distinctive: "Golden skin, soft features, expressive eyes" },
   "Polish": { skin_tone: "Fair", eye_color: "Blue to grey", hair_color: "Ash blonde to light brown", hair_texture: "Straight", face_shape: "Oval", height_range: "167-176cm", build: "Lean", ethnicity: "West Slavic", distinctive: "High cheekbones, pale skin, often striking pale eyes" },
   "Portuguese": { skin_tone: "Light olive", eye_color: "Brown to hazel", hair_color: "Dark brown", hair_texture: "Wavy", face_shape: "Oval", height_range: "164-172cm", build: "Medium", ethnicity: "Iberian / Atlantic", distinctive: "Darker Iberian features, soulful eyes" },
-  "Puerto Rican": { skin_tone: "Warm caramel", eye_color: "Brown to hazel", hair_color: "Dark brown", hair_texture: "Wavy to curly", face_shape: "Oval", height_range: "163-172cm", build: "Curvaceous", ethnicity: "Mixed European/African/Taino", distinctive: "Rich Caribbean blend, warm tone, lush hair" },
-  "Qatari": { skin_tone: "Warm olive", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Straight", face_shape: "Oval", height_range: "162-170cm", build: "Slim", ethnicity: "Gulf Arab", distinctive: "Refined desert Arab features, elegant bearing" },
   "Romanian": { skin_tone: "Light olive", eye_color: "Brown to hazel", hair_color: "Dark brown", hair_texture: "Wavy", face_shape: "Oval", height_range: "165-174cm", build: "Lean", ethnicity: "Latin / Dacian European", distinctive: "Defined features, dark expressive eyes, warm olive tone" },
   "Russian": { skin_tone: "Fair to porcelain", eye_color: "Blue to grey", hair_color: "Blonde to ash", hair_texture: "Straight", face_shape: "Oval", height_range: "168-176cm", build: "Lean, tall", ethnicity: "East Slavic", distinctive: "High cheekbones, pale skin, light eyes, angular features" },
-  "Rwandan": { skin_tone: "Medium to deep brown", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Coily", face_shape: "Narrow oval", height_range: "165-175cm", build: "Lean, tall", ethnicity: "Tutsi / Hutu / Central African", distinctive: "Long elegant features, lean tall frame" },
   "Saudi": { skin_tone: "Warm olive to medium", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Straight to wavy", face_shape: "Oval", height_range: "162-170cm", build: "Slim to medium", ethnicity: "Arab / Hijazi", distinctive: "Classic Arabian features, kohl-dark eyes, dignified bearing" },
   "Senegalese": { skin_tone: "Deep brown to ebony", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Coily", face_shape: "Oval", height_range: "165-175cm", build: "Lean, statuesque", ethnicity: "Wolof / West African", distinctive: "Exceptional skin clarity, refined bone structure, tall elegant frame" },
   "Serbian": { skin_tone: "Light olive", eye_color: "Brown to hazel", hair_color: "Dark brown", hair_texture: "Wavy", face_shape: "Oval", height_range: "168-177cm", build: "Tall, athletic", ethnicity: "South Slavic", distinctive: "Tall frame, defined features, Mediterranean-Slavic blend" },
-  "Sierra Leonean": { skin_tone: "Medium to deep brown", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Coily", face_shape: "Round", height_range: "160-170cm", build: "Medium", ethnicity: "West African / Mende", distinctive: "Round face, warm glow, strong features" },
-  "Singaporean": { skin_tone: "Light to medium golden", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Straight", face_shape: "Oval", height_range: "160-168cm", build: "Slim", ethnicity: "Chinese / Malay / Indian mixed", distinctive: "Diverse mixed Asian features, well-groomed look" },
-  "Slovak": { skin_tone: "Fair", eye_color: "Blue to grey", hair_color: "Blonde to light brown", hair_texture: "Straight", face_shape: "Oval", height_range: "166-175cm", build: "Lean", ethnicity: "West Slavic", distinctive: "Pale skin, high cheekbones, light features" },
-  "Slovenian": { skin_tone: "Fair", eye_color: "Blue to green", hair_color: "Blonde to brown", hair_texture: "Straight to wavy", face_shape: "Oval", height_range: "167-176cm", build: "Athletic", ethnicity: "South Slavic / Alpine", distinctive: "Alpine-Slavic features, tall, fair coloring" },
   "Somali": { skin_tone: "Medium brown to deep", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Coily to wavy", face_shape: "Narrow oval", height_range: "165-175cm", build: "Lean, tall", ethnicity: "Cushitic East African", distinctive: "Sharp angular features, long limbs, elegant stature" },
   "South African": { skin_tone: "Varies – golden to deep brown", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Coily", face_shape: "Oval", height_range: "163-173cm", build: "Athletic", ethnicity: "Zulu / Xhosa / Mixed", distinctive: "Vibrant diverse features, strong bone structure" },
   "South Korean": { skin_tone: "Fair ivory", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Straight", face_shape: "V-shaped / heart", height_range: "162-170cm", build: "Slim, petite", ethnicity: "Korean", distinctive: "Glass skin, v-shaped jaw, monolid or large double-eyelid" },
@@ -196,26 +204,12 @@ const ARCHETYPES: Record<string, Archetype> = {
   "Sri Lankan": { skin_tone: "Medium warm brown", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Straight to wavy", face_shape: "Oval", height_range: "158-166cm", build: "Slim", ethnicity: "Sinhalese / Tamil South Asian", distinctive: "Rich warm skin, large expressive eyes, delicate features" },
   "Sudanese": { skin_tone: "Deep brown to ebony", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Coily", face_shape: "Narrow oval", height_range: "168-178cm", build: "Tall, lean", ethnicity: "Nilotic / Nubian", distinctive: "Very tall and lean, extraordinarily fine features, deep blue-black skin" },
   "Swedish": { skin_tone: "Very fair", eye_color: "Blue", hair_color: "Pale blonde", hair_texture: "Straight", face_shape: "Oval", height_range: "169-178cm", build: "Tall, lean", ethnicity: "Nordic", distinctive: "Platinum blonde, sky-blue eyes, naturally tall and lean" },
-  "Swiss": { skin_tone: "Fair", eye_color: "Blue to green", hair_color: "Blonde to brown", hair_texture: "Straight", face_shape: "Oval", height_range: "166-175cm", build: "Athletic", ethnicity: "Central European", distinctive: "Clean classic European features, healthy complexion" },
   "Syrian": { skin_tone: "Light to warm olive", eye_color: "Hazel to dark brown", hair_color: "Dark brown", hair_texture: "Wavy", face_shape: "Oval", height_range: "163-172cm", build: "Slim to medium", ethnicity: "Levantine Arab", distinctive: "Often hazel or light eyes, defined features, warm olive skin" },
-  "Taiwanese": { skin_tone: "Fair to light golden", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Straight", face_shape: "Oval", height_range: "160-168cm", build: "Slim", ethnicity: "Han Chinese / Austronesian", distinctive: "Delicate features, bright clear skin" },
-  "Tajik": { skin_tone: "Light to medium olive", eye_color: "Dark brown to hazel", hair_color: "Dark brown", hair_texture: "Straight to wavy", face_shape: "Oval", height_range: "162-170cm", build: "Slim", ethnicity: "Iranic Central Asian", distinctive: "Persian-influenced features, defined brow, hazel eyes possible" },
-  "Tanzanian": { skin_tone: "Deep brown", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Coily", face_shape: "Oval", height_range: "163-173cm", build: "Lean", ethnicity: "Bantu / Nilotic East African", distinctive: "Smooth deep tone, graceful features" },
   "Thai": { skin_tone: "Light golden brown", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Straight", face_shape: "Oval to round", height_range: "158-165cm", build: "Petite, slim", ethnicity: "Tai / Southeast Asian", distinctive: "Golden warm skin, soft features, graceful posture" },
-  "Togolese": { skin_tone: "Deep brown", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Coily", face_shape: "Oval", height_range: "162-172cm", build: "Lean", ethnicity: "Ewe / West African", distinctive: "Smooth deep tone, symmetrical features" },
-  "Trinidadian": { skin_tone: "Warm caramel to medium brown", eye_color: "Brown to hazel", hair_color: "Dark brown", hair_texture: "Wavy to curly", face_shape: "Oval", height_range: "163-172cm", build: "Curvaceous", ethnicity: "Mixed Afro-Caribbean / South Asian", distinctive: "Vibrant mixed heritage, warm island glow" },
-  "Tunisian": { skin_tone: "Light to medium olive", eye_color: "Dark brown to hazel", hair_color: "Dark brown", hair_texture: "Wavy", face_shape: "Oval", height_range: "163-172cm", build: "Slim", ethnicity: "Arab / Amazigh", distinctive: "Mediterranean fineness, hazel eyes possible" },
   "Turkish": { skin_tone: "Light olive to warm", eye_color: "Brown to hazel", hair_color: "Dark brown", hair_texture: "Wavy", face_shape: "Oval", height_range: "165-173cm", build: "Medium", ethnicity: "Turkic / Anatolian", distinctive: "Strong cheekbones, deep eyes, Eurasian blend" },
-  "Turkmen": { skin_tone: "Light to medium", eye_color: "Dark brown", hair_color: "Black to dark brown", hair_texture: "Straight", face_shape: "Broad oval", height_range: "162-170cm", build: "Medium", ethnicity: "Turkic Central Asian", distinctive: "Broad face, prominent cheekbones, almond eyes" },
-  "Ugandan": { skin_tone: "Deep brown", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Coily", face_shape: "Oval", height_range: "163-173cm", build: "Athletic", ethnicity: "Bantu / Nilotic East African", distinctive: "Strong athletic build, smooth deep tone" },
   "Ukrainian": { skin_tone: "Fair", eye_color: "Blue to grey", hair_color: "Blonde", hair_texture: "Straight to wavy", face_shape: "Oval", height_range: "168-177cm", build: "Tall, feminine", ethnicity: "East Slavic", distinctive: "Bright blue eyes, blonde hair, high cheekbones, tall and graceful" },
-  "Uruguayan": { skin_tone: "Fair to light olive", eye_color: "Brown to hazel", hair_color: "Dark brown", hair_texture: "Wavy", face_shape: "Oval", height_range: "165-173cm", build: "Medium", ethnicity: "South American European descent", distinctive: "European-descended features, warm undertone" },
-  "Uzbek": { skin_tone: "Light olive to medium", eye_color: "Dark brown", hair_color: "Black to dark brown", hair_texture: "Straight", face_shape: "Broad oval", height_range: "162-170cm", build: "Medium", ethnicity: "Turkic / Persian Central Asian", distinctive: "Eurasian blend, high cheekbones, almond eyes" },
   "Venezuelan": { skin_tone: "Golden to medium brown", eye_color: "Brown to hazel", hair_color: "Dark brown", hair_texture: "Wavy", face_shape: "Heart to oval", height_range: "165-174cm", build: "Curvaceous, tall", ethnicity: "Mixed European/Indigenous/African", distinctive: "Pageant-quality features, tall frame, expressive eyes" },
   "Vietnamese": { skin_tone: "Light to medium golden", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Straight", face_shape: "Oval", height_range: "158-165cm", build: "Petite, slim", ethnicity: "Kinh Vietnamese", distinctive: "Delicate refined features, silky straight hair, warm glow" },
-  "Yemeni": { skin_tone: "Warm olive to medium brown", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Wavy to curly", face_shape: "Oval", height_range: "162-170cm", build: "Slim", ethnicity: "Arab / Semitic", distinctive: "Intense dark features, prominent eyes, ancient Semitic lineage" },
-  "Zambian": { skin_tone: "Medium to deep brown", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Coily", face_shape: "Oval", height_range: "162-172cm", build: "Medium", ethnicity: "Bantu Southern African", distinctive: "Smooth even tone, rounded soft features" },
-  "Zimbabwean": { skin_tone: "Medium to deep brown", eye_color: "Dark brown", hair_color: "Black", hair_texture: "Coily", face_shape: "Oval", height_range: "163-173cm", build: "Athletic", ethnicity: "Shona / Ndebele Southern African", distinctive: "Defined bone structure, warm even complexion" },
 };
 
 const ALL_COUNTRIES = Object.keys(ARCHETYPES).sort();
@@ -224,17 +218,10 @@ const ALL_COUNTRIES = Object.keys(ARCHETYPES).sort();
 const GENDERS = ["Female", "Male"];
 const AGE_GROUPS = ["18-22", "23-27", "28-34", "35-42", "43-50", "50+"];
 const SPECIALTIES = [
-  "High fashion / editorial",
-  "Luxury lifestyle",
-  "Commercial / catalogue",
-  "Sportswear & activewear",
-  "Swimwear & lingerie",
-  "Beauty & cosmetics",
-  "Streetwear & urban",
-  "Bridal & formal wear",
-  "Fitness & wellness",
-  "E-commerce",
-  "Art & avant-garde",
+  "High fashion / editorial", "Luxury lifestyle", "Commercial / catalogue",
+  "Sportswear & activewear", "Swimwear & lingerie", "Beauty & cosmetics",
+  "Streetwear & urban", "Bridal & formal wear", "Fitness & wellness",
+  "E-commerce", "Art & avant-garde",
 ];
 const BODY_TYPES = ["Petite", "Slim", "Athletic", "Curvaceous", "Plus-size", "Tall & lean", "Muscular", "Androgynous"];
 const HAIR_COLORS = ["Black", "Dark brown", "Medium brown", "Auburn / red", "Blonde", "Platinum blonde", "Grey / silver", "Highlighted", "Coloured / unnatural"];
@@ -244,6 +231,10 @@ const SKIN_TONES = ["Very fair / porcelain", "Fair", "Light olive", "Warm olive 
 const POSE_STYLES = ["Editorial high fashion", "Natural / candid", "Sporty / dynamic", "Glamour", "Minimalist", "Streetstyle", "Fine art / conceptual"];
 const WARDROBE_STYLES = ["Luxury couture", "Streetwear", "Minimalist clean", "Bohemian", "Sportswear", "Lingerie / swimwear", "Bridal", "Avant-garde"];
 const LIGHTING_STYLES = ["Studio soft-box", "Natural daylight", "Golden hour", "Dramatic side-light", "High-key white", "Low-key dark / moody", "Neon / coloured"];
+const TRAINING_STATUSES = ["untrained", "dataset_ready", "training", "completed", "failed"];
+const CAMPAIGN_STATUSES = ["draft", "generating", "ready", "published", "archived"];
+const REQUEST_STATUSES = ["new", "reviewing", "quoted", "accepted", "declined", "completed"];
+const PLATFORMS = ["fal.ai", "Tensor.Art", "Replicate", "Astria", "Civitai", "ComfyUI", "Other"];
 
 // ─── Wizard Step Config ──────────────────────────────────────────────────────
 const WIZARD_STEPS = [
@@ -254,40 +245,212 @@ const WIZARD_STEPS = [
 ];
 
 interface WizardData {
-  gender: string;
-  age_group: string;
-  nationality: string;
-  skin_tone: string;
-  eye_color: string;
-  hair_color: string;
-  hair_texture: string;
-  body_type: string;
-  specialty: string;
-  wardrobe_style: string;
-  pose_style: string;
-  lighting: string;
+  gender: string; age_group: string; nationality: string;
+  skin_tone: string; eye_color: string; hair_color: string;
+  hair_texture: string; body_type: string; specialty: string;
+  wardrobe_style: string; pose_style: string; lighting: string;
 }
 
 const emptyWizard = (): WizardData => ({
-  gender: "",
-  age_group: "",
-  nationality: "",
-  skin_tone: "",
-  eye_color: "",
-  hair_color: "",
-  hair_texture: "",
-  body_type: "",
-  specialty: "",
-  wardrobe_style: "",
-  pose_style: "",
-  lighting: "",
+  gender: "", age_group: "", nationality: "", skin_tone: "", eye_color: "",
+  hair_color: "", hair_texture: "", body_type: "", specialty: "",
+  wardrobe_style: "", pose_style: "", lighting: "",
 });
 
-// ─── ModelWizard Component ───────────────────────────────────────────────────
-function ModelWizard({
-  onComplete,
-  onCancel,
-}: {
+// ─── Style helpers ────────────────────────────────────────────────────────────
+const colors = {
+  bg: "#0d0d0d", surface: "#161616", border: "#2a2a2a",
+  accent: "#c9a96e", accentDim: "rgba(201,169,110,0.15)",
+  text: "#f0ece4", muted: "#888", danger: "#ef4444", success: "#4ade80",
+};
+
+function btnStyle(variant: "primary" | "secondary" | "danger" | "ghost"): React.CSSProperties {
+  const base: React.CSSProperties = {
+    padding: "8px 16px", borderRadius: 6, cursor: "pointer",
+    fontSize: 13, fontFamily: "inherit", fontWeight: 500,
+    transition: "all 0.15s", border: "1px solid transparent", whiteSpace: "nowrap",
+  };
+  if (variant === "primary") return { ...base, background: colors.accent, color: "#0d0d0d", borderColor: colors.accent };
+  if (variant === "secondary") return { ...base, background: "transparent", color: colors.accent, borderColor: colors.accent };
+  if (variant === "danger") return { ...base, background: "transparent", color: colors.danger, borderColor: colors.danger };
+  return { ...base, background: "transparent", color: colors.muted, borderColor: "transparent" };
+}
+
+function inputStyle(): React.CSSProperties {
+  return {
+    width: "100%", padding: "8px 12px", borderRadius: 6,
+    background: "#1e1e1e", border: `1px solid ${colors.border}`,
+    color: colors.text, fontSize: 13, fontFamily: "inherit",
+    outline: "none", boxSizing: "border-box",
+  };
+}
+
+function labelStyle(): React.CSSProperties {
+  return { fontSize: 11, fontWeight: 600, color: colors.muted, letterSpacing: "0.08em", textTransform: "uppercase" };
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      <label style={labelStyle()}>{label}</label>
+      {children}
+    </div>
+  );
+}
+
+function Toggle({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", userSelect: "none" }}>
+      <div onClick={() => onChange(!checked)} style={{
+        width: 36, height: 20, borderRadius: 10, position: "relative",
+        background: checked ? colors.accent : colors.border, transition: "background 0.2s", flexShrink: 0,
+      }}>
+        <div style={{
+          position: "absolute", top: 2, left: checked ? 18 : 2,
+          width: 16, height: 16, borderRadius: "50%",
+          background: checked ? "#0d0d0d" : colors.muted, transition: "left 0.2s",
+        }} />
+      </div>
+      <span style={{ fontSize: 13, color: colors.text }}>{label}</span>
+    </label>
+  );
+}
+
+function Toast({ message, type }: { message: string; type: "success" | "error" }) {
+  return (
+    <div style={{
+      position: "fixed", bottom: 24, right: 24, zIndex: 9999,
+      padding: "12px 20px", borderRadius: 8,
+      background: type === "success" ? "#1a1a2e" : "#2d0a0a",
+      border: `1px solid ${type === "success" ? "#4ade80" : "#f87171"}`,
+      color: type === "success" ? "#4ade80" : "#f87171",
+      fontSize: 14, fontFamily: "monospace",
+      boxShadow: "0 4px 20px rgba(0,0,0,0.4)", maxWidth: 320,
+    }}>
+      {type === "success" ? "✓ " : "✗ "}{message}
+    </div>
+  );
+}
+
+function StatusBadge({ status, type }: { status: string; type: "training" | "campaign" | "request" }) {
+  const statusColors: Record<string, { bg: string; color: string }> = {
+    untrained: { bg: "rgba(136,136,136,0.15)", color: "#888" },
+    dataset_ready: { bg: "rgba(250,204,21,0.15)", color: "#facc15" },
+    training: { bg: "rgba(59,130,246,0.15)", color: "#60a5fa" },
+    completed: { bg: "rgba(74,222,128,0.15)", color: "#4ade80" },
+    failed: { bg: "rgba(239,68,68,0.15)", color: "#ef4444" },
+    draft: { bg: "rgba(136,136,136,0.15)", color: "#888" },
+    generating: { bg: "rgba(59,130,246,0.15)", color: "#60a5fa" },
+    ready: { bg: "rgba(250,204,21,0.15)", color: "#facc15" },
+    published: { bg: "rgba(74,222,128,0.15)", color: "#4ade80" },
+    archived: { bg: "rgba(136,136,136,0.15)", color: "#555" },
+    new: { bg: "rgba(239,68,68,0.15)", color: "#ef4444" },
+    reviewing: { bg: "rgba(250,204,21,0.15)", color: "#facc15" },
+    quoted: { bg: "rgba(59,130,246,0.15)", color: "#60a5fa" },
+    accepted: { bg: "rgba(74,222,128,0.15)", color: "#4ade80" },
+    declined: { bg: "rgba(136,136,136,0.15)", color: "#888" },
+    completed_req: { bg: "rgba(201,169,110,0.15)", color: "#c9a96e" },
+  };
+  const key = status === "completed" && type === "request" ? "completed_req" : status;
+  const sc = statusColors[key] || statusColors.draft;
+  return (
+    <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 4, background: sc.bg, color: sc.color, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+      {status.replace("_", " ")}
+    </span>
+  );
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+function publicUrl(bucket: string, path: string | null | undefined): string {
+  if (!path) return "";
+  if (path.startsWith("http")) return path;
+  return supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
+}
+
+function slugify(name: string): string {
+  return name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+}
+
+function formatDate(d: string) {
+  return new Date(d).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+}
+
+// ─── ImageUploader ────────────────────────────────────────────────────────────
+function ImageUploader({ bucket, folder, currentPath, onUploaded, label = "Upload Image" }: {
+  bucket: string; folder: string; currentPath?: string | null;
+  onUploaded: (path: string) => void; label?: string;
+}) {
+  const [uploading, setUploading] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    const ext = file.name.split(".").pop();
+    const path = `${folder}/${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from(bucket).upload(path, file, { upsert: true });
+    setUploading(false);
+    if (!error) onUploaded(path);
+  };
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      {currentPath && (
+        <img src={publicUrl(bucket, currentPath)} alt="preview"
+          style={{ width: 120, height: 120, objectFit: "cover", borderRadius: 6, border: "1px solid #333" }} />
+      )}
+      <button type="button" onClick={() => inputRef.current?.click()} disabled={uploading} style={btnStyle("secondary")}>
+        {uploading ? "Uploading…" : label}
+      </button>
+      <input ref={inputRef} type="file" accept="image/*,video/*" onChange={handleUpload} style={{ display: "none" }} />
+    </div>
+  );
+}
+
+// ─── MultiImageUploader ───────────────────────────────────────────────────────
+function MultiImageUploader({ bucket, folder, images, onAdded, onDeleted }: {
+  bucket: string; folder: string; images: CollectionImage[];
+  onAdded: (path: string) => void; onDeleted: (img: CollectionImage) => void;
+}) {
+  const [uploading, setUploading] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    setUploading(true);
+    for (const file of files) {
+      const ext = file.name.split(".").pop();
+      const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const { error } = await supabase.storage.from(bucket).upload(path, file, { upsert: true });
+      if (!error) onAdded(path);
+    }
+    setUploading(false);
+  };
+
+  return (
+    <div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 8 }}>
+        {images.map(img => (
+          <div key={img.id} style={{ position: "relative" }}>
+            <img src={publicUrl(bucket, img.path)} alt=""
+              style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 6, border: "1px solid #333" }} />
+            <button type="button" onClick={() => onDeleted(img)}
+              style={{ position: "absolute", top: -6, right: -6, width: 20, height: 20, borderRadius: "50%", background: "#ef4444", border: "none", color: "#fff", cursor: "pointer", fontSize: 12, lineHeight: "20px", padding: 0 }}>×</button>
+          </div>
+        ))}
+      </div>
+      <button type="button" onClick={() => inputRef.current?.click()} disabled={uploading} style={btnStyle("secondary")}>
+        {uploading ? "Uploading…" : "+ Add Images"}
+      </button>
+      <input ref={inputRef} type="file" accept="image/*,video/*" multiple onChange={handleUpload} style={{ display: "none" }} />
+    </div>
+  );
+}
+
+// ─── ModelWizard ──────────────────────────────────────────────────────────────
+function ModelWizard({ onComplete, onCancel }: {
   onComplete: (name: string, json: string, specialty: string, nationality: string) => void;
   onCancel: () => void;
 }) {
@@ -302,16 +465,8 @@ function ModelWizard({
   const applyArchetype = () => {
     const arch = ARCHETYPES[data.nationality];
     if (!arch) return;
-    setData(prev => ({
-      ...prev,
-      skin_tone: arch.skin_tone,
-      eye_color: arch.eye_color,
-      hair_color: arch.hair_color,
-      hair_texture: arch.hair_texture,
-      body_type: arch.build,
-    }));
+    setData(prev => ({ ...prev, skin_tone: arch.skin_tone, eye_color: arch.eye_color, hair_color: arch.hair_color, hair_texture: arch.hair_texture, body_type: arch.build }));
   };
-
 
   const canAdvance = () => {
     if (step === 0) return !!(data.gender && data.age_group && data.nationality);
@@ -372,11 +527,12 @@ Respond ONLY with valid JSON, no preamble, no markdown, exactly this structure:
     "pose_style": "${data.pose_style}",
     "lighting_preference": "${data.lighting}"
   },
+  "trigger_word": "<firstname_lastname_abbreviated e.g. vanessa_rv>",
   "prompts": {
+    "dalle_training": "Generate 24 consistent portrait photos of [full description]: [skin tone] skin, [eye color] eyes, [hair color] [hair texture] hair, [body type] build, [distinctive features]. Angles: front face, 3/4 left, 3/4 right, profile left, profile right, slight up, slight down, close-up eyes, close-up lips, chest up, waist up, full body. Lighting variations: studio soft, natural daylight, golden hour, dramatic side. Expression: neutral, slight smile, serious. DALL-E 4 consistent character sheet.",
+    "fal_inference": "portrait of [trigger_word] woman, [specialty] editorial, [wardrobe_style], [lighting], hyperrealistic, fashion photography, 8K",
     "kling": "photorealistic, [model description], ${data.specialty}, ${data.wardrobe_style} outfit, ${data.lighting} lighting, ${data.pose_style} pose, professional model photography, 8K, detailed",
-    "fal_ai": "portrait of [model description], ${data.specialty} editorial, ${data.wardrobe_style}, ${data.lighting}, hyperrealistic, fashion photography",
-    "astria": "[model description], consistent face, LoRA training reference, ${data.specialty}, neutral expression, multiple angles",
-    "negative": "deformed, ugly, blurry, low quality, bad anatomy, extra limbs, watermark, text, logo"
+    "negative": "deformed, ugly, blurry, low quality, bad anatomy, extra limbs, watermark, text, logo, different person"
   }
 }`;
 
@@ -388,7 +544,6 @@ Respond ONLY with valid JSON, no preamble, no markdown, exactly this structure:
 
       if (!response.ok) {
         const errData = await response.json().catch(() => ({}));
-        console.error("Proxy error:", response.status, errData);
         throw new Error(`API error ${response.status}: ${errData.error || "unknown"}`);
       }
 
@@ -396,11 +551,7 @@ Respond ONLY with valid JSON, no preamble, no markdown, exactly this structure:
       const clean = text.replace(/```json|```/g, "").trim();
       const parsed = JSON.parse(clean);
 
-      setResult({
-        name: parsed.model_name,
-        json: JSON.stringify(parsed, null, 2),
-        prompts: parsed.prompts,
-      });
+      setResult({ name: parsed.model_name, json: JSON.stringify(parsed, null, 2), prompts: parsed.prompts });
     } catch (e) {
       setError("Generation failed. Check API connection and try again.");
       console.error(e);
@@ -420,13 +571,10 @@ Respond ONLY with valid JSON, no preamble, no markdown, exactly this structure:
     outline: "none", boxSizing: "border-box" as const, cursor: "pointer",
     appearance: "none" as const,
     backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C%2Fsvg%3E")`,
-    backgroundRepeat: "no-repeat",
-    backgroundPosition: "right 12px center",
+    backgroundRepeat: "no-repeat", backgroundPosition: "right 12px center",
   };
 
-  const DD = ({ label, value, options, onChange }: {
-    label: string; value: string; options: string[]; onChange: (v: string) => void;
-  }) => (
+  const DD = ({ label, value, options, onChange }: { label: string; value: string; options: string[]; onChange: (v: string) => void }) => (
     <Field label={label}>
       <select value={value} onChange={e => onChange(e.target.value)} style={ddStyle}>
         <option value="" disabled>Select {label.toLowerCase()}...</option>
@@ -435,7 +583,6 @@ Respond ONLY with valid JSON, no preamble, no markdown, exactly this structure:
     </Field>
   );
 
-  // ── Result screen ──
   if (result) {
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: 20, overflowY: "auto", maxHeight: "calc(100vh - 140px)" }}>
@@ -453,12 +600,9 @@ Respond ONLY with valid JSON, no preamble, no markdown, exactly this structure:
           {Object.entries(result.prompts).map(([platform, prompt]) => (
             <div key={platform} style={{ background: "#1a1a1a", borderRadius: 8, padding: 14 }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                <span style={{ fontSize: 11, color: colors.accent, letterSpacing: "0.1em", textTransform: "uppercase" }}>{platform.replace("_", ".")}</span>
-                <button
-                  type="button"
-                  onClick={() => { navigator.clipboard.writeText(prompt).catch(() => { const ta = document.createElement('textarea'); ta.value = prompt; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); }); }}
-                  style={{ ...btnStyle("ghost"), padding: "3px 8px", fontSize: 11 }}
-                >Copy</button>
+                <span style={{ fontSize: 11, color: colors.accent, letterSpacing: "0.1em", textTransform: "uppercase" }}>{platform.replace(/_/g, " ")}</span>
+                <button type="button" onClick={() => { navigator.clipboard.writeText(prompt).catch(() => {}); }}
+                  style={{ ...btnStyle("ghost"), padding: "3px 8px", fontSize: 11 }}>Copy</button>
               </div>
               <div style={{ fontSize: 12, color: colors.muted, lineHeight: 1.6 }}>{prompt}</div>
             </div>
@@ -473,47 +617,37 @@ Respond ONLY with valid JSON, no preamble, no markdown, exactly this structure:
     );
   }
 
-  // ── Step screens ──
   const stepTitles = ["Identity", "Physical", "Specialty", "Style & Lighting"];
   const totalSteps = stepTitles.length;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20, minHeight: 480 }}>
-      {/* Header */}
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <button type="button" onClick={onCancel} style={{ background: "none", border: "none", color: colors.muted, cursor: "pointer", fontSize: 18 }}>←</button>
         <div style={{ flex: 1 }}>
           <h2 style={{ margin: 0, fontSize: 18, color: colors.text }}>✦ AI Model Wizard</h2>
           <div style={{ fontSize: 12, color: colors.muted, marginTop: 2 }}>Step {step + 1} of {totalSteps} — {stepTitles[step]}</div>
         </div>
-        <button type="button" onClick={() => { setStep(0); setData(emptyWizard()); setError(""); }} style={{ background: "none", border: `1px solid ${colors.border}`, color: colors.muted, cursor: "pointer", fontSize: 12, padding: "4px 12px", borderRadius: 6, whiteSpace: "nowrap" }}>↺ Reset</button>
+        <button type="button" onClick={() => { setStep(0); setData(emptyWizard()); setError(""); }}
+          style={{ background: "none", border: `1px solid ${colors.border}`, color: colors.muted, cursor: "pointer", fontSize: 12, padding: "4px 12px", borderRadius: 6, whiteSpace: "nowrap" }}>↺ Reset</button>
       </div>
 
-      {/* Progress bar */}
       <div style={{ height: 3, background: colors.border, borderRadius: 2 }}>
         <div style={{ height: "100%", width: `${((step + 1) / totalSteps) * 100}%`, background: colors.accent, borderRadius: 2, transition: "width 0.3s" }} />
       </div>
 
-      {/* Step 0 — Identity */}
       {step === 0 && (
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
           <DD label="Gender" value={data.gender} options={GENDERS} onChange={v => set("gender", v)} />
           <DD label="Age Group" value={data.age_group} options={AGE_GROUPS} onChange={v => set("age_group", v)} />
           <Field label="Nationality">
             <div style={{ display: "flex", gap: 8 }}>
-              <select
-                value={data.nationality}
-                onChange={e => set("nationality", e.target.value)}
-                style={ddStyle}
-              >
+              <select value={data.nationality} onChange={e => set("nationality", e.target.value)} style={ddStyle}>
                 <option value="" disabled>Select nationality...</option>
                 {ALL_COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
               {data.nationality && (
-                <button type="button" onClick={applyArchetype}
-                  style={{ ...btnStyle("primary"), whiteSpace: "nowrap", fontSize: 12, flexShrink: 0 }}>
-                  ✦ Archetype
-                </button>
+                <button type="button" onClick={applyArchetype} style={{ ...btnStyle("primary"), whiteSpace: "nowrap", fontSize: 12, flexShrink: 0 }}>✦ Archetype</button>
               )}
             </div>
             {data.nationality && ARCHETYPES[data.nationality] && (
@@ -525,12 +659,11 @@ Respond ONLY with valid JSON, no preamble, no markdown, exactly this structure:
         </div>
       )}
 
-      {/* Step 1 — Physical */}
       {step === 1 && (
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           {data.nationality && ARCHETYPES[data.nationality] && (
             <div style={{ padding: "10px 14px", background: colors.accentDim, borderRadius: 8, fontSize: 12, color: colors.accent }}>
-              <strong>Archetype active:</strong> {data.nationality} — fields pre-filled with typical traits. Edit below if needed.
+              <strong>Archetype active:</strong> {data.nationality} — fields pre-filled. Edit below if needed.
             </div>
           )}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
@@ -543,12 +676,10 @@ Respond ONLY with valid JSON, no preamble, no markdown, exactly this structure:
         </div>
       )}
 
-      {/* Step 2 — Specialty */}
       {step === 2 && (
         <DD label="Specialty / Market" value={data.specialty} options={SPECIALTIES} onChange={v => set("specialty", v)} />
       )}
 
-      {/* Step 3 — Style */}
       {step === 3 && (
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <DD label="Wardrobe Style" value={data.wardrobe_style} options={WARDROBE_STYLES} onChange={v => set("wardrobe_style", v)} />
@@ -559,15 +690,12 @@ Respond ONLY with valid JSON, no preamble, no markdown, exactly this structure:
 
       {error && <div style={{ fontSize: 12, color: colors.danger, padding: "8px 12px", background: "rgba(239,68,68,0.1)", borderRadius: 6 }}>{error}</div>}
 
-      {/* Navigation */}
       <div style={{ display: "flex", gap: 10, justifyContent: "space-between", marginTop: "auto", paddingTop: 20, borderTop: `1px solid ${colors.border}` }}>
         <button type="button" onClick={() => step > 0 ? setStep(s => s - 1) : onCancel()} style={btnStyle("ghost")}>
           {step === 0 ? "Cancel" : "← Back"}
         </button>
         {step < totalSteps - 1 ? (
-          <button type="button" onClick={() => setStep(s => s + 1)} disabled={!canAdvance()} style={btnStyle("primary")}>
-            Next →
-          </button>
+          <button type="button" onClick={() => setStep(s => s + 1)} disabled={!canAdvance()} style={btnStyle("primary")}>Next →</button>
         ) : (
           <button type="button" onClick={generatePersona} disabled={!canAdvance() || generating} style={btnStyle("primary")}>
             {generating ? "Generating..." : "✦ Generate Persona"}
@@ -578,188 +706,7 @@ Respond ONLY with valid JSON, no preamble, no markdown, exactly this structure:
   );
 }
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-function publicUrl(bucket: string, path: string | null | undefined): string {
-  if (!path) return "";
-  if (path.startsWith("http")) return path;
-  return supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
-}
-
-function slugify(name: string): string {
-  return name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
-}
-
-// ─── Style helpers ────────────────────────────────────────────────────────────
-const colors = {
-  bg: "#0d0d0d",
-  surface: "#161616",
-  border: "#2a2a2a",
-  accent: "#c9a96e",
-  accentDim: "rgba(201,169,110,0.15)",
-  text: "#f0ece4",
-  muted: "#888",
-  danger: "#ef4444",
-  success: "#4ade80",
-};
-
-function btnStyle(variant: "primary" | "secondary" | "danger" | "ghost"): React.CSSProperties {
-  const base: React.CSSProperties = {
-    padding: "8px 16px", borderRadius: 6, cursor: "pointer",
-    fontSize: 13, fontFamily: "inherit", fontWeight: 500,
-    transition: "all 0.15s", border: "1px solid transparent",
-    whiteSpace: "nowrap",
-  };
-  if (variant === "primary") return { ...base, background: colors.accent, color: "#0d0d0d", borderColor: colors.accent };
-  if (variant === "secondary") return { ...base, background: "transparent", color: colors.accent, borderColor: colors.accent };
-  if (variant === "danger") return { ...base, background: "transparent", color: colors.danger, borderColor: colors.danger };
-  return { ...base, background: "transparent", color: colors.muted, borderColor: "transparent" };
-}
-
-function inputStyle(): React.CSSProperties {
-  return {
-    width: "100%", padding: "8px 12px", borderRadius: 6,
-    background: "#1e1e1e", border: `1px solid ${colors.border}`,
-    color: colors.text, fontSize: 13, fontFamily: "inherit",
-    outline: "none", boxSizing: "border-box",
-  };
-}
-
-function labelStyle(): React.CSSProperties {
-  return { fontSize: 11, fontWeight: 600, color: colors.muted, letterSpacing: "0.08em", textTransform: "uppercase" };
-}
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-      <label style={labelStyle()}>{label}</label>
-      {children}
-    </div>
-  );
-}
-
-function Toggle({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
-  return (
-    <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", userSelect: "none" }}>
-      <div
-        onClick={() => onChange(!checked)}
-        style={{
-          width: 36, height: 20, borderRadius: 10, position: "relative",
-          background: checked ? colors.accent : colors.border,
-          transition: "background 0.2s", flexShrink: 0,
-        }}
-      >
-        <div style={{
-          position: "absolute", top: 2, left: checked ? 18 : 2,
-          width: 16, height: 16, borderRadius: "50%",
-          background: checked ? "#0d0d0d" : colors.muted,
-          transition: "left 0.2s",
-        }} />
-      </div>
-      <span style={{ fontSize: 13, color: colors.text }}>{label}</span>
-    </label>
-  );
-}
-
-// ─── Sub-components ───────────────────────────────────────────────────────────
-function Toast({ message, type }: { message: string; type: "success" | "error" }) {
-  return (
-    <div style={{
-      position: "fixed", bottom: 24, right: 24, zIndex: 9999,
-      padding: "12px 20px", borderRadius: 8,
-      background: type === "success" ? "#1a1a2e" : "#2d0a0a",
-      border: `1px solid ${type === "success" ? "#4ade80" : "#f87171"}`,
-      color: type === "success" ? "#4ade80" : "#f87171",
-      fontSize: 14, fontFamily: "monospace",
-      boxShadow: "0 4px 20px rgba(0,0,0,0.4)", maxWidth: 320,
-    }}>
-      {type === "success" ? "✓ " : "✗ "}{message}
-    </div>
-  );
-}
-
-function ImageUploader({ bucket, folder, currentPath, onUploaded, label = "Upload Image" }: {
-  bucket: string; folder: string; currentPath?: string | null;
-  onUploaded: (path: string) => void; label?: string;
-}) {
-  const [uploading, setUploading] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploading(true);
-    const ext = file.name.split(".").pop();
-    const path = `${folder}/${Date.now()}.${ext}`;
-    const { error } = await supabase.storage.from(bucket).upload(path, file, { upsert: true });
-    setUploading(false);
-    if (!error) onUploaded(path);
-  };
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-      {currentPath && (
-        <img src={publicUrl(bucket, currentPath)} alt="preview"
-          style={{ width: 120, height: 120, objectFit: "cover", borderRadius: 6, border: "1px solid #333" }} />
-      )}
-      <button type="button" onClick={() => inputRef.current?.click()} disabled={uploading} style={btnStyle("secondary")}>
-        {uploading ? "Uploading…" : label}
-      </button>
-      <input ref={inputRef} type="file" accept="image/*,video/*" onChange={handleUpload} style={{ display: "none" }} />
-    </div>
-  );
-}
-
-function MultiImageUploader({ bucket, folder, images, onAdded, onDeleted }: {
-  bucket: string; folder: string; images: CollectionImage[];
-  onAdded: (path: string) => void; onDeleted: (img: CollectionImage) => void;
-}) {
-  const [uploading, setUploading] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    if (!files.length) return;
-    setUploading(true);
-    for (const file of files) {
-      const ext = file.name.split(".").pop();
-      const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-      const { error } = await supabase.storage.from(bucket).upload(path, file, { upsert: true });
-      if (!error) onAdded(path);
-    }
-    setUploading(false);
-  };
-
-  return (
-    <div>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 8 }}>
-        {images.map(img => (
-          <div key={img.id} style={{ position: "relative" }}>
-            <img src={publicUrl(bucket, img.path)} alt=""
-              style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 6, border: "1px solid #333" }} />
-            <button type="button" onClick={() => onDeleted(img)}
-              style={{ position: "absolute", top: -6, right: -6, width: 20, height: 20, borderRadius: "50%", background: "#ef4444", border: "none", color: "#fff", cursor: "pointer", fontSize: 12, lineHeight: "20px", padding: 0 }}>
-              ×
-            </button>
-          </div>
-        ))}
-      </div>
-      <button type="button" onClick={() => inputRef.current?.click()} disabled={uploading} style={btnStyle("secondary")}>
-        {uploading ? "Uploading…" : "+ Add Images"}
-      </button>
-      <input ref={inputRef} type="file" accept="image/*,video/*" multiple onChange={handleUpload} style={{ display: "none" }} />
-    </div>
-  );
-}
-
-// ─── Model Form ───────────────────────────────────────────────────────────────
-const emptyModel = (): Partial<Model> => ({
-  name: "", slug: "", nationality: "", ethnicity: "", gender: "female",
-  age_group: "", height: "", weight: "", specialty: "", hobbies: "",
-  bio: "", thumbnail_path: "", price_usd: 0,
-  is_published: false, is_featured: false, is_new: false, is_popular: false, is_coming_soon: false,
-  social_media: "", measurements: "",
-});
-
+// ─── Collections Editor ───────────────────────────────────────────────────────
 function CollectionsEditor({ modelId, modelSlug }: { modelId: string; modelSlug: string }) {
   const [collections, setCollections] = useState<Collection[]>([]);
   const [images, setImages] = useState<Record<string, CollectionImage[]>>({});
@@ -849,10 +796,21 @@ function CollectionsEditor({ modelId, modelSlug }: { modelId: string; modelSlug:
   );
 }
 
+// ─── Model Form ───────────────────────────────────────────────────────────────
+const emptyModel = (): Partial<Model> => ({
+  name: "", slug: "", nationality: "", ethnicity: "", gender: "female",
+  age_group: "", height: "", weight: "", specialty: "", hobbies: "",
+  bio: "", thumbnail_path: "", price_usd: 0,
+  is_published: false, is_featured: false, is_new: false, is_popular: false, is_coming_soon: false,
+  social_media: "", measurements: "",
+  lora_url: "", trigger_word: "", training_status: "untrained",
+  training_run_id: "", dalle_prompt_pack: "",
+});
+
 function ModelForm({ initial, onSaved, onCancel }: { initial?: Partial<Model>; onSaved: () => void; onCancel: () => void }) {
   const [form, setForm] = useState<Partial<Model>>(initial || emptyModel());
   const [saving, setSaving] = useState(false);
-  const [tab, setTab] = useState<"details" | "collections">("details");
+  const [tab, setTab] = useState<"details" | "lora" | "collections">("details");
   const isEdit = !!initial?.id;
 
   const set = (key: keyof Model, val: unknown) => setForm(prev => ({ ...prev, [key]: val }));
@@ -867,16 +825,22 @@ function ModelForm({ initial, onSaved, onCancel }: { initial?: Partial<Model>; o
     onSaved();
   };
 
+  const ddStyle: React.CSSProperties = {
+    ...inputStyle(), appearance: "none" as const,
+    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C%2Fsvg%3E")`,
+    backgroundRepeat: "no-repeat", backgroundPosition: "right 12px center", paddingRight: 36,
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 0, height: "100%" }}>
       <div style={{ display: "flex", borderBottom: `1px solid ${colors.border}`, marginBottom: 24 }}>
-        {(["details", "collections"] as const).map(t => (
+        {(["details", "lora", "collections"] as const).map(t => (
           <button key={t} type="button" onClick={() => setTab(t)} style={{
             padding: "10px 20px", background: "none", border: "none",
             borderBottom: `2px solid ${tab === t ? colors.accent : "transparent"}`,
             color: tab === t ? colors.accent : colors.muted,
             cursor: "pointer", fontSize: 13, fontWeight: 500, textTransform: "capitalize", transition: "all 0.15s",
-          }}>{t}</button>
+          }}>{t === "lora" ? "✦ LoRA / AI" : t}</button>
         ))}
       </div>
 
@@ -905,23 +869,16 @@ function ModelForm({ initial, onSaved, onCancel }: { initial?: Partial<Model>; o
               <input value={form.ethnicity || ""} onChange={e => set("ethnicity", e.target.value)} style={inputStyle()} />
             </Field>
             <Field label="Gender">
-              <select value={form.gender || "female"} onChange={e => set("gender", e.target.value)} style={inputStyle()}>
+              <select value={form.gender || "female"} onChange={e => set("gender", e.target.value)} style={ddStyle}>
                 <option value="female">Female</option>
                 <option value="male">Male</option>
-                <option value="non-binary">Non-binary</option>
               </select>
             </Field>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
-            <Field label="Age Group">
-              <input value={form.age_group || ""} onChange={e => set("age_group", e.target.value)} style={inputStyle()} placeholder="e.g. 18-25" />
-            </Field>
-            <Field label="Height">
-              <input value={form.height || ""} onChange={e => set("height", e.target.value)} style={inputStyle()} placeholder="e.g. 172cm" />
-            </Field>
-            <Field label="Weight">
-              <input value={form.weight || ""} onChange={e => set("weight", e.target.value)} style={inputStyle()} placeholder="e.g. 54kg" />
-            </Field>
+            <Field label="Age Group"><input value={form.age_group || ""} onChange={e => set("age_group", e.target.value)} style={inputStyle()} placeholder="e.g. 18-25" /></Field>
+            <Field label="Height"><input value={form.height || ""} onChange={e => set("height", e.target.value)} style={inputStyle()} placeholder="e.g. 172cm" /></Field>
+            <Field label="Weight"><input value={form.weight || ""} onChange={e => set("weight", e.target.value)} style={inputStyle()} placeholder="e.g. 54kg" /></Field>
           </div>
           <Field label="Measurements">
             <input value={form.measurements || ""} onChange={e => set("measurements", e.target.value)} style={inputStyle()} placeholder="e.g. 34-24-35" />
@@ -935,7 +892,7 @@ function ModelForm({ initial, onSaved, onCancel }: { initial?: Partial<Model>; o
           </Field>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
             <Field label="Social Media">
-              <input value={form.social_media || ""} onChange={e => set("social_media", e.target.value)} style={inputStyle()} placeholder='@handle' />
+              <input value={form.social_media || ""} onChange={e => set("social_media", e.target.value)} style={inputStyle()} placeholder="@handle" />
             </Field>
             <Field label="Price (USD)">
               <input type="number" value={form.price_usd || 0} onChange={e => set("price_usd", parseFloat(e.target.value))} style={inputStyle()} />
@@ -951,6 +908,79 @@ function ModelForm({ initial, onSaved, onCancel }: { initial?: Partial<Model>; o
         </div>
       )}
 
+      {/* ── NEW: LoRA / AI Tab ── */}
+      {tab === "lora" && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 20, overflowY: "auto", flex: 1 }}>
+          {/* Training Status Banner */}
+          <div style={{ padding: "14px 16px", background: "#1a1a1a", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div>
+              <div style={{ fontSize: 11, color: colors.muted, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 4 }}>Training Status</div>
+              <StatusBadge status={form.training_status || "untrained"} type="training" />
+            </div>
+            <select value={form.training_status || "untrained"} onChange={e => set("training_status", e.target.value)}
+              style={{ ...inputStyle(), width: "auto", fontSize: 12 }}>
+              {TRAINING_STATUSES.map(s => <option key={s} value={s}>{s.replace("_", " ")}</option>)}
+            </select>
+          </div>
+
+          <Field label="Trigger Word">
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <input value={form.trigger_word || ""} onChange={e => set("trigger_word", e.target.value)} style={{ ...inputStyle(), flex: 1 }} placeholder="e.g. vanessa_rv" />
+              {form.trigger_word && (
+                <button type="button" onClick={() => navigator.clipboard.writeText(form.trigger_word!)}
+                  style={{ ...btnStyle("ghost"), padding: "8px 12px", fontSize: 12, flexShrink: 0, border: `1px solid ${colors.border}` }}>
+                  Copy
+                </button>
+              )}
+            </div>
+            <div style={{ fontSize: 11, color: colors.muted, marginTop: 4 }}>Use this word in every generation prompt to activate the LoRA</div>
+          </Field>
+
+          <Field label="LoRA URL (fal.ai safetensors)">
+            <div style={{ display: "flex", gap: 8 }}>
+              <input value={form.lora_url || ""} onChange={e => set("lora_url", e.target.value)}
+                style={{ ...inputStyle(), flex: 1 }} placeholder="https://v3b.fal.media/files/..." />
+              {form.lora_url && (
+                <button type="button" onClick={() => navigator.clipboard.writeText(form.lora_url!)}
+                  style={{ ...btnStyle("secondary"), flexShrink: 0, fontSize: 12 }}>Copy URL</button>
+              )}
+            </div>
+            <div style={{ fontSize: 11, color: colors.muted, marginTop: 4 }}>Paste the diffusers_lora_file URL from fal.ai → Training history → Show files</div>
+          </Field>
+
+          <Field label="Training Run ID">
+            <input value={form.training_run_id || ""} onChange={e => set("training_run_id", e.target.value)}
+              style={inputStyle()} placeholder="e.g. 019d208f-8e27-76c3-9f77-e27121654b4f" />
+          </Field>
+
+          {form.lora_url && form.trigger_word && (
+            <div style={{ padding: "12px 16px", background: colors.accentDim, borderRadius: 8 }}>
+              <div style={{ fontSize: 11, color: colors.accent, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>Quick Generate Links</div>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                <a href={`https://fal.ai/models/fal-ai/flux-lora?lora=${encodeURIComponent(form.lora_url)}`} target="_blank" rel="noopener"
+                  style={{ ...btnStyle("secondary"), fontSize: 12, textDecoration: "none" }}>Open in fal.ai ↗</a>
+              </div>
+            </div>
+          )}
+
+          <Field label="DALL-E Training Prompt Pack">
+            <textarea
+              value={form.dalle_prompt_pack || ""}
+              onChange={e => set("dalle_prompt_pack", e.target.value)}
+              style={{ ...inputStyle(), minHeight: 140, resize: "vertical", fontFamily: "monospace", fontSize: 12 }}
+              placeholder="Paste your DALL-E 24-image training prompt here for reference…"
+            />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 4 }}>
+              <div style={{ fontSize: 11, color: colors.muted }}>Store your working DALL-E prompt for regenerating training sets</div>
+              {form.dalle_prompt_pack && (
+                <button type="button" onClick={() => navigator.clipboard.writeText(form.dalle_prompt_pack!)}
+                  style={{ ...btnStyle("ghost"), fontSize: 11, padding: "4px 10px", border: `1px solid ${colors.border}` }}>Copy Prompt</button>
+              )}
+            </div>
+          </Field>
+        </div>
+      )}
+
       {tab === "collections" && isEdit && <CollectionsEditor modelId={form.id!} modelSlug={form.slug || "model"} />}
       {tab === "collections" && !isEdit && (
         <div style={{ color: colors.muted, fontSize: 13, textAlign: "center", padding: 40 }}>
@@ -960,7 +990,7 @@ function ModelForm({ initial, onSaved, onCancel }: { initial?: Partial<Model>; o
 
       <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", paddingTop: 20, marginTop: "auto", borderTop: `1px solid ${colors.border}` }}>
         <button type="button" onClick={onCancel} style={btnStyle("ghost")}>Cancel</button>
-        {tab === "details" && (
+        {tab !== "collections" && (
           <button type="button" onClick={save} disabled={saving} style={btnStyle("primary")}>
             {saving ? "Saving…" : isEdit ? "Save Changes" : "Create Model"}
           </button>
@@ -992,7 +1022,8 @@ function StyleForm({ initial, onSaved, onCancel }: { initial?: Partial<Style>; o
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       <Field label="Thumbnail">
-        <ImageUploader bucket={BUCKETS.STYLES} folder={form.slug || "styles"} currentPath={form.thumbnail_path} onUploaded={path => set("thumbnail_path", path)} label="Upload Thumbnail" />
+        <ImageUploader bucket={BUCKETS.STYLES} folder={form.slug || "styles"} currentPath={form.thumbnail_path}
+          onUploaded={path => set("thumbnail_path", path)} label="Upload Thumbnail" />
       </Field>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
         <Field label="Style Name *">
@@ -1003,7 +1034,8 @@ function StyleForm({ initial, onSaved, onCancel }: { initial?: Partial<Style>; o
         </Field>
       </div>
       <Field label="Description">
-        <textarea value={form.description || ""} onChange={e => set("description", e.target.value)} style={{ ...inputStyle(), minHeight: 80, resize: "vertical" }} />
+        <textarea value={form.description || ""} onChange={e => set("description", e.target.value)}
+          style={{ ...inputStyle(), minHeight: 80, resize: "vertical" }} />
       </Field>
       <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", paddingTop: 8 }}>
         <button type="button" onClick={onCancel} style={btnStyle("ghost")}>Cancel</button>
@@ -1054,16 +1086,16 @@ function ModelsPanel() {
         bio: Array.isArray(parsed.identity?.personality) ? parsed.identity.personality.join(", ") : "",
         measurements: JSON.stringify(m),
         hobbies: v.distinctive_features || "",
-        skin_tone: v.skin_tone || "",
-        eye_color: v.eye_color || "",
         age_group: parsed.identity?.age_group || "",
-        is_published: false,
-        is_new: true,
+        trigger_word: parsed.trigger_word || "",
+        dalle_prompt_pack: parsed.prompts?.dalle_training || "",
+        training_status: "dataset_ready",
+        is_published: false, is_new: true,
       });
       if (error) throw error;
       setWizarding(false);
       await load();
-      showToast(`${name} added to roster!`);
+      showToast(`${name} added — LoRA tab ready for training details`);
     } catch (e: any) {
       showToast("Failed to save: " + (e?.message || "unknown error"), "error");
     }
@@ -1088,8 +1120,7 @@ function ModelsPanel() {
     return matchSearch && matchNat && matchSpec;
   });
 
-
- if (wizarding) {
+  if (wizarding) {
     return (
       <div style={{ overflowY: "auto", maxHeight: "calc(100vh - 120px)", paddingBottom: 40 }}>
         <ModelWizard onComplete={handleWizardComplete} onCancel={() => setWizarding(false)} />
@@ -1101,7 +1132,8 @@ function ModelsPanel() {
     return (
       <div style={{ height: "calc(100vh - 120px)", display: "flex", flexDirection: "column" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-          <button type="button" onClick={() => { setCreating(false); setEditing(null); }} style={{ background: "none", border: "none", color: colors.muted, cursor: "pointer", fontSize: 18 }}>←</button>
+          <button type="button" onClick={() => { setCreating(false); setEditing(null); }}
+            style={{ background: "none", border: "none", color: colors.muted, cursor: "pointer", fontSize: 18 }}>←</button>
           <h2 style={{ margin: 0, fontSize: 18, color: colors.text }}>{editing ? `Edit: ${editing.name}` : "New Model"}</h2>
         </div>
         <div style={{ flex: 1, overflowY: "auto" }}>
@@ -1118,7 +1150,6 @@ function ModelsPanel() {
   return (
     <div>
       {toast && <Toast message={toast.msg} type={toast.type} />}
-
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
         <h2 style={{ margin: 0, fontSize: 18, color: colors.text }}>
           Models <span style={{ color: colors.muted, fontSize: 14, fontWeight: 400 }}>({models.length})</span>
@@ -1129,22 +1160,21 @@ function ModelsPanel() {
         </div>
       </div>
       <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
-        <input
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          placeholder="Search name or nationality…"
-          style={{ ...inputStyle(), flex: 1, minWidth: 160, fontSize: 12 }}
-        />
-        <select value={filterNationality} onChange={e => setFilterNationality(e.target.value)} style={{ ...inputStyle(), width: "auto", fontSize: 12, paddingRight: 28 }}>
+        <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search name or nationality…"
+          style={{ ...inputStyle(), flex: 1, minWidth: 160, fontSize: 12 }} />
+        <select value={filterNationality} onChange={e => setFilterNationality(e.target.value)}
+          style={{ ...inputStyle(), width: "auto", fontSize: 12, paddingRight: 28 }}>
           <option value="">All nationalities</option>
           {[...new Set(models.map(m => m.nationality).filter(Boolean))].sort().map(n => <option key={n} value={n}>{n}</option>)}
         </select>
-        <select value={filterSpecialty} onChange={e => setFilterSpecialty(e.target.value)} style={{ ...inputStyle(), width: "auto", fontSize: 12, paddingRight: 28 }}>
+        <select value={filterSpecialty} onChange={e => setFilterSpecialty(e.target.value)}
+          style={{ ...inputStyle(), width: "auto", fontSize: 12, paddingRight: 28 }}>
           <option value="">All specialties</option>
-          {[...new Set(models.map(m => m.specialty).filter(Boolean))].sort().map(s => <option key={s} value={s.slice(0,40)}>{s.slice(0,40)}</option>)}
+          {[...new Set(models.map(m => m.specialty).filter(Boolean))].sort().map(s => <option key={s} value={s.slice(0, 40)}>{s.slice(0, 40)}</option>)}
         </select>
         {(search || filterNationality || filterSpecialty) && (
-          <button type="button" onClick={() => { setSearch(""); setFilterNationality(""); setFilterSpecialty(""); }} style={{ ...btnStyle("ghost"), fontSize: 12, padding: "6px 10px" }}>✕ Clear</button>
+          <button type="button" onClick={() => { setSearch(""); setFilterNationality(""); setFilterSpecialty(""); }}
+            style={{ ...btnStyle("ghost"), fontSize: 12, padding: "6px 10px" }}>✕ Clear</button>
         )}
       </div>
 
@@ -1152,15 +1182,14 @@ function ModelsPanel() {
         <div style={{ color: colors.muted, textAlign: "center", padding: 40 }}>Loading…</div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          {filteredModels.length === 0 && !loading && (
+          {filteredModels.length === 0 && (
             <div style={{ color: colors.muted, textAlign: "center", padding: 40, fontSize: 13 }}>No models match your filters.</div>
           )}
           {filteredModels.map(m => (
             <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 14, padding: "12px 16px", background: colors.surface, borderRadius: 10, border: `1px solid ${colors.border}` }}>
               <img
                 src={publicUrl(BUCKETS.MODELS, m.thumbnail_path) || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Crect width='48' height='48' fill='%23333'/%3E%3C/svg%3E"}
-                alt={m.name} style={{ width: 48, height: 48, objectFit: "cover", borderRadius: 8, flexShrink: 0 }}
-              />
+                alt={m.name} style={{ width: 48, height: 48, objectFit: "cover", borderRadius: 8, flexShrink: 0 }} />
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                   <span style={{ fontSize: 14, fontWeight: 600, color: colors.text }}>{m.name}</span>
@@ -1168,17 +1197,18 @@ function ModelsPanel() {
                   {m.is_coming_soon && <span style={{ fontSize: 10, padding: "2px 6px", background: "rgba(250,204,21,0.15)", color: "#facc15", borderRadius: 4 }}>SOON</span>}
                   {m.is_new && <span style={{ fontSize: 10, padding: "2px 6px", background: "rgba(201,169,110,0.15)", color: colors.accent, borderRadius: 4 }}>NEW</span>}
                   {m.is_popular && <span style={{ fontSize: 10, padding: "2px 6px", background: "rgba(239,68,68,0.15)", color: colors.danger, borderRadius: 4 }}>POPULAR</span>}
+                  {m.training_status && m.training_status !== "untrained" && (
+                    <StatusBadge status={m.training_status} type="training" />
+                  )}
                 </div>
-                <div style={{ fontSize: 12, color: colors.muted, marginTop: 2 }}>{m.nationality} · {m.specialty || "No specialty set"}</div>
+                <div style={{ fontSize: 12, color: colors.muted, marginTop: 2 }}>
+                  {m.nationality} · {m.specialty || "No specialty set"}
+                  {m.trigger_word && <span style={{ color: colors.accent, marginLeft: 8, fontFamily: "monospace" }}>#{m.trigger_word}</span>}
+                </div>
               </div>
               <div style={{ display: "flex", gap: 6 }}>
                 <button type="button" onClick={() => {
-                  const studioData = {
-                    name: m.name, age: m.age_group, height: m.height,
-                    skin_tone: m.skin_tone || "", eye_color: m.eye_color || "",
-                    hair_base: "", build: "", nationality: m.nationality,
-                    ethnicity: m.ethnicity, signature_look: m.specialty || "",
-                  };
+                  const studioData = { name: m.name, age: m.age_group, height: m.height, skin_tone: "", eye_color: "", hair_base: "", build: "", nationality: m.nationality, ethnicity: m.ethnicity, signature_look: m.specialty || "" };
                   sessionStorage.setItem("studioModel", JSON.stringify(studioData));
                   window.location.href = "/admin/studio";
                 }} style={{ ...btnStyle("secondary"), color: "#c9a96e", borderColor: "#c9a96e", fontSize: 12 }}>✦ Studio</button>
@@ -1201,25 +1231,14 @@ function StylesPanel() {
   const [creating, setCreating] = useState(false);
   const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
 
-  const showToast = (msg: string, type: "success" | "error" = "success") => {
-    setToast({ msg, type });
-    setTimeout(() => setToast(null), 3000);
-  };
-
-  const load = useCallback(async () => {
-    setLoading(true);
-    const { data } = await supabase.from("styles").select("*").order("name");
-    setStyles(data || []);
-    setLoading(false);
-  }, []);
-
+  const showToast = (msg: string, type: "success" | "error" = "success") => { setToast({ msg, type }); setTimeout(() => setToast(null), 3000); };
+  const load = useCallback(async () => { setLoading(true); const { data } = await supabase.from("styles").select("*").order("name"); setStyles(data || []); setLoading(false); }, []);
   useEffect(() => { load(); }, [load]);
 
   const deleteStyle = async (s: Style) => {
     if (!confirm(`Delete style "${s.name}"?`)) return;
     await supabase.from("styles").delete().eq("id", s.id);
-    showToast(`${s.name} deleted`);
-    load();
+    showToast(`${s.name} deleted`); load();
   };
 
   if (creating || editing) {
@@ -1229,11 +1248,7 @@ function StylesPanel() {
           <button type="button" onClick={() => { setCreating(false); setEditing(null); }} style={{ background: "none", border: "none", color: colors.muted, cursor: "pointer", fontSize: 18 }}>←</button>
           <h2 style={{ margin: 0, fontSize: 18, color: colors.text }}>{editing ? `Edit: ${editing.name}` : "New Style"}</h2>
         </div>
-        <StyleForm
-          initial={editing || undefined}
-          onSaved={() => { setCreating(false); setEditing(null); load(); showToast("Style saved"); }}
-          onCancel={() => { setCreating(false); setEditing(null); }}
-        />
+        <StyleForm initial={editing || undefined} onSaved={() => { setCreating(false); setEditing(null); load(); showToast("Style saved"); }} onCancel={() => { setCreating(false); setEditing(null); }} />
       </div>
     );
   }
@@ -1275,40 +1290,13 @@ function HeroPanel() {
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
 
-  const showToast = (msg: string, type: "success" | "error" = "success") => {
-    setToast({ msg, type });
-    setTimeout(() => setToast(null), 3000);
-  };
-
-  const load = useCallback(async () => {
-    setLoading(true);
-    const { data } = await supabase.from("hero_images").select("*").order("display_order");
-    setImages(data || []);
-    setLoading(false);
-  }, []);
-
+  const showToast = (msg: string, type: "success" | "error" = "success") => { setToast({ msg, type }); setTimeout(() => setToast(null), 3000); };
+  const load = useCallback(async () => { setLoading(true); const { data } = await supabase.from("hero_images").select("*").order("display_order"); setImages(data || []); setLoading(false); }, []);
   useEffect(() => { load(); }, [load]);
 
-  const addImage = async (path: string) => {
-    const maxOrder = Math.max(0, ...images.map(i => i.display_order));
-    await supabase.from("hero_images").insert({ path, display_order: maxOrder + 1 });
-    showToast("Hero image added");
-    load();
-  };
-
-  const deleteImage = async (id: string) => {
-    await supabase.from("hero_images").delete().eq("id", id);
-    showToast("Image removed");
-    load();
-  };
-
-  const moveUp = async (idx: number) => {
-    if (idx === 0) return;
-    const a = images[idx], b = images[idx - 1];
-    await supabase.from("hero_images").update({ display_order: b.display_order }).eq("id", a.id);
-    await supabase.from("hero_images").update({ display_order: a.display_order }).eq("id", b.id);
-    load();
-  };
+  const addImage = async (path: string) => { const maxOrder = Math.max(0, ...images.map(i => i.display_order)); await supabase.from("hero_images").insert({ path, display_order: maxOrder + 1 }); showToast("Hero image added"); load(); };
+  const deleteImage = async (id: string) => { await supabase.from("hero_images").delete().eq("id", id); showToast("Image removed"); load(); };
+  const moveUp = async (idx: number) => { if (idx === 0) return; const a = images[idx], b = images[idx - 1]; await supabase.from("hero_images").update({ display_order: b.display_order }).eq("id", a.id); await supabase.from("hero_images").update({ display_order: a.display_order }).eq("id", b.id); load(); };
 
   return (
     <div>
@@ -1317,9 +1305,7 @@ function HeroPanel() {
         <h2 style={{ margin: 0, fontSize: 18, color: colors.text }}>Hero Images <span style={{ color: colors.muted, fontSize: 14, fontWeight: 400 }}>({images.length})</span></h2>
         <ImageUploader bucket={BUCKETS.HERO} folder="hero" onUploaded={addImage} label="+ Upload Hero Image" />
       </div>
-      {loading ? (
-        <div style={{ color: colors.muted, textAlign: "center", padding: 40 }}>Loading…</div>
-      ) : (
+      {loading ? <div style={{ color: colors.muted, textAlign: "center", padding: 40 }}>Loading…</div> : (
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {images.map((img, idx) => (
             <div key={img.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", background: colors.surface, borderRadius: 10, border: `1px solid ${colors.border}` }}>
@@ -1338,6 +1324,426 @@ function HeroPanel() {
   );
 }
 
+// ─── NEW: Prompt Library Panel ─────────────────────────────────────────────────
+function PromptsPanel() {
+  const [prompts, setPrompts] = useState<Prompt[]>([]);
+  const [models, setModels] = useState<Model[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filterModel, setFilterModel] = useState("");
+  const [filterPlatform, setFilterPlatform] = useState("");
+  const [creating, setCreating] = useState(false);
+  const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
+  const [form, setForm] = useState({ model_id: "", label: "", prompt_text: "", platform: "fal.ai", works_well: true });
+
+  const showToast = (msg: string, type: "success" | "error" = "success") => { setToast({ msg, type }); setTimeout(() => setToast(null), 3000); };
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const [{ data: p }, { data: m }] = await Promise.all([
+      supabase.from("prompts").select("*").order("created_at", { ascending: false }),
+      supabase.from("models").select("id, name, trigger_word").order("name"),
+    ]);
+    setPrompts(p || []);
+    setModels(m || []);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const save = async () => {
+    if (!form.label.trim() || !form.prompt_text.trim()) return alert("Label and prompt are required");
+    await supabase.from("prompts").insert({ ...form });
+    setForm({ model_id: "", label: "", prompt_text: "", platform: "fal.ai", works_well: true });
+    setCreating(false);
+    load();
+    showToast("Prompt saved");
+  };
+
+  const deletePrompt = async (id: string) => {
+    await supabase.from("prompts").delete().eq("id", id);
+    showToast("Prompt deleted");
+    load();
+  };
+
+  const toggleWorks = async (p: Prompt) => {
+    await supabase.from("prompts").update({ works_well: !p.works_well }).eq("id", p.id);
+    load();
+  };
+
+  const filtered = prompts.filter(p =>
+    (!filterModel || p.model_id === filterModel) &&
+    (!filterPlatform || p.platform === filterPlatform)
+  );
+
+  const modelName = (id: string) => models.find(m => m.id === id)?.name || "—";
+
+  return (
+    <div>
+      {toast && <Toast message={toast.msg} type={toast.type} />}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+        <h2 style={{ margin: 0, fontSize: 18, color: colors.text }}>
+          Prompt Library <span style={{ color: colors.muted, fontSize: 14, fontWeight: 400 }}>({prompts.length})</span>
+        </h2>
+        <button type="button" onClick={() => setCreating(!creating)} style={btnStyle("primary")}>+ Save Prompt</button>
+      </div>
+
+      {creating && (
+        <div style={{ background: colors.surface, borderRadius: 10, border: `1px solid ${colors.border}`, padding: 20, marginBottom: 16, display: "flex", flexDirection: "column", gap: 14 }}>
+          <div style={{ fontSize: 13, color: colors.accent, fontWeight: 600 }}>New Prompt</div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+            <Field label="Model">
+              <select value={form.model_id} onChange={e => setForm(f => ({ ...f, model_id: e.target.value }))} style={inputStyle()}>
+                <option value="">— Any model —</option>
+                {models.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+              </select>
+            </Field>
+            <Field label="Platform">
+              <select value={form.platform} onChange={e => setForm(f => ({ ...f, platform: e.target.value }))} style={inputStyle()}>
+                {PLATFORMS.map(p => <option key={p} value={p}>{p}</option>)}
+              </select>
+            </Field>
+            <Field label="Label">
+              <input value={form.label} onChange={e => setForm(f => ({ ...f, label: e.target.value }))} style={inputStyle()} placeholder="e.g. Studio portrait v2" />
+            </Field>
+          </div>
+          <Field label="Prompt Text">
+            <textarea value={form.prompt_text} onChange={e => setForm(f => ({ ...f, prompt_text: e.target.value }))}
+              style={{ ...inputStyle(), minHeight: 80, resize: "vertical", fontFamily: "monospace", fontSize: 12 }}
+              placeholder="Enter the full prompt…" />
+          </Field>
+          <div style={{ display: "flex", gap: 10, justifyContent: "space-between", alignItems: "center" }}>
+            <Toggle label="Works well" checked={form.works_well} onChange={v => setForm(f => ({ ...f, works_well: v }))} />
+            <div style={{ display: "flex", gap: 8 }}>
+              <button type="button" onClick={() => setCreating(false)} style={btnStyle("ghost")}>Cancel</button>
+              <button type="button" onClick={save} style={btnStyle("primary")}>Save Prompt</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
+        <select value={filterModel} onChange={e => setFilterModel(e.target.value)} style={{ ...inputStyle(), width: "auto", fontSize: 12 }}>
+          <option value="">All models</option>
+          {models.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+        </select>
+        <select value={filterPlatform} onChange={e => setFilterPlatform(e.target.value)} style={{ ...inputStyle(), width: "auto", fontSize: 12 }}>
+          <option value="">All platforms</option>
+          {PLATFORMS.map(p => <option key={p} value={p}>{p}</option>)}
+        </select>
+        {(filterModel || filterPlatform) && (
+          <button type="button" onClick={() => { setFilterModel(""); setFilterPlatform(""); }} style={{ ...btnStyle("ghost"), fontSize: 12 }}>✕ Clear</button>
+        )}
+      </div>
+
+      {loading ? <div style={{ color: colors.muted, textAlign: "center", padding: 40 }}>Loading…</div> : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {filtered.length === 0 && <div style={{ color: colors.muted, textAlign: "center", padding: 40, fontSize: 13 }}>No prompts saved yet. Hit "+ Save Prompt" to start building your library.</div>}
+          {filtered.map(p => (
+            <div key={p.id} style={{ background: colors.surface, borderRadius: 10, border: `1px solid ${p.works_well ? colors.border : "rgba(239,68,68,0.3)"}`, padding: "14px 16px" }}>
+              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, marginBottom: 8 }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 4 }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: colors.text }}>{p.label}</span>
+                    <span style={{ fontSize: 10, padding: "2px 8px", background: colors.accentDim, color: colors.accent, borderRadius: 4 }}>{p.platform}</span>
+                    {p.model_id && <span style={{ fontSize: 10, color: colors.muted }}>{modelName(p.model_id)}</span>}
+                    {!p.works_well && <span style={{ fontSize: 10, padding: "2px 6px", background: "rgba(239,68,68,0.15)", color: colors.danger, borderRadius: 4 }}>NOT WORKING</span>}
+                  </div>
+                  <div style={{ fontSize: 12, color: colors.muted, lineHeight: 1.5, fontFamily: "monospace" }}>{p.prompt_text}</div>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 6, flexShrink: 0 }}>
+                  <button type="button" onClick={() => navigator.clipboard.writeText(p.prompt_text)} style={{ ...btnStyle("secondary"), padding: "6px 12px", fontSize: 12 }}>Copy</button>
+                  <button type="button" onClick={() => toggleWorks(p)} style={{ ...btnStyle("ghost"), padding: "6px 12px", fontSize: 11, border: `1px solid ${colors.border}` }}>
+                    {p.works_well ? "Mark bad" : "Mark good"}
+                  </button>
+                  <button type="button" onClick={() => deletePrompt(p.id)} style={{ ...btnStyle("danger"), padding: "6px 12px", fontSize: 12 }}>Delete</button>
+                </div>
+              </div>
+              <div style={{ fontSize: 11, color: colors.muted }}>{formatDate(p.created_at)}</div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── NEW: Campaigns Panel ──────────────────────────────────────────────────────
+function CampaignsPanel() {
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [models, setModels] = useState<Model[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [creating, setCreating] = useState(false);
+  const [editing, setEditing] = useState<Campaign | null>(null);
+  const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
+  const [form, setForm] = useState({ name: "", description: "", status: "draft", model_ids: [] as string[] });
+
+  const showToast = (msg: string, type: "success" | "error" = "success") => { setToast({ msg, type }); setTimeout(() => setToast(null), 3000); };
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const [{ data: c }, { data: m }] = await Promise.all([
+      supabase.from("collections").select("*").order("created_at", { ascending: false }),
+      supabase.from("models").select("id, name, thumbnail_path").order("name"),
+    ]);
+    setCampaigns(c || []);
+    setModels(m || []);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const save = async () => {
+    if (!form.name.trim()) return alert("Campaign name required");
+    const payload = { ...form, updated_at: new Date().toISOString() };
+    if (editing) { await supabase.from("collections").update(payload).eq("id", editing.id); }
+    else { await supabase.from("collections").insert(payload); }
+    setCreating(false); setEditing(null);
+    setForm({ name: "", description: "", status: "draft", model_ids: [] });
+    load(); showToast("Campaign saved");
+  };
+
+  const deleteCampaign = async (id: string, name: string) => {
+    if (!confirm(`Delete campaign "${name}"?`)) return;
+    await supabase.from("collections").delete().eq("id", id);
+    showToast("Campaign deleted"); load();
+  };
+
+  const toggleModel = (id: string) => {
+    setForm(f => ({
+      ...f,
+      model_ids: f.model_ids.includes(id) ? f.model_ids.filter(m => m !== id) : [...f.model_ids, id],
+    }));
+  };
+
+  const startEdit = (c: Campaign) => {
+    setEditing(c);
+    setForm({ name: c.name, description: c.description || "", status: c.status, model_ids: c.model_ids || [] });
+    setCreating(true);
+  };
+
+  return (
+    <div>
+      {toast && <Toast message={toast.msg} type={toast.type} />}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+        <h2 style={{ margin: 0, fontSize: 18, color: colors.text }}>
+          Campaigns <span style={{ color: colors.muted, fontSize: 14, fontWeight: 400 }}>({campaigns.length})</span>
+        </h2>
+        <button type="button" onClick={() => { setEditing(null); setForm({ name: "", description: "", status: "draft", model_ids: [] }); setCreating(!creating); }} style={btnStyle("primary")}>+ New Campaign</button>
+      </div>
+
+      {creating && (
+        <div style={{ background: colors.surface, borderRadius: 10, border: `1px solid ${colors.border}`, padding: 20, marginBottom: 16, display: "flex", flexDirection: "column", gap: 16 }}>
+          <div style={{ fontSize: 13, color: colors.accent, fontWeight: 600 }}>{editing ? "Edit Campaign" : "New Campaign"}</div>
+          <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 12 }}>
+            <Field label="Campaign Name">
+              <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} style={inputStyle()} placeholder="e.g. Twist & Cascade Spring 2026" />
+            </Field>
+            <Field label="Status">
+              <select value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value }))} style={inputStyle()}>
+                {CAMPAIGN_STATUSES.map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
+              </select>
+            </Field>
+          </div>
+          <Field label="Description / Brief">
+            <textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
+              style={{ ...inputStyle(), minHeight: 60, resize: "vertical" }} placeholder="Campaign brief, client notes, mood direction…" />
+          </Field>
+          <Field label="Assign Models">
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              {models.map(m => (
+                <button key={m.id} type="button" onClick={() => toggleModel(m.id)}
+                  style={{
+                    padding: "6px 12px", borderRadius: 20, cursor: "pointer", fontSize: 12, fontFamily: "inherit",
+                    background: form.model_ids.includes(m.id) ? colors.accent : "#1e1e1e",
+                    color: form.model_ids.includes(m.id) ? "#0d0d0d" : colors.muted,
+                    border: `1px solid ${form.model_ids.includes(m.id) ? colors.accent : colors.border}`,
+                    transition: "all 0.15s",
+                  }}>{m.name}</button>
+              ))}
+            </div>
+          </Field>
+          <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+            <button type="button" onClick={() => { setCreating(false); setEditing(null); }} style={btnStyle("ghost")}>Cancel</button>
+            <button type="button" onClick={save} style={btnStyle("primary")}>Save Campaign</button>
+          </div>
+        </div>
+      )}
+
+      {loading ? <div style={{ color: colors.muted, textAlign: "center", padding: 40 }}>Loading…</div> : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {campaigns.length === 0 && <div style={{ color: colors.muted, textAlign: "center", padding: 40, fontSize: 13 }}>No campaigns yet. Create one to start tracking your production pipeline.</div>}
+          {campaigns.map(c => {
+            const assignedModels = models.filter(m => (c.model_ids || []).includes(m.id));
+            return (
+              <div key={c.id} style={{ background: colors.surface, borderRadius: 10, border: `1px solid ${colors.border}`, padding: "16px" }}>
+                <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                      <span style={{ fontSize: 14, fontWeight: 600, color: colors.text }}>{c.name}</span>
+                      <StatusBadge status={c.status} type="campaign" />
+                    </div>
+                    {c.description && <div style={{ fontSize: 12, color: colors.muted, marginBottom: 8 }}>{c.description}</div>}
+                    {assignedModels.length > 0 && (
+                      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                        {assignedModels.map(m => (
+                          <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 4, padding: "3px 8px", background: "#1a1a1a", borderRadius: 20, border: `1px solid ${colors.border}` }}>
+                            <img src={publicUrl(BUCKETS.MODELS, m.thumbnail_path)} alt="" style={{ width: 16, height: 16, borderRadius: "50%", objectFit: "cover" }} />
+                            <span style={{ fontSize: 11, color: colors.muted }}>{m.name}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <div style={{ fontSize: 11, color: colors.muted, marginTop: 8 }}>{formatDate(c.created_at)}</div>
+                  </div>
+                  <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+                    <button type="button" onClick={() => startEdit(c)} style={btnStyle("secondary")}>Edit</button>
+                    <button type="button" onClick={() => deleteCampaign(c.id, c.name)} style={btnStyle("danger")}>Delete</button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── NEW: Client Requests Panel ───────────────────────────────────────────────
+function RequestsPanel() {
+  const [requests, setRequests] = useState<ClientRequest[]>([]);
+  const [models, setModels] = useState<Model[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filterStatus, setFilterStatus] = useState("");
+  const [expanded, setExpanded] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
+
+  const showToast = (msg: string, type: "success" | "error" = "success") => { setToast({ msg, type }); setTimeout(() => setToast(null), 3000); };
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const [{ data: r }, { data: m }] = await Promise.all([
+      supabase.from("client_requests").select("*").order("created_at", { ascending: false }),
+      supabase.from("models").select("id, name").order("name"),
+    ]);
+    setRequests(r || []);
+    setModels(m || []);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const updateStatus = async (id: string, status: string) => {
+    await supabase.from("client_requests").update({ status }).eq("id", id);
+    showToast("Status updated"); load();
+  };
+
+  const deleteRequest = async (id: string) => {
+    if (!confirm("Delete this request?")) return;
+    await supabase.from("client_requests").delete().eq("id", id);
+    showToast("Request deleted"); load();
+  };
+
+  const filtered = requests.filter(r => !filterStatus || r.status === filterStatus);
+  const modelName = (id: string) => models.find(m => m.id === id)?.name || "—";
+
+  const statusCounts = REQUEST_STATUSES.reduce((acc, s) => {
+    acc[s] = requests.filter(r => r.status === s).length;
+    return acc;
+  }, {} as Record<string, number>);
+
+  return (
+    <div>
+      {toast && <Toast message={toast.msg} type={toast.type} />}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+        <h2 style={{ margin: 0, fontSize: 18, color: colors.text }}>
+          Client Requests <span style={{ color: colors.muted, fontSize: 14, fontWeight: 400 }}>({requests.length})</span>
+        </h2>
+        {requests.filter(r => r.status === "new").length > 0 && (
+          <span style={{ fontSize: 12, padding: "4px 12px", background: "rgba(239,68,68,0.15)", color: colors.danger, borderRadius: 20, fontWeight: 600 }}>
+            {requests.filter(r => r.status === "new").length} new
+          </span>
+        )}
+      </div>
+
+      {/* Status Summary */}
+      <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
+        {REQUEST_STATUSES.map(s => (
+          <button key={s} type="button" onClick={() => setFilterStatus(filterStatus === s ? "" : s)}
+            style={{
+              padding: "6px 14px", borderRadius: 20, cursor: "pointer", fontSize: 12, fontFamily: "inherit",
+              border: `1px solid ${filterStatus === s ? colors.accent : colors.border}`,
+              background: filterStatus === s ? colors.accentDim : "transparent",
+              color: filterStatus === s ? colors.accent : colors.muted,
+              transition: "all 0.15s",
+            }}>
+            {s.replace("_", " ")} {statusCounts[s] > 0 && `(${statusCounts[s]})`}
+          </button>
+        ))}
+      </div>
+
+      {loading ? <div style={{ color: colors.muted, textAlign: "center", padding: 40 }}>Loading…</div> : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {filtered.length === 0 && (
+            <div style={{ color: colors.muted, textAlign: "center", padding: 40, fontSize: 13 }}>
+              No requests yet. They'll appear here when clients submit quote requests from the website.
+            </div>
+          )}
+          {filtered.map(r => (
+            <div key={r.id} style={{ background: colors.surface, borderRadius: 10, border: `1px solid ${r.status === "new" ? colors.danger : colors.border}`, overflow: "hidden" }}>
+              <div style={{ padding: "14px 16px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}
+                onClick={() => setExpanded(expanded === r.id ? null : r.id)}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
+                    <span style={{ fontSize: 14, fontWeight: 600, color: colors.text }}>{r.client_name}</span>
+                    <StatusBadge status={r.status} type="request" />
+                    <span style={{ fontSize: 11, color: colors.muted }}>{r.request_type}</span>
+                  </div>
+                  <div style={{ fontSize: 12, color: colors.muted }}>
+                    {r.client_email} · {r.model_id ? modelName(r.model_id) : "Any model"}
+                    {r.budget && <span style={{ color: colors.accent, marginLeft: 8 }}>{r.budget}</span>}
+                    <span style={{ marginLeft: 8 }}>{formatDate(r.created_at)}</span>
+                  </div>
+                </div>
+                <span style={{ color: colors.muted, fontSize: 16 }}>{expanded === r.id ? "▲" : "▼"}</span>
+              </div>
+
+              {expanded === r.id && (
+                <div style={{ padding: "0 16px 16px", borderTop: `1px solid ${colors.border}`, paddingTop: 14, display: "flex", flexDirection: "column", gap: 14 }}>
+                  {r.message && (
+                    <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 12 }}>
+                      <div style={{ fontSize: 11, color: colors.muted, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Message</div>
+                      <div style={{ fontSize: 13, color: colors.text, lineHeight: 1.6 }}>{r.message}</div>
+                    </div>
+                  )}
+                  <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                    <div style={{ fontSize: 12, color: colors.muted }}>Update status:</div>
+                    {REQUEST_STATUSES.map(s => (
+                      <button key={s} type="button" onClick={() => updateStatus(r.id, s)}
+                        style={{
+                          padding: "5px 12px", borderRadius: 20, cursor: "pointer", fontSize: 11, fontFamily: "inherit",
+                          border: `1px solid ${r.status === s ? colors.accent : colors.border}`,
+                          background: r.status === s ? colors.accentDim : "transparent",
+                          color: r.status === s ? colors.accent : colors.muted,
+                          transition: "all 0.15s",
+                        }}>{s.replace("_", " ")}</button>
+                    ))}
+                  </div>
+                  <div style={{ display: "flex", gap: 8, justifyContent: "space-between" }}>
+                    <a href={`mailto:${r.client_email}?subject=Re: Your CyberChic Models request`}
+                      style={{ ...btnStyle("secondary"), textDecoration: "none", fontSize: 12 }}>✉ Reply by Email</a>
+                    <button type="button" onClick={() => deleteRequest(r.id)} style={{ ...btnStyle("danger"), fontSize: 12 }}>Delete</button>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Login ────────────────────────────────────────────────────────────────────
 function LoginScreen({ onLogin }: { onLogin: () => void }) {
   const [email, setEmail] = useState("");
@@ -1346,8 +1752,7 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
   const [error, setError] = useState("");
 
   const login = async () => {
-    setLoading(true);
-    setError("");
+    setLoading(true); setError("");
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (error) setError(error.message);
@@ -1369,7 +1774,8 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
             <input type="password" value={password} onChange={e => setPassword(e.target.value)} style={inputStyle()} onKeyDown={e => e.key === "Enter" && login()} />
           </Field>
           {error && <div style={{ fontSize: 12, color: colors.danger, textAlign: "center" }}>{error}</div>}
-          <button type="button" onClick={login} disabled={loading} style={{ ...btnStyle("primary"), width: "100%", padding: "10px", marginTop: 8, fontSize: 14 }}>
+          <button type="button" onClick={login} disabled={loading}
+            style={{ ...btnStyle("primary"), width: "100%", padding: "10px", marginTop: 8, fontSize: 14 }}>
             {loading ? "Signing in…" : "Sign In"}
           </button>
         </div>
@@ -1407,6 +1813,9 @@ export default function AdminPage() {
     { key: "models", label: "Models" },
     { key: "styles", label: "Styles" },
     { key: "hero", label: "Hero" },
+    { key: "prompts", label: "Prompts" },
+    { key: "campaigns", label: "Campaigns" },
+    { key: "requests", label: "Requests" },
   ];
 
   return (
@@ -1427,13 +1836,11 @@ export default function AdminPage() {
               fontFamily: "inherit", transition: "all 0.15s", marginBottom: 2,
             }}>{t.label}</button>
           ))}
-          <a href="/admin/studio" style={{ display: "block", padding: "10px 12px", borderRadius: 8, color: colors.muted, fontSize: 13, textDecoration: "none", fontFamily: "inherit", marginBottom: 2, transition: "all 0.15s" }}>✦ Frame Studio</a>
+          <a href="/admin/studio" style={{ display: "block", padding: "10px 12px", borderRadius: 8, color: colors.muted, fontSize: 13, textDecoration: "none", fontFamily: "inherit", marginBottom: 2 }}>✦ Frame Studio</a>
         </nav>
         <div style={{ padding: "16px 20px", borderTop: `1px solid ${colors.border}` }}>
           <div style={{ fontSize: 11, color: colors.muted, marginBottom: 8, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.email}</div>
-          <button type="button" onClick={() => supabase.auth.signOut()} style={{ ...btnStyle("ghost"), width: "100%", textAlign: "left", padding: "6px 0", fontSize: 12 }}>
-            Sign out
-          </button>
+          <button type="button" onClick={() => supabase.auth.signOut()} style={{ ...btnStyle("ghost"), width: "100%", textAlign: "left", padding: "6px 0", fontSize: 12 }}>Sign out</button>
         </div>
       </div>
 
@@ -1442,6 +1849,9 @@ export default function AdminPage() {
         {activeTab === "models" && <ModelsPanel />}
         {activeTab === "styles" && <StylesPanel />}
         {activeTab === "hero" && <HeroPanel />}
+        {activeTab === "prompts" && <PromptsPanel />}
+        {activeTab === "campaigns" && <CampaignsPanel />}
+        {activeTab === "requests" && <RequestsPanel />}
       </div>
     </div>
   );
