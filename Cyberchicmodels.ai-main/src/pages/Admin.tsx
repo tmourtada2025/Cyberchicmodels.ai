@@ -221,7 +221,7 @@ const ARCHETYPES: Record<string, Archetype> = {
 const ALL_COUNTRIES = Object.keys(ARCHETYPES).sort();
 
 // ─── Wizard Options ──────────────────────────────────────────────────────────
-const GENDERS = ["Female", "Male", "Non-binary"];
+const GENDERS = ["Female", "Male"];
 const AGE_GROUPS = ["18-22", "23-27", "28-34", "35-42", "43-50", "50+"];
 const SPECIALTIES = [
   "High fashion / editorial",
