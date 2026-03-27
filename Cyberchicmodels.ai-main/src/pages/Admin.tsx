@@ -111,6 +111,25 @@ interface ClientRequest {
 
 type Tab = "models" | "styles" | "hero" | "prompts" | "campaigns" | "requests";
 
+
+// Robust clipboard copy with fallback
+function copyToClipboard(text: string): void {
+  if (navigator.clipboard && window.isSecureContext) {
+    copyToClipboard(text).catch(() => fallbackCopy(text));
+  } else {
+    fallbackCopy(text);
+  }
+}
+function fallbackCopy(text: string): void {
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  ta.style.cssText = "position:fixed;top:0;left:0;opacity:0";
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  document.execCommand("copy");
+  document.body.removeChild(ta);
+}
 // ─── Archetype Data ──────────────────────────────────────────────────────────
 interface Archetype {
   skin_tone: string;
@@ -601,7 +620,7 @@ Respond ONLY with valid JSON, no preamble, no markdown, exactly this structure:
             <div key={platform} style={{ background: "#1a1a1a", borderRadius: 8, padding: 14 }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
                 <span style={{ fontSize: 11, color: colors.accent, letterSpacing: "0.1em", textTransform: "uppercase" }}>{platform.replace(/_/g, " ")}</span>
-                <button type="button" onClick={() => { navigator.clipboard.writeText(prompt).catch(() => {}); }}
+                <button type="button" onClick={() => { copyToClipboard(prompt).catch(() => {}); }}
                   style={{ ...btnStyle("ghost"), padding: "3px 8px", fontSize: 11 }}>Copy</button>
               </div>
               <div style={{ fontSize: 12, color: colors.muted, lineHeight: 1.6 }}>{prompt}</div>
@@ -609,9 +628,9 @@ Respond ONLY with valid JSON, no preamble, no markdown, exactly this structure:
           ))}
         </div>
 
-        <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", paddingTop: 12, marginTop: 16, borderTop: `1px solid ${colors.border}`, flexShrink: 0 }}>
+        <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", paddingTop: 12, marginTop: 16, borderTop: `1px solid ${colors.border}`, position: "sticky", bottom: 0, background: colors.bg, zIndex: 10 }}>
           <button type="button" onClick={onCancel} style={btnStyle("ghost")}>Discard</button>
-          <button type="button" onClick={handleSave} style={{ ...btnStyle("primary"), minWidth: 160 }}>💾 Save to Database</button>
+          <button type="button" onClick={handleSave} style={{ ...btnStyle("primary"), minWidth: 160, fontSize: 14, padding: "10px 20px" }}>💾 Save to Database</button>
         </div>
       </div>
     );
@@ -927,7 +946,7 @@ function ModelForm({ initial, onSaved, onCancel }: { initial?: Partial<Model>; o
             <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
               <input value={form.trigger_word || ""} onChange={e => set("trigger_word", e.target.value)} style={{ ...inputStyle(), flex: 1 }} placeholder="e.g. vanessa_rv" />
               {form.trigger_word && (
-                <button type="button" onClick={() => navigator.clipboard.writeText(form.trigger_word!)}
+                <button type="button" onClick={() => copyToClipboard(form.trigger_word!)}
                   style={{ ...btnStyle("ghost"), padding: "8px 12px", fontSize: 12, flexShrink: 0, border: `1px solid ${colors.border}` }}>
                   Copy
                 </button>
@@ -941,7 +960,7 @@ function ModelForm({ initial, onSaved, onCancel }: { initial?: Partial<Model>; o
               <input value={form.lora_url || ""} onChange={e => set("lora_url", e.target.value)}
                 style={{ ...inputStyle(), flex: 1 }} placeholder="https://v3b.fal.media/files/..." />
               {form.lora_url && (
-                <button type="button" onClick={() => navigator.clipboard.writeText(form.lora_url!)}
+                <button type="button" onClick={() => copyToClipboard(form.lora_url!)}
                   style={{ ...btnStyle("secondary"), flexShrink: 0, fontSize: 12 }}>Copy URL</button>
               )}
             </div>
@@ -973,7 +992,7 @@ function ModelForm({ initial, onSaved, onCancel }: { initial?: Partial<Model>; o
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 4 }}>
               <div style={{ fontSize: 11, color: colors.muted }}>Store your working DALL-E prompt for regenerating training sets</div>
               {form.dalle_prompt_pack && (
-                <button type="button" onClick={() => navigator.clipboard.writeText(form.dalle_prompt_pack!)}
+                <button type="button" onClick={() => copyToClipboard(form.dalle_prompt_pack!)}
                   style={{ ...btnStyle("ghost"), fontSize: 11, padding: "4px 10px", border: `1px solid ${colors.border}` }}>Copy Prompt</button>
               )}
             </div>
@@ -1451,7 +1470,7 @@ function PromptsPanel() {
                   <div style={{ fontSize: 12, color: colors.muted, lineHeight: 1.5, fontFamily: "monospace" }}>{p.prompt_text}</div>
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 6, flexShrink: 0 }}>
-                  <button type="button" onClick={() => navigator.clipboard.writeText(p.prompt_text)} style={{ ...btnStyle("secondary"), padding: "6px 12px", fontSize: 12 }}>Copy</button>
+                  <button type="button" onClick={() => copyToClipboard(p.prompt_text)} style={{ ...btnStyle("secondary"), padding: "6px 12px", fontSize: 12 }}>Copy</button>
                   <button type="button" onClick={() => toggleWorks(p)} style={{ ...btnStyle("ghost"), padding: "6px 12px", fontSize: 11, border: `1px solid ${colors.border}` }}>
                     {p.works_well ? "Mark bad" : "Mark good"}
                   </button>
