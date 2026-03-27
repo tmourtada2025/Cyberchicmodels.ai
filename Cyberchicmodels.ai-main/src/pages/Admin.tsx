@@ -1,6 +1,7 @@
 /**
  * CyberChicModels Admin Panel — Phase 1 Update
  * Added: LoRA fields, Prompt Library, Collections Tracker, Client Requests
+ * Added: Affogato FaceLock Session Generator (Phase 2)
  * Drop this file into: src/pages/Admin.tsx
  */
 
@@ -43,7 +44,6 @@ interface Model {
   is_coming_soon: boolean;
   social_media: string;
   measurements: string;
-  // ── NEW Phase 1 fields ──
   lora_url: string;
   trigger_word: string;
   training_status: string;
@@ -75,7 +75,6 @@ interface Style {
   thumbnail_path: string;
 }
 
-// ── NEW Phase 1 types ──
 interface Prompt {
   id: string;
   model_id: string;
@@ -111,11 +110,10 @@ interface ClientRequest {
 
 type Tab = "models" | "styles" | "hero" | "prompts" | "campaigns" | "requests";
 
-
-// Robust clipboard copy with fallback
+// FIXED: was recursive, calling itself instead of navigator.clipboard.writeText
 function copyToClipboard(text: string): void {
   if (navigator.clipboard && window.isSecureContext) {
-    copyToClipboard(text).catch(() => fallbackCopy(text));
+    navigator.clipboard.writeText(text).catch(() => fallbackCopy(text));
   } else {
     fallbackCopy(text);
   }
@@ -130,6 +128,108 @@ function fallbackCopy(text: string): void {
   document.execCommand("copy");
   document.body.removeChild(ta);
 }
+
+// ─── Affogato Session Builder ─────────────────────────────────────────────────
+interface AffogatoPersona {
+  model_name: string;
+  identity?: { ethnicity?: string; nationality?: string };
+  visual_traits?: {
+    skin_tone?: string; eye_color?: string; hair_color?: string;
+    hair_texture?: string; face_shape?: string; distinctive_features?: string;
+  };
+  prompts?: { negative?: string; affogato_facelock?: string };
+}
+
+function buildAffogatoShots(persona: AffogatoPersona) {
+  const firstName = (persona.model_name || "MODEL").split(" ")[0];
+  const v = persona.visual_traits || {};
+  const traits = [
+    persona.identity?.ethnicity || persona.identity?.nationality || "",
+    v.skin_tone ? `${v.skin_tone} skin` : "",
+    v.eye_color ? `${v.eye_color} eyes` : "",
+    v.hair_color && v.hair_texture ? `${v.hair_texture} ${v.hair_color} hair` : "",
+    v.face_shape ? `${v.face_shape} face` : "",
+    v.distinctive_features || "",
+  ].filter(Boolean).join(", ");
+
+  const base = `^${firstName}^ ${traits}`;
+  const suffix = `photorealistic, 85mm portrait lens, sharp focus on eyes <lora:better_hands:0.8>`;
+
+  const defs = [
+    { label: "SHOT 01 — Front Facing Neutral (ANCHOR)", shot: "front-facing headshot, neutral expression, eyes directly at camera", light: "studio soft lighting, flat even illumination", bg: "neutral grey seamless backdrop" },
+    { label: "SHOT 02 — Front Facing Soft Smile", shot: "front-facing headshot, soft natural smile, eyes directly at camera", light: "studio soft lighting", bg: "neutral grey background" },
+    { label: "SHOT 03 — 3/4 Turn Right", shot: "nose pointing toward right edge of frame, right cheek and right ear visible, left cheek partially hidden, eyes looking back at camera, 45-degree head turn", light: "studio soft lighting", bg: "grey background" },
+    { label: "SHOT 04 — 3/4 Turn Left", shot: "nose pointing toward left edge of frame, left cheek and left ear visible, right cheek partially hidden, eyes looking back at camera, 45-degree head turn", light: "studio soft lighting", bg: "grey background" },
+    { label: "SHOT 05 — Profile Right", shot: "full side profile, nose pointing right edge of frame, only one eye visible, jawline in full silhouette, body facing right", light: "studio lighting", bg: "grey background" },
+    { label: "SHOT 06 — Profile Left", shot: "full side profile, nose pointing left edge of frame, only one eye visible, jawline in full silhouette, body facing left", light: "studio lighting", bg: "grey background" },
+    { label: "SHOT 07 — Chin Up", shot: "face tilted upward 20 degrees, eyes looking downward toward camera, camera positioned slightly above subject", light: "dramatic side lighting", bg: "grey background" },
+    { label: "SHOT 08 — Chin Down", shot: "face tilted downward 15 degrees, eyes looking upward at camera, camera positioned slightly below subject", light: "studio soft lighting", bg: "grey background" },
+    { label: "SHOT 09 — Eyes Left", shot: "head facing forward, eyes shifted to subject's left, NOT looking at camera, contemplative expression", light: "dramatic side lighting", bg: "grey background" },
+    { label: "SHOT 10 — Eyes Right", shot: "head facing forward, eyes shifted to subject's right, NOT looking at camera, neutral expression", light: "natural daylight", bg: "grey background" },
+    { label: "SHOT 11 — Eyes Down", shot: "head facing forward, eyes cast downward toward chest level, thoughtful introspective expression", light: "soft natural indoor light", bg: "warm neutral background" },
+    { label: "SHOT 12 — Eyes Up", shot: "head facing forward, eyes looking upward above frame, open serene expression", light: "golden hour lighting", bg: "soft background" },
+    { label: "SHOT 13 — Bust Front", shot: "bust shot shoulders to crown, front-facing, neutral expression, eyes at camera, simple fitted top", light: "studio soft lighting", bg: "grey background" },
+    { label: "SHOT 14 — Bust 3/4 Right Eyes Off", shot: "bust shot, nose pointing toward right edge of frame, eyes looking off into space to subject's left NOT at camera, simple fitted top", light: "dramatic side lighting", bg: "off-white background" },
+    { label: "SHOT 15 — Bust 3/4 Left Eyes On", shot: "bust shot, nose pointing toward left edge of frame, eyes directly at camera, simple fitted top", light: "natural soft indoor light", bg: "warm neutral background" },
+    { label: "SHOT 16 — Candid Bust", shot: "candid bust shot, slight natural head tilt, relaxed expression, eyes at camera, minimal makeup, simple top", light: "ambient natural window light", bg: "soft indoor background" },
+    { label: "SHOT 17 — Full Body Front", shot: "full body, front-facing, standing neutral, hands relaxed at sides, simple fitted jeans and white top", light: "studio soft lighting", bg: "white seamless background" },
+    { label: "SHOT 18 — Full Body 3/4 Right", shot: "full body, body and face angled toward right edge of frame, weight shifted onto one leg, natural relaxed stance, simple outfit", light: "studio lighting", bg: "white background" },
+    { label: "SHOT 19 — Full Body 3/4 Left", shot: "full body, body and face angled toward left edge of frame, slight implied movement, one foot stepping forward, simple outfit", light: "studio lighting", bg: "white background" },
+    { label: "SHOT 20 — Walking Toward Camera", shot: "full body, walking directly toward camera, confident stride, one foot forward, natural arm movement, simple outfit", light: "studio lighting", bg: "white background" },
+    { label: "SHOT 21 — Back Turned Head Right", shot: "full body, body facing away from camera, chin near right shoulder, right eye visible looking back at camera making direct eye contact, simple outfit", light: "studio lighting", bg: "white background" },
+    { label: "SHOT 22 — Seated Relaxed", shot: "full body, seated casually on simple stool, relaxed posture, front-facing, eyes at camera, simple outfit", light: "soft studio lighting", bg: "neutral background" },
+    { label: "SHOT 23 — Genuine Laugh", shot: "tight face crop, genuine laugh, eyes crinkled with joy, mouth open naturally, no forced smile", light: "soft natural light", bg: "" },
+    { label: "SHOT 24 — Serious Intense", shot: "tight face crop, serious intense expression, lips slightly parted, direct unwavering eye contact with camera", light: "dramatic side lighting, one side in slight shadow", bg: "" },
+  ];
+
+  return defs.map((d, i) => ({
+    id: i + 1,
+    label: d.label,
+    prompt: `${base},\n${d.shot},\n${d.light}${d.bg ? `, ${d.bg}` : ""},\n${suffix}`,
+  }));
+}
+
+function buildAffogatoMarkdown(persona: AffogatoPersona): string {
+  const shots = buildAffogatoShots(persona);
+  const firstName = (persona.model_name || "MODEL").split(" ")[0];
+  const date = new Date().toISOString().split("T")[0];
+  const neg = persona.prompts?.negative || "deformed, ugly, blurry, low quality, watermark, text, logo, different person";
+  const lines = [
+    `# ${persona.model_name} — Affogato FaceLock Training Session`,
+    `**Date:** ${date}  |  **Trigger:** ^${firstName}^  |  **Shots:** 24`,
+    ``,
+    `---`,
+    ``,
+    `## Negative Prompt (apply to all shots)`,
+    `\`\`\``,
+    neg,
+    `\`\`\``,
+    ``,
+    `---`,
+    ``,
+    `## Shot-by-Shot Prompts`,
+    `> Paste each into Affogato sequentially. Generate 2 variants per shot, pick the best.`,
+    ``,
+    ...shots.flatMap(s => [
+      `### ${s.label}`,
+      `\`\`\``,
+      s.prompt,
+      `\`\`\``,
+      `- [ ] Generated  - [ ] Approved`,
+      ``,
+      `---`,
+      ``,
+    ]),
+    `## Curation Checklist`,
+    `- [ ] 24 approved images downloaded`,
+    `- [ ] No repeated angles`,
+    `- [ ] Anchor features consistent across all shots`,
+    `- [ ] No skin tone / identity drift`,
+    `- [ ] Ready to upload to Fal.ai LoRA trainer`,
+  ];
+  return lines.join("\n");
+}
+
 // ─── Archetype Data ──────────────────────────────────────────────────────────
 interface Archetype {
   skin_tone: string;
@@ -253,7 +353,7 @@ const LIGHTING_STYLES = ["Studio soft-box", "Natural daylight", "Golden hour", "
 const TRAINING_STATUSES = ["untrained", "dataset_ready", "training", "completed", "failed"];
 const CAMPAIGN_STATUSES = ["draft", "generating", "ready", "published", "archived"];
 const REQUEST_STATUSES = ["new", "reviewing", "quoted", "accepted", "declined", "completed"];
-const PLATFORMS = ["fal.ai", "Tensor.Art", "Replicate", "Astria", "Civitai", "ComfyUI", "Other"];
+const PLATFORMS = ["fal.ai", "Tensor.Art", "Replicate", "Astria", "Civitai", "ComfyUI", "Affogato", "Other"];
 
 // ─── Wizard Step Config ──────────────────────────────────────────────────────
 const WIZARD_STEPS = [
@@ -478,6 +578,8 @@ function ModelWizard({ onComplete, onCancel }: {
   const [generating, setGenerating] = useState(false);
   const [result, setResult] = useState<{ name: string; json: string; prompts: Record<string, string> } | null>(null);
   const [error, setError] = useState("");
+  const [sessionExpanded, setSessionExpanded] = useState(false);
+  const [copiedShot, setCopiedShot] = useState<number | null>(null);
 
   const set = (key: keyof WizardData, val: string) => setData(prev => ({ ...prev, [key]: val }));
 
@@ -551,9 +653,12 @@ Respond ONLY with valid JSON, no preamble, no markdown, exactly this structure:
     "dalle_training": "Generate 24 consistent portrait photos of [full description]: [skin tone] skin, [eye color] eyes, [hair color] [hair texture] hair, [body type] build, [distinctive features]. Angles: front face, 3/4 left, 3/4 right, profile left, profile right, slight up, slight down, close-up eyes, close-up lips, chest up, waist up, full body. Lighting variations: studio soft, natural daylight, golden hour, dramatic side. Expression: neutral, slight smile, serious. DALL-E 4 consistent character sheet.",
     "fal_inference": "portrait of [trigger_word] woman, [specialty] editorial, [wardrobe_style], [lighting], hyperrealistic, fashion photography, 8K",
     "kling": "photorealistic, [model description], ${data.specialty}, ${data.wardrobe_style} outfit, ${data.lighting} lighting, ${data.pose_style} pose, professional model photography, 8K, detailed",
+    "affogato_facelock": "^[model_first_name]^ [ethnicity] woman, [skin_tone] skin, [eye_color] eyes, [hair_texture] [hair_color] hair, [face_shape] face, [distinctive_features], [SHOT DESCRIPTION], [LIGHTING], photorealistic, 85mm portrait lens <lora:better_hands:0.8>",
     "negative": "deformed, ugly, blurry, low quality, bad anatomy, extra limbs, watermark, text, logo, different person"
   }
-}`;
+}
+
+IMPORTANT for affogato_facelock field: wrap the model's first name in carets ^Name^, list all physical identity traits comma-separated and densely, leave the literal placeholder text [SHOT DESCRIPTION] and [LIGHTING] exactly as written — do NOT fill these in, end with: photorealistic, 85mm portrait lens <lora:better_hands:0.8>`;
 
       const response = await fetch("/api/generate-persona", {
         method: "POST",
@@ -603,6 +708,24 @@ Respond ONLY with valid JSON, no preamble, no markdown, exactly this structure:
   );
 
   if (result) {
+    const parsedPersona: AffogatoPersona | null = (() => { try { return JSON.parse(result.json); } catch { return null; } })();
+    const affogatoShots = parsedPersona ? buildAffogatoShots(parsedPersona) : [];
+    const firstName = parsedPersona ? (parsedPersona.model_name || "MODEL").split(" ")[0] : "MODEL";
+    const basePrompt = parsedPersona?.prompts?.affogato_facelock ||
+      `^${firstName}^ [traits], [SHOT DESCRIPTION], [LIGHTING], photorealistic, 85mm portrait lens <lora:better_hands:0.8>`;
+
+    const handleDownloadMd = () => {
+      if (!parsedPersona) return;
+      const md = buildAffogatoMarkdown(parsedPersona);
+      const blob = new Blob([md], { type: "text/markdown" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${(parsedPersona.model_name || "model").replace(/\s+/g, "_")}_affogato_session.md`;
+      a.click();
+      URL.revokeObjectURL(url);
+    };
+
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: 20, overflowY: "auto", maxHeight: "calc(100vh - 140px)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -620,13 +743,81 @@ Respond ONLY with valid JSON, no preamble, no markdown, exactly this structure:
             <div key={platform} style={{ background: "#1a1a1a", borderRadius: 8, padding: 14 }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
                 <span style={{ fontSize: 11, color: colors.accent, letterSpacing: "0.1em", textTransform: "uppercase" }}>{platform.replace(/_/g, " ")}</span>
-                <button type="button" onClick={() => { copyToClipboard(prompt).catch(() => {}); }}
+                <button type="button" onClick={() => copyToClipboard(prompt as string)}
                   style={{ ...btnStyle("ghost"), padding: "3px 8px", fontSize: 11 }}>Copy</button>
               </div>
-              <div style={{ fontSize: 12, color: colors.muted, lineHeight: 1.6 }}>{prompt}</div>
+              <div style={{ fontSize: 12, color: colors.muted, lineHeight: 1.6 }}>{prompt as string}</div>
             </div>
           ))}
         </div>
+
+        {/* ── Affogato FaceLock Session Panel ── */}
+        {parsedPersona && (
+          <div style={{ border: `1px solid rgba(201,169,110,0.3)`, borderRadius: 10, overflow: "hidden" }}>
+            {/* Header */}
+            <div style={{ padding: "14px 16px", background: "rgba(201,169,110,0.08)", borderBottom: `1px solid rgba(201,169,110,0.2)`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div>
+                <div style={{ fontSize: 11, color: colors.accent, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 2 }}>✦ Affogato FaceLock Session</div>
+                <div style={{ fontSize: 12, color: colors.muted }}>24-shot training dataset · ^{firstName}^</div>
+              </div>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button type="button" onClick={handleDownloadMd}
+                  style={{ ...btnStyle("primary"), fontSize: 12, padding: "7px 14px" }}>
+                  ⬇ Download .md
+                </button>
+                <button type="button" onClick={() => setSessionExpanded(e => !e)}
+                  style={{ ...btnStyle("secondary"), fontSize: 12, padding: "7px 14px" }}>
+                  {sessionExpanded ? "▲ Collapse" : "▼ All 24 Shots"}
+                </button>
+              </div>
+            </div>
+
+            {/* Base prompt */}
+            <div style={{ padding: "14px 16px", borderBottom: `1px solid ${colors.border}` }}>
+              <div style={{ fontSize: 11, color: colors.muted, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>Base FaceLock Prompt</div>
+              <div style={{ position: "relative" }}>
+                <pre style={{ margin: 0, fontSize: 11, color: "#4ade80", background: "rgba(0,0,0,0.4)", borderRadius: 6, padding: 12, overflow: "auto", whiteSpace: "pre-wrap", fontFamily: "monospace", lineHeight: 1.6 }}>
+                  {basePrompt}
+                </pre>
+                <button type="button" onClick={() => copyToClipboard(basePrompt)}
+                  style={{ position: "absolute", top: 8, right: 8, ...btnStyle("ghost"), fontSize: 11, padding: "3px 8px", border: `1px solid ${colors.border}` }}>
+                  Copy
+                </button>
+              </div>
+            </div>
+
+            {/* Expanded shot list */}
+            {sessionExpanded && (
+              <div style={{ maxHeight: 520, overflowY: "auto", padding: "14px 16px", display: "flex", flexDirection: "column", gap: 10 }}>
+                <div style={{ fontSize: 12, color: colors.muted, marginBottom: 4 }}>
+                  Generate 2 variants per shot in Affogato. Pick the best. Check off as you go.
+                </div>
+                {affogatoShots.map(shot => (
+                  <div key={shot.id} style={{ border: `1px solid ${colors.border}`, borderRadius: 8, overflow: "hidden" }}>
+                    <div style={{ padding: "8px 12px", background: "#1a1a1a", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                      <span style={{ fontSize: 12, color: colors.text, fontWeight: 500 }}>{shot.label}</span>
+                      <button type="button"
+                        onClick={() => { copyToClipboard(shot.prompt); setCopiedShot(shot.id); setTimeout(() => setCopiedShot(null), 1500); }}
+                        style={{ ...btnStyle("ghost"), fontSize: 11, padding: "3px 8px", border: `1px solid ${colors.border}` }}>
+                        {copiedShot === shot.id ? "✓ Copied" : "Copy"}
+                      </button>
+                    </div>
+                    <pre style={{ margin: 0, fontSize: 11, color: "#4ade80", background: "rgba(0,0,0,0.3)", padding: "10px 12px", overflow: "auto", whiteSpace: "pre-wrap", fontFamily: "monospace", lineHeight: 1.6 }}>
+                      {shot.prompt}
+                    </pre>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Footer */}
+            <div style={{ padding: "10px 16px", borderTop: `1px solid ${colors.border}`, background: "#0f0f0f" }}>
+              <div style={{ fontSize: 11, color: colors.muted }}>
+                Negative: {parsedPersona.prompts?.negative || "deformed, ugly, blurry, low quality, watermark, text, logo, different person"}
+              </div>
+            </div>
+          </div>
+        )}
 
         <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", paddingTop: 12, marginTop: 16, borderTop: `1px solid ${colors.border}`, position: "sticky", bottom: 0, background: colors.bg, zIndex: 10 }}>
           <button type="button" onClick={onCancel} style={btnStyle("ghost")}>Discard</button>
@@ -927,10 +1118,8 @@ function ModelForm({ initial, onSaved, onCancel }: { initial?: Partial<Model>; o
         </div>
       )}
 
-      {/* ── NEW: LoRA / AI Tab ── */}
       {tab === "lora" && (
         <div style={{ display: "flex", flexDirection: "column", gap: 20, overflowY: "auto", flex: 1 }}>
-          {/* Training Status Banner */}
           <div style={{ padding: "14px 16px", background: "#1a1a1a", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <div>
               <div style={{ fontSize: 11, color: colors.muted, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 4 }}>Training Status</div>
@@ -1343,7 +1532,7 @@ function HeroPanel() {
   );
 }
 
-// ─── NEW: Prompt Library Panel ─────────────────────────────────────────────────
+// ─── Prompt Library Panel ─────────────────────────────────────────────────────
 function PromptsPanel() {
   const [prompts, setPrompts] = useState<Prompt[]>([]);
   const [models, setModels] = useState<Model[]>([]);
@@ -1486,7 +1675,7 @@ function PromptsPanel() {
   );
 }
 
-// ─── NEW: Campaigns Panel ──────────────────────────────────────────────────────
+// ─── Campaigns Panel ──────────────────────────────────────────────────────────
 function CampaignsPanel() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [models, setModels] = useState<Model[]>([]);
@@ -1628,7 +1817,7 @@ function CampaignsPanel() {
   );
 }
 
-// ─── NEW: Client Requests Panel ───────────────────────────────────────────────
+// ─── Client Requests Panel ────────────────────────────────────────────────────
 function RequestsPanel() {
   const [requests, setRequests] = useState<ClientRequest[]>([]);
   const [models, setModels] = useState<Model[]>([]);
@@ -1685,7 +1874,6 @@ function RequestsPanel() {
         )}
       </div>
 
-      {/* Status Summary */}
       <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
         {REQUEST_STATUSES.map(s => (
           <button key={s} type="button" onClick={() => setFilterStatus(filterStatus === s ? "" : s)}
@@ -1839,7 +2027,6 @@ export default function AdminPage() {
 
   return (
     <div style={{ minHeight: "100vh", background: colors.bg, color: colors.text, fontFamily: "'Georgia', serif" }}>
-      {/* Sidebar */}
       <div style={{ position: "fixed", left: 0, top: 64, bottom: 0, width: 220, background: colors.surface, borderRight: `1px solid ${colors.border}`, display: "flex", flexDirection: "column", zIndex: 100 }}>
         <div style={{ padding: "28px 20px 20px" }}>
           <div style={{ fontSize: 10, letterSpacing: "0.3em", color: colors.accent, textTransform: "uppercase", marginBottom: 4 }}>CyberChic</div>
@@ -1863,7 +2050,6 @@ export default function AdminPage() {
         </div>
       </div>
 
-      {/* Main content */}
       <div style={{ marginLeft: 220, padding: "40px", paddingTop: 80, maxWidth: 960 }}>
         {activeTab === "models" && <ModelsPanel />}
         {activeTab === "styles" && <StylesPanel />}
