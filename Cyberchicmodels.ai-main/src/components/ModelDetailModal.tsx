@@ -99,7 +99,7 @@ export function ModelDetailModal({ model, allModels = [], onClose, onModelChange
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75" onClick={onClose}>
       <div
         className="relative bg-white rounded-2xl overflow-hidden flex flex-col shadow-2xl"
-        style={{ width: '900px', height: '620px' }}
+        style={{ width: '95vw', maxWidth: '1800px', height: '90vh' }}
         onClick={e => e.stopPropagation()}
       >
         {/* Top bar */}
@@ -129,7 +129,7 @@ export function ModelDetailModal({ model, allModels = [], onClose, onModelChange
         <div className="flex flex-1 overflow-hidden">
 
           {/* LEFT — image */}
-          <div className="relative bg-gray-100 flex items-center justify-center overflow-hidden" style={{ width: '520px', minWidth: '520px' }}>
+          <div className="relative bg-gray-100 flex items-center justify-center overflow-hidden" style={{ flex: '1 1 0', minWidth: 0 }}>
             {loading ? (
               <div className="w-10 h-10 border-4 border-rose-200 border-t-rose-500 rounded-full animate-spin" />
             ) : (
@@ -184,7 +184,7 @@ export function ModelDetailModal({ model, allModels = [], onClose, onModelChange
           </div>
 
           {/* RIGHT — info */}
-          <div className="flex-1 flex flex-col overflow-y-auto">
+          <div className="flex flex-col overflow-y-auto shrink-0" style={{ width: '380px' }}>
             <div className="p-6 flex flex-col gap-4 flex-1">
 
               {/* Like / Favorite */}
