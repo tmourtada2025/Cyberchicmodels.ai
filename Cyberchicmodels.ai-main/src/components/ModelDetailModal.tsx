@@ -46,7 +46,7 @@ export function ModelDetailModal({ model, allModels = [], onClose, onModelChange
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const likes = useSelector((state: RootState) => state.likes);
-  const favorites = useSelector((state: RootState) => state.favorites);
+  const favorites = useSelector((state: RootState) => state.favorites.items);
 
   const [collections, setCollections] = useState<Collection[]>([]);
   const [activeCollectionIdx, setActiveCollectionIdx] = useState(0);
@@ -54,7 +54,7 @@ export function ModelDetailModal({ model, allModels = [], onClose, onModelChange
   const [loading, setLoading] = useState(true);
 
   const isLiked = likes[model.id] > 0;
-  const isFavorited = favorites.includes(model.id);
+  const isFavorited = favorites.some((f: any) => f.id === model.id);
   const currentModelIdx = allModels.findIndex(m => m.id === model.id);
 
   useEffect(() => {
@@ -218,7 +218,7 @@ export function ModelDetailModal({ model, allModels = [], onClose, onModelChange
                   {likes[model.id] ?? 0}
                 </button>
                 <button
-                  onClick={() => dispatch(toggleFavorite(model.id))}
+                  onClick={() => dispatch(toggleFavorite({ id: model.id, name: model.name, image: model.image, specialty: model.specialty }))}
                   className="text-gray-400 hover:text-yellow-500"
                 >
                   <Star size={18} className={isFavorited ? 'fill-yellow-400 text-yellow-400' : ''} />
