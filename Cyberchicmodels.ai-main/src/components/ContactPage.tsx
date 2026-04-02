@@ -49,8 +49,8 @@ export function ContactPage() {
                   <Mail className="h-6 w-6 text-gray-600" />
                   <div>
                     <p className="font-medium">Email</p>
-                    <a href="mailto:info@cyberchicmodels.ai" className="text-gray-600 hover:text-black">
-                      info@cyberchicmodels.ai
+                    <a href="mailto:agent@cyberchicmodels.ai" className="text-gray-600 hover:text-black">
+                      agent@cyberchicmodels.ai
                     </a>
                   </div>
                 </div>
