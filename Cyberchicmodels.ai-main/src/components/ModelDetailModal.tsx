@@ -130,9 +130,9 @@ export function ModelDetailModal({ model, allModels = [], onClose, onModelChange
     : getStorageUrl('model-thumbnails', model.image);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-6" onClick={onClose}>
       <div
-        className="relative bg-white rounded-2xl overflow-hidden w-full max-w-4xl max-h-[85vh] flex flex-col"
+        className="relative bg-white rounded-2xl overflow-hidden w-full max-w-6xl h-[90vh] flex flex-col"
         onClick={e => e.stopPropagation()}
       >
         {/* Top nav */}
@@ -161,14 +161,14 @@ export function ModelDetailModal({ model, allModels = [], onClose, onModelChange
         {/* Body */}
         <div className="flex flex-1 overflow-hidden">
           {/* LEFT — image viewer */}
-          <div className="relative bg-gray-50 flex items-center justify-center overflow-hidden"  style={{width: "420px", minWidth: "420px"}}>
+          <div className="relative flex-1 bg-gray-100 flex items-center justify-center overflow-hidden">
             {loading ? (
               <div className="w-12 h-12 border-4 border-rose-200 border-t-rose-500 rounded-full animate-spin" />
             ) : (
               <img
                 src={imageUrl}
                 alt={model.name}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain p-4"
                 onError={e => { (e.target as HTMLImageElement).src = model.image; }}
               />
             )}
@@ -206,7 +206,7 @@ export function ModelDetailModal({ model, allModels = [], onClose, onModelChange
           </div>
 
           {/* RIGHT — info panel */}
-          <div className="flex-1 flex flex-col overflow-y-auto border-l border-gray-100">
+          <div className="w-80 shrink-0 flex flex-col overflow-y-auto border-l border-gray-100">
             <div className="p-6 flex flex-col gap-4 flex-1">
               {/* Like / Favorite */}
               <div className="flex justify-end gap-2">
