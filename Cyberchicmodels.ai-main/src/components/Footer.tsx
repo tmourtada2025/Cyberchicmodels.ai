@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
+import { Instagram, Youtube } from 'lucide-react';
 
 export function Footer() {
   return (
@@ -11,12 +11,6 @@ export function Footer() {
             <h3 className="text-xl font-serif mb-4">CyberChicModels.ai</h3>
             <p className="text-gray-400">Redefining digital fashion with AI-generated models.</p>
             <div className="flex space-x-4 mt-6">
-              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">
-                <Facebook className="h-5 w-5" />
-              </a>
-              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">
-                <Twitter className="h-5 w-5" />
-              </a>
               <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">
                 <Instagram className="h-5 w-5" />
               </a>
@@ -29,16 +23,17 @@ export function Footer() {
             <h4 className="text-lg mb-4">Quick Links</h4>
             <ul className="space-y-2">
               <li><Link to="/models" className="text-gray-400 hover:text-white">Browse Models</Link></li>
+              <li><Link to="/styles" className="text-gray-400 hover:text-white">Styles</Link></li>
               <li><Link to="/about" className="text-gray-400 hover:text-white">About Us</Link></li>
               <li><Link to="/contact" className="text-gray-400 hover:text-white">Contact</Link></li>
             </ul>
           </div>
           <div>
-            <h4 className="text-lg mb-4">Resources</h4>
+            <h4 className="text-lg mb-4">Legal</h4>
             <ul className="space-y-2">
-              <li><a href="#" className="text-gray-400 hover:text-white">Documentation</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white">API Access</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white">Support</a></li>
+              <li><Link to="/privacy-policy" className="text-gray-400 hover:text-white">Privacy Policy</Link></li>
+              <li><Link to="/terms" className="text-gray-400 hover:text-white">Terms of Use</Link></li>
+              <li><Link to="/contact" className="text-gray-400 hover:text-white">Licensing Inquiries</Link></li>
             </ul>
           </div>
           <div>
