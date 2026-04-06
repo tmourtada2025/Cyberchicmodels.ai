@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import { Star, ChevronRight, ArrowRight, Video, Image, Monitor, Download, Palette, LayoutGrid, FileCheck, Paintbrush } from 'lucide-react';
+import { Star, ChevronRight, ArrowRight, Video, Image, Monitor, Palette, LayoutGrid, FileCheck, Paintbrush } from 'lucide-react';
 import { Navbar } from './components/Navbar';
 import { ModelsPage } from './components/ModelsPage';
 import { ModelProfilePage } from './components/ModelProfilePage';
@@ -136,38 +136,6 @@ function App() {
                       <p className="text-sm text-gray-300">New styles coming soon!</p>
                     </div>
                   )}
-                </div>
-              </div>
-              <div className="py-12 bg-black text-white">
-                <div className="max-w-7xl mx-auto px-4">
-                  <h2 className="text-3xl font-serif mb-4 text-center">What's Included in a Pack</h2>
-                  <p className="text-lg text-center text-gray-300 mb-10 max-w-3xl mx-auto">
-                    Explore our premium AI model roster - each identity is crafted for creators, brands, and digital campaigns.
-                  </p>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6">
-                      <h3 className="text-xl font-serif mb-4 flex items-center">
-                        <Image className="h-6 w-6 mr-3 text-rose-300" /> Model Pack Includes:
-                      </h3>
-                      <div className="space-y-3">
-                        <div className="flex items-start"><Image className="h-5 w-5 mr-3 mt-1 text-rose-300" /><p className="text-sm">30+ high-resolution fashion portraits</p></div>
-                        <div className="flex items-start"><Video className="h-5 w-5 mr-3 mt-1 text-rose-300" /><p className="text-sm">Short videos for motion training & storytelling</p></div>
-                        <div className="flex items-start"><Monitor className="h-5 w-5 mr-3 mt-1 text-rose-300" /><p className="text-sm">Clean, studio-style backgrounds</p></div>
-                        <div className="flex items-start"><FileCheck className="h-5 w-5 mr-3 mt-1 text-rose-300" /><p className="text-sm">Ready for AI training and commercial use</p></div>
-                      </div>
-                    </div>
-                    <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6">
-                      <h3 className="text-xl font-serif mb-4 flex items-center">
-                        <Paintbrush className="h-6 w-6 mr-3 text-rose-300" /> Style Pack Includes:
-                      </h3>
-                      <div className="space-y-3">
-                        <div className="flex items-start"><LayoutGrid className="h-5 w-5 mr-3 mt-1 text-rose-300" /><p className="text-sm">Full-body fashion renders across angles</p></div>
-                        <div className="flex items-start"><Palette className="h-5 w-5 mr-3 mt-1 text-rose-300" /><p className="text-sm">Color swatch variants with seamless integration</p></div>
-                        <div className="flex items-start"><Download className="h-5 w-5 mr-3 mt-1 text-rose-300" /><p className="text-sm">Transparent backgrounds for drag-and-drop design</p></div>
-                        <div className="flex items-start"><FileCheck className="h-5 w-5 mr-3 mt-1 text-rose-300" /><p className="text-sm">Royalty-free license for creative & commercial projects</p></div>
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </div>
               <div className="py-12 px-4">
