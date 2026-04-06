@@ -72,7 +72,7 @@ function App() {
                 <div className="max-w-4xl mx-auto text-center">
                   <h2 className="text-3xl font-serif mb-4">About CyberChicModels.ai</h2>
                   <p className="text-lg text-gray-600">
-                    A curated digital platform offering AI-generated fashion models for editorial, branding, and creative content. Our stylish influencers are ready for download, with consistent visual packs tailored for modern creators.
+                    A curated digital platform offering AI-generated fashion models for editorial, branding, and creative content. Our stylish influencers bring editorial, branding, and social campaigns to life with premium AI-generated imagery.
                   </p>
                 </div>
               </div>
@@ -142,7 +142,7 @@ function App() {
                 <div className="max-w-7xl mx-auto px-4">
                   <h2 className="text-3xl font-serif mb-4 text-center">What's Included in a Pack</h2>
                   <p className="text-lg text-center text-gray-300 mb-10 max-w-3xl mx-auto">
-                    Explore our premium downloads — each pack is crafted for creators, developers, and digital stylists.
+                    Explore our premium AI model roster - each identity is crafted for creators, brands, and digital campaigns.
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6">
