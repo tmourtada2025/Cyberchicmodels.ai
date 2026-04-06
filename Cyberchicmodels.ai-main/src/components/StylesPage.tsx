@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { addToCart } from '../store/cartSlice';
+
 import { ArrowLeft, X, Search, RefreshCw } from 'lucide-react';
 import { Footer } from './Footer';
 import { supabase } from '../lib/supabase';
@@ -22,7 +22,7 @@ interface ColorTag {
 }
 
 export function StylesPage() {
-  const dispatch = useDispatch();
+  
   const navigate = useNavigate();
   const [styles, setStyles] = useState<Style[]>([]);
   const [loading, setLoading] = useState(true);
@@ -178,7 +178,7 @@ export function StylesPage() {
           <div className="text-center mb-12">
             <h1 className="text-4xl font-serif mb-4">Style Concepts & Digital Couture</h1>
             <p className="text-xl text-gray-600">
-              Discover curated fashion looks you can download, train on, or shop from.
+              Discover curated fashion looks created for digital campaigns, brand licensing, and AI development.
             </p>
           </div>
 
@@ -323,7 +323,7 @@ export function StylesPage() {
                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                         <div className="absolute inset-x-0 bottom-0 p-4 text-white transform translate-y-2 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200">
                           <h3 className="text-lg font-medium truncate">{mainStyle.name}</h3>
-                          <p className="text-sm text-white/80">${(mainStyle.price_usd || 0).toFixed(2)}</p>
+                          
                         </div>
                       </div>
                     </Link>
