@@ -9,7 +9,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <h3 className="text-xl font-serif mb-4">CyberChicModels.ai</h3>
-            <p className="text-gray-400">Redefining digital fashion with AI-generated models.</p>
+            <p className="text-gray-400">Not a stock library. A licensable roster.</p>
             <div className="flex space-x-4 mt-6">
               <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">
                 <Instagram className="h-5 w-5" />
@@ -23,7 +23,6 @@ export function Footer() {
             <h4 className="text-lg mb-4">Quick Links</h4>
             <ul className="space-y-2">
               <li><Link to="/models" className="text-gray-400 hover:text-white">Browse Models</Link></li>
-              <li><Link to="/styles" className="text-gray-400 hover:text-white">Styles</Link></li>
               <li><Link to="/about" className="text-gray-400 hover:text-white">About Us</Link></li>
               <li><Link to="/contact" className="text-gray-400 hover:text-white">Contact</Link></li>
             </ul>
