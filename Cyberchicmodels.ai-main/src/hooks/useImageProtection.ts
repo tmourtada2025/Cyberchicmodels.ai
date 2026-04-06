@@ -23,26 +23,9 @@ function addShield(img: HTMLImageElement) {
   if (pos === 'static') parent.style.position = 'relative';
   const shield = document.createElement('div');
   shield.className = 'ccm-shield';
-  shield.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;z-index:10;cursor:default;-webkit-user-select:none;user-select:none;';
-  shield.addEventListener('contextmenu', function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    showSecurityNotice();
-  });
-  shield.addEventListener('dragstart', function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    showSecurityNotice();
-  });
-  let touchTimer: ReturnType<typeof setTimeout>;
-  shield.addEventListener('touchstart', function(e) {
-    touchTimer = setTimeout(function() {
-      e.preventDefault();
-      showSecurityNotice();
-    }, 500);
-  }, { passive: false });
-  shield.addEventListener('touchend', function() { clearTimeout(touchTimer); });
-  shield.addEventListener('touchmove', function() { clearTimeout(touchTimer); });
+  // pointer-events: none so clicks pass through to buttons underneath
+  // Right-click is caught by the document capture listener instead
+  shield.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;z-index:10;pointer-events:none;-webkit-user-select:none;user-select:none;';
   parent.appendChild(shield);
 }
 
@@ -52,10 +35,10 @@ export function useImageProtection() {
       const blocked =
         (e.ctrlKey && e.key === 's') ||
         (e.ctrlKey && e.key === 'u') ||
-        (e.ctrlKey && e.key === 'p') ||
+  2     (e.ctrlKey && e.key === 'p') ||
         (e.ctrlKey && e.shiftKey && e.key === 'I') ||
         (e.ctrlKey && e.shiftKey && e.key === 'J') ||
-   0    (e.ctrlKey && e.shiftKey && e.key === 'C') ||
+        (e.ctrlKey && e.shiftKey && e.key === 'C') ||
         e.key === 'F12' ||
         e.key === 'PrintScreen';
       if (blocked) {
@@ -65,23 +48,40 @@ export function useImageProtection() {
       }
     };
 
+    // Capture-phase contextmenu on document catches right-clicks on images
+    // even when pointer-events:none is on the shield
     const handleContextMenu = function(e: MouseEvent) {
       const target = e.target as HTMLElement;
       const blocked =
         target.tagName === 'IMG' ||
-        target.classList.contains('ccm-shield') ||
         !!target.closest('[class*="hero"]') ||
         !!target.closest('[class*="carousel"]') ||
-        !!target.closest('[class*="card"]') ||
-        !!target.closest('[class*="modal"]') ||
-        !!target.closest('[class*="collection"]') ||
-        !!target.closest('[class*="style"]');
+        !!target.closest('.ccm-shield');
       if (blocked) {
         e.preventDefault();
         e.stopPropagation();
         showSecurityNotice();
       }
     };
+
+    // Block drag on images directly
+    const handleDragStart = function(e: DragEvent) {
+      if ((e.target as HTMLElement).tagName === 'IMG') {
+        e.preventDefault();
+        showSecurityNotice();
+      }
+    };
+
+    // Mobile long-press on images
+    let touchTimer: ReturnType<typeof setTimeout>;
+    const handleTouchStart = function(e: TouchEvent) {
+      if ((e.target as HTMLElement).tagName === 'IMG') {
+        touchTimer = setTimeout(function() {
+          showSecurityNotice();
+        }, 500);
+      }
+    };
+    const handleTouchEnd = function() { clearTimeout(touchTimer); };
 
     const protectImages = function() {
       const images = document.querySelectorAll('img');
@@ -106,7 +106,7 @@ export function useImageProtection() {
         devToolsOpen = false;
         document.querySelectorAll('img').forEach(function(img) {
           (img as HTMLImageElement).style.filter = '';
-     0  });
+        });
       }
     }, 500);
 
@@ -115,11 +115,17 @@ export function useImageProtection() {
 
     document.addEventListener('contextmenu', handleContextMenu, true);
     document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('dragstart', handleDragStart);
+    document.addEventListener('touchstart', handleTouchStart, { passive: true });
+    document.addEventListener('touchend', handleTouchEnd);
     protectImages();
 
     return function() {
       document.removeEventListener('contextmenu', handleContextMenu, true);
       document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('dragstart', handleDragStart);
+      document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchend', handleTouchEnd);
       clearInterval(devToolsCheck);
       observer.disconnect();
       document.querySelectorAll('.ccm-shield').forEach(function(s) { s.remove(); });
