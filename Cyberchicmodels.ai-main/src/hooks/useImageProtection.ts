@@ -46,18 +46,11 @@ export function useImageProtection() {
       }
     };
 
+    // Block ALL right-clicks on the page - simplest reliable approach
     const handleContextMenu = function(e: MouseEvent) {
-      const target = e.target as HTMLElement;
-      const blocked =
-        target.tagName === 'IMG' ||
-        !!target.closest('[class*="hero"]') ||
-        !!target.closest('[class*="carousel"]') ||
-        !!target.closest('.ccm-shield');
-      if (blocked) {
-        e.preventDefault();
-        e.stopPropagation();
-        showSecurityNotice();
-      }
+      e.preventDefault();
+      e.stopPropagation();
+      showSecurityNotice();
     };
 
     const handleDragStart = function(e: DragEvent) {
