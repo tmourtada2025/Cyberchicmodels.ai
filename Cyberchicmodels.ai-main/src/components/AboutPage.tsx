@@ -18,10 +18,10 @@ export function AboutPage() {
           <div className="prose prose-lg mx-auto">
             <div className="text-lg text-gray-700 mb-12">
               <p className="mb-6">
-                At CyberChicModels.ai, we're reimagining the world of fashion through the lens of artificial intelligence. Our platform curates a growing roster of AI-generated fashion models - each designed with precision, diversity, and visual impact in mind.
+                CyberChicModels.ai is a licensable AI model agency. Not a stock library — a curated roster of persistent digital identities built for brand campaigns, editorial production, and creative content at scale.
               </p>
               <p>
-                Whether you're building creative campaigns, branded content, or editorial projects, our digital models are licensable identities tailored for modern creators who demand style, flexibility, and innovation.
+                Each model on our roster is a unique AI identity with a defined look, cultural background, and commercial range. License the face. Deploy it across every campaign, platform, and format you need.
               </p>
             </div>
             <h2 className="text-2xl font-serif mb-8">What We Offer</h2>
@@ -45,9 +45,9 @@ export function AboutPage() {
                 </p>
               </div>
               <div className="bg-gray-50 p-6 rounded-lg">
-                <h3 className="text-xl font-serif mb-3">Digital Couture & Style Concepts</h3>
+                <h3 className="text-xl font-serif mb-3">Ethical & Scalable</h3>
                 <p className="text-gray-700">
-                  Our curated looks are crafted to inspire fashion-forward collections, blending high-end aesthetics with algorithmic precision.
+                  No shoots, no contracts, no scheduling. Our models are available on demand — consistent, ethical, and built to scale with your creative output.
                 </p>
               </div>
             </div>
