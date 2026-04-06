@@ -9,17 +9,17 @@ export function Navbar() {
   const favorites = useSelector((state: RootState) => state.favorites.items);
   const location = useLocation();
   return (
-    <nav className="fixed w-full z-50 bg-white/80 backdrop-blur-sm">
+    <nav className="fixed w-full z-50" style={{ background: 'rgba(8,8,8,0.85)', backdropFilter: 'blur(8px)' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <Link to="/" className="text-2xl font-serif">CyberChicModels.ai</Link>
+            <Link to="/" className="text-2xl font-serif" style={{ color: '#f5f0e8' }}>CyberChicModels.ai</Link>
           </div>
           <div className="hidden md:flex items-center space-x-8">
-            <Link to="/models" className="text-gray-700 hover:text-black">Models</Link>
-            <Link to="/about" className="text-gray-700 hover:text-black">About</Link>
-            <Link to="/contact" className="text-gray-700 hover:text-black">Contact</Link>
-            <Link to="/favorites" className="relative text-gray-700 hover:text-black">
+            <Link to="/models" style={{ color: 'rgba(245,240,232,0.7)' }} className="hover:text-white transition">Models</Link>
+            <Link to="/about" style={{ color: 'rgba(245,240,232,0.7)' }} className="hover:text-white transition">About</Link>
+            <Link to="/contact" style={{ color: 'rgba(245,240,232,0.7)' }} className="hover:text-white transition">Contact</Link>
+            <Link to="/favorites" className="relative transition" style={{ color: 'rgba(245,240,232,0.7)' }}>
               Favorites
               {favorites.length > 0 && (
                 <span className="absolute -top-2 -right-2 bg-rose-300 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">

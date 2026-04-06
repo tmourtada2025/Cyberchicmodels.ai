@@ -18,7 +18,7 @@ export function HeroCarousel() {
         style={{
           backgroundImage: `url("https://iqoifrsavdreyiixuksd.supabase.co/storage/v1/object/public/hero/hero.webp")`,
           backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          backgroundPosition: 'top center',
           backgroundRepeat: 'no-repeat',
         }}
         onContextMenu={blockContextMenu}
