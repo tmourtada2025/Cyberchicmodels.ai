@@ -72,7 +72,7 @@ export function useImageProtection() {
       const images = document.querySelectorAll('img');
       images.forEach(function(img) {
         img.setAttribute('draggable', 'false');
-        if (!img.dataset.ccmProtected) addShield(img as HTMLImageElement);
+        const inModal = img.closest('[class*="fixed"][class*="z-50"], [class*="z-50"][class*="fixed"]'); if (!img.dataset.ccmProtected && !inModal) addShield(img as HTMLImageElement);
       });
     };
 
