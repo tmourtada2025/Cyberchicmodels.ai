@@ -35,7 +35,7 @@
 ::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.5); }
 
 /* ============================================
-   IMAGE PROTECTION — CyberChicModels.ai
+   IMAGE PROTECTION â CyberChicModels.ai
    ============================================ */
 
 img {
@@ -47,7 +47,6 @@ img {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  pointer-events: none;
 }
 
 button, a, [role="button"] {
