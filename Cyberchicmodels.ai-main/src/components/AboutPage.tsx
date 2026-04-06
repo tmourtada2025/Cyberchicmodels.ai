@@ -21,7 +21,7 @@ export function AboutPage() {
             <div className="text-lg text-gray-700 mb-12">
               <p className="mb-6">
                 At CyberChicModels.ai, we're reimagining the world of fashion through the lens of artificial intelligence. 
-                Our platform curates a growing library of AI-generated fashion models—each designed with precision, diversity, 
+                Our platform curates a growing library of AI-generated fashion models---each designed with precision, diversity, 
                 and visual impact in mind.
               </p>
               <p>
@@ -67,10 +67,10 @@ export function AboutPage() {
             <div className="mb-12">
               <p className="text-gray-700 mb-6">
                 Fashion is evolving. With the rise of digital platforms, AI influencers, and virtual campaigns, the demand 
-                for fresh, scalable, and diverse visuals has never been greater. We exist to fill that gap—with style.
+                for fresh, scalable, and diverse visuals has never been greater. We exist to fill that gap---with style.
               </p>
               <p className="text-gray-700">
-                Whether you're a designer, marketer, AI developer, or visionary brand—CyberChicModels.ai is your gateway 
+                Whether you're a designer, marketer, AI developer, or visionary brand---CyberChicModels.ai is your gateway 
                 to the next era of visual storytelling.
               </p>
             </div>
@@ -79,7 +79,7 @@ export function AboutPage() {
             <div className="text-center mb-12">
               <p className="text-gray-700 mb-8">
                 We're constantly updating our model library, adding new looks, faces, and collections.
-                Follow our journey—and shape the future of fashion with us.
+                Follow our journey---and shape the future of fashion with us.
               </p>
               <Link 
                 to="/models" 
