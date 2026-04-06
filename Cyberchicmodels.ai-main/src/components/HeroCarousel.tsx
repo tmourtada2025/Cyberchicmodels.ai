@@ -16,7 +16,7 @@ export function HeroCarousel() {
       <div
         className="absolute inset-0 w-full h-full"
         style={{
-          backgroundImage: `url("https://iqoifrsavdreyiixuksd.supabase.co/storage/v1/object/public/hero/hero.jpg")`,
+          backgroundImage: `url("https://iqoifrsavdreyiixuksd.supabase.co/storage/v1/object/public/hero/hero.webp")`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
