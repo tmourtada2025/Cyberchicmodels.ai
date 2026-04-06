@@ -210,7 +210,7 @@ export function ModelsPage() {
           </div>
           <h1 className="text-4xl font-serif mb-4">Our Models</h1>
           <p className="text-lg text-gray-600 max-w-2xl">
-            Discover our collection of AI-generated fashion models. Each model comes with a complete pack of high-resolution images perfect for your creative projects.
+            Discover our roster of AI-generated fashion models. Each model is a licensable identity built for editorial, brand campaigns, and creative production.
           </p>
         </div>
       </div>
