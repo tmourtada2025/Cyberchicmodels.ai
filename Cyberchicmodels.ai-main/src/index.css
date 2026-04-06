@@ -34,9 +34,9 @@
 ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.3); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.5); }
 
-/* ==========================================
+/* ============================================
    IMAGE PROTECTION — CyberChicModels.ai
-   ========================================== */
+   ============================================ */
 
 img {
   -webkit-user-drag: none;
