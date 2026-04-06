@@ -113,7 +113,7 @@ export function HeroCarousel() {
                   className="absolute inset-0 w-full h-full"
                   style={{
                     backgroundImage: `url("${getImageUrl(slide)}")`,
-      3             backgroundSize: 'cover',
+                    backgroundSize: 'cover',
                     backgroundPosition: 'center',
                   }}
                   onContextMenu={blockContextMenu}
