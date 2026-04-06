@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, ChevronDown, Download, ChevronRight as ChevronRightIcon } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronDown, ChevronRight as ChevronRightIcon } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { getStorageUrl } from '../lib/storage';
 import type { HeroImage } from '../lib/supabase';
@@ -63,10 +63,6 @@ export function HeroCarousel() {
 
   const goToSlide = (index: number) => setCurrentIndex(index);
 
-  const handleDownloadDemo = () => {
-    alert('Demo pack download will be implemented soon!');
-  };
-
   const scrollToContent = () => {
     const contentSection = document.getElementById('main-content');
     if (contentSection) contentSection.scrollIntoView({ behavior: 'smooth' });
@@ -112,40 +108,33 @@ export function HeroCarousel() {
           {slides.map((slide, index) => (
             <div key={slide.id} className="absolute w-full h-full" style={{ left: `${index * 100}%` }}>
               <div className="h-full flex items-center justify-center">
-                {/* Background image div — protected against right-click */}
+                {/* Background image - protected against right-click */}
                 <div
-                  className="absolute inset-0 w-full h-full hero-image-bg"
+                  className="absolute inset-0 w-full h-full"
                   style={{
                     backgroundImage: `url("${getImageUrl(slide)}")`,
-                    backgroundSize: 'cover',
+      3             backgroundSize: 'cover',
                     backgroundPosition: 'center',
                   }}
                   onContextMenu={blockContextMenu}
                   onDragStart={blockContextMenu}
                 />
-                {/* Transparent shield over hero image */}
+                {/* Shield: pointer-events none so nav buttons still work */}
                 <div
                   className="absolute inset-0 z-10"
-                  style={{ cursor: 'default' }}
+                  style={{ pointerEvents: 'none' }}
                   onContextMenu={blockContextMenu}
-                  onDragStart={blockContextMenu}
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-40" />
                 <div className="relative text-center text-white px-4 max-w-4xl mx-auto z-20">
                   <h2 className="text-6xl font-serif mb-6">{slide.alt_text || 'CyberChic Models'}</h2>
                   <p className="text-xl mb-12">{slide.alt_text || 'Discover our latest AI fashion models'}</p>
-                  <div className="flex justify-center space-x-6">
+                  <div className="flex justify-center">
                     <button
                       onClick={() => navigate('/models')}
                       className="bg-white text-black px-8 py-3 rounded-full hover:bg-opacity-90 transition flex items-center"
                     >
                       Browse Models <ChevronRightIcon className="ml-2 h-5 w-5" />
-                    </button>
-                    <button
-                      onClick={handleDownloadDemo}
-                      className="bg-transparent border-2 border-white text-white px-8 py-3 rounded-full hover:bg-white/10 transition flex items-center"
-                    >
-                      <Download className="mr-2 h-5 w-5" /> Download Demo
                     </button>
                   </div>
                 </div>
