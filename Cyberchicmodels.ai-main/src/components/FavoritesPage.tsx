@@ -82,19 +82,13 @@ export function FavoritesPage() {
           </div>
 
           <div className="flex justify-between items-center mb-8">
-            <h1 className="text-4xl font-serif">Favorite Models & Styles</h1>
+            <h1 className="text-4xl font-serif">Favorite Models</h1>
             <div className="flex space-x-4">
               <Link
                 to="/models"
                 className="bg-black text-white px-6 py-2 rounded-full hover:bg-opacity-90 transition"
               >
                 Browse Models
-              </Link>
-              <Link
-                to="/styles"
-                className="bg-rose-300 text-white px-6 py-2 rounded-full hover:bg-rose-400 transition"
-              >
-                Browse Styles
               </Link>
             </div>
           </div>
