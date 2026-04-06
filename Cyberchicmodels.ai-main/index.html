@@ -5,6 +5,41 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CyberChicModels.ai</title>
+    <script>
+      (function() {
+        var overlay = null;
+        function showNotice() {
+          if (document.getElementById('ccm-notice')) return;
+          var o = document.createElement('div');
+          o.id = 'ccm-notice';
+          o.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:2147483647;display:flex;align-items:center;justify-content:center;font-family:sans-serif;';
+          o.innerHTML = '<div style="background:#fff;border-radius:16px;padding:40px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.5);"><div style="font-size:40px;margin-bottom:16px;">&#128274;</div><h2 style="margin:0 0 12px;font-size:20px;font-weight:700;color:#111;">Content Protected</h2><p style="margin:0 0 20px;font-size:14px;color:#555;line-height:1.6;">All images and content on <strong>CyberChicModels.ai</strong> are protected by copyright. Unauthorized copying or distribution is strictly prohibited.</p><p style="margin:0 0 24px;font-size:13px;color:#888;">To license our models, please contact us.</p><button onclick="document.getElementById('ccm-notice').remove()" style="background:#e11d48;color:#fff;border:none;border-radius:8px;padding:12px 32px;font-size:14px;font-weight:600;cursor:pointer;">I Understand</button></div>';
+          document.body.appendChild(o);
+          o.onclick = function(e) { if (e.target === o) o.remove(); };
+          setTimeout(function() { if (o.parentNode) o.remove(); }, 6000);
+        }
+        document.addEventListener('contextmenu', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          showNotice();
+          return false;
+        }, true);
+        document.addEventListener('keydown', function(e) {
+          if ((e.ctrlKey && (e.key==='s'||e.key==='u'||e.key==='p')) ||
+              (e.ctrlKey && e.shiftKey && (e.key==='I'||e.key==='J'||e.key==='C')) ||
+              e.key==='F12' || e.key==='PrintScreen') {
+            e.preventDefault();
+            showNotice();
+          }
+        }, true);
+        document.addEventListener('dragstart', function(e) {
+          if (e.target && e.target.tagName === 'IMG') {
+            e.preventDefault();
+            showNotice();
+          }
+        }, true);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
