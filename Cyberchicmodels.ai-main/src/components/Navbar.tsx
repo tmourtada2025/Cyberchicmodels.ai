@@ -17,7 +17,6 @@ export function Navbar() {
           </div>
           <div className="hidden md:flex items-center space-x-8">
             <Link to="/models" className="text-gray-700 hover:text-black">Models</Link>
-            <Link to="/styles" className="text-gray-700 hover:text-black">Styles</Link>
             <Link to="/about" className="text-gray-700 hover:text-black">About</Link>
             <Link to="/contact" className="text-gray-700 hover:text-black">Contact</Link>
             <Link to="/favorites" className="relative text-gray-700 hover:text-black">
@@ -40,7 +39,6 @@ export function Navbar() {
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             <Link to="/models" className="block px-3 py-2 text-gray-700">Models</Link>
-            <Link to="/styles" className="block px-3 py-2 text-gray-700">Styles</Link>
             <Link to="/about" className="block px-3 py-2 text-gray-700">About</Link>
             <Link to="/contact" className="block px-3 py-2 text-gray-700">Contact</Link>
             <Link to="/favorites" className="block px-3 py-2 text-gray-700">Favorites</Link>

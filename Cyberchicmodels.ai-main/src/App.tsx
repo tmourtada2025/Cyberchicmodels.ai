@@ -68,17 +68,21 @@ function App() {
           <Route path="/" element={
             <div>
               <HeroCarousel />
-              <div id="main-content" className="py-12 px-4 bg-gradient-to-b from-rose-50 to-white">
-                <div className="max-w-4xl mx-auto text-center">
-                  <h2 className="text-3xl font-serif mb-4">About CyberChicModels.ai</h2>
-                  <p className="text-lg text-gray-600">
-                    A curated digital platform offering AI-generated fashion models for editorial, branding, and creative content. Our stylish influencers bring editorial, branding, and social campaigns to life with premium AI-generated imagery.
+              <div id="main-content" className="py-16 px-4" style={{ background: '#080808' }}>
+                <div className="max-w-3xl mx-auto text-center">
+                  <p className="mb-3" style={{ fontSize: '11px', color: '#c8a96e', letterSpacing: '0.2em', textTransform: 'uppercase' }}>What we are</p>
+                  <h2 className="font-serif mb-6" style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', color: '#f5f0e8', fontWeight: 400 }}>License AI model identities for your brand campaigns.</h2>
+                  <p style={{ fontSize: '16px', color: 'rgba(245,240,232,0.6)', lineHeight: 1.8 }}>
+                    Persistent faces. Infinite creative directions. No agency fees, no contracts, no scheduling. Each model on our roster is a licensable identity — built for editorial, brand campaigns, and creative production.
                   </p>
                 </div>
               </div>
-              <div className="py-12 px-4">
+              <div className="py-16 px-4" style={{ background: '#f8f5f0' }}>
                 <div className="max-w-7xl mx-auto">
-                  <h2 className="text-3xl font-serif mb-8 text-center">Featured Models</h2>
+                  <div className="text-center mb-10">
+                    <p className="mb-3" style={{ fontSize: '11px', color: '#c8a96e', letterSpacing: '0.2em', textTransform: 'uppercase' }}>The roster</p>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', color: '#1a1a1a', fontWeight: 400 }}>Featured identities</h2>
+                  </div>
                   {loading ? (
                     <div className="flex justify-center items-center py-12">
                       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-500"></div>
@@ -116,39 +120,7 @@ function App() {
                   )}
                 </div>
               </div>
-              <div className="py-12 bg-black">
-                <div className="max-w-7xl mx-auto px-4">
-                  <div className="flex flex-col items-center mb-8">
-                    <h2 className="text-3xl font-serif text-white text-center mb-4">Featured Styles & Digital Couture</h2>
-                  </div>
-                  {featuredStyles.length > 0 ? (
-                    <>
-                      <StylesCarousel styles={featuredStyles} />
-                      <div className="mt-8 text-center">
-                        <Link to="/styles" className="inline-flex items-center justify-center px-8 py-3 bg-white text-black rounded-full hover:bg-opacity-90 transition-colors">
-                          Explore All Styles <ChevronRight className="ml-2 h-5 w-5" />
-                        </Link>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="text-center py-12">
-                      <p className="text-white mb-4">No styles available</p>
-                      <p className="text-sm text-gray-300">New styles coming soon!</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="py-12 px-4">
-                <div className="max-w-4xl mx-auto text-center">
-                  <h2 className="text-3xl font-serif mb-4">New Models Weekly</h2>
-                  <p className="text-lg text-gray-600 mb-8">
-                    We're adding new digital influencers weekly. Come back often to explore fresh faces.
-                  </p>
-                  <Link to="/models" className="inline-flex items-center text-black hover:text-rose-500 transition">
-                    Browse All Models <ChevronRight className="ml-2 h-5 w-5" />
-                  </Link>
-                </div>
-              </div>
+
               <Footer />
             </div>
           } />
