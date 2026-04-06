@@ -23,8 +23,6 @@ function addShield(img: HTMLImageElement) {
   if (pos === 'static') parent.style.position = 'relative';
   const shield = document.createElement('div');
   shield.className = 'ccm-shield';
-  // pointer-events: none so clicks pass through to buttons underneath
-  // Right-click is caught by the document capture listener instead
   shield.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;z-index:10;pointer-events:none;-webkit-user-select:none;user-select:none;';
   parent.appendChild(shield);
 }
@@ -35,7 +33,7 @@ export function useImageProtection() {
       const blocked =
         (e.ctrlKey && e.key === 's') ||
         (e.ctrlKey && e.key === 'u') ||
-  2     (e.ctrlKey && e.key === 'p') ||
+        (e.ctrlKey && e.key === 'p') ||
         (e.ctrlKey && e.shiftKey && e.key === 'I') ||
         (e.ctrlKey && e.shiftKey && e.key === 'J') ||
         (e.ctrlKey && e.shiftKey && e.key === 'C') ||
@@ -48,8 +46,6 @@ export function useImageProtection() {
       }
     };
 
-    // Capture-phase contextmenu on document catches right-clicks on images
-    // even when pointer-events:none is on the shield
     const handleContextMenu = function(e: MouseEvent) {
       const target = e.target as HTMLElement;
       const blocked =
@@ -64,7 +60,6 @@ export function useImageProtection() {
       }
     };
 
-    // Block drag on images directly
     const handleDragStart = function(e: DragEvent) {
       if ((e.target as HTMLElement).tagName === 'IMG') {
         e.preventDefault();
@@ -72,13 +67,10 @@ export function useImageProtection() {
       }
     };
 
-    // Mobile long-press on images
     let touchTimer: ReturnType<typeof setTimeout>;
     const handleTouchStart = function(e: TouchEvent) {
       if ((e.target as HTMLElement).tagName === 'IMG') {
-        touchTimer = setTimeout(function() {
-          showSecurityNotice();
-        }, 500);
+        touchTimer = setTimeout(function() { showSecurityNotice(); }, 500);
       }
     };
     const handleTouchEnd = function() { clearTimeout(touchTimer); };
