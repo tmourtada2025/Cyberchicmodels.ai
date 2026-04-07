@@ -24,7 +24,6 @@ import { useImageProtection } from './hooks/useImageProtection';
 
 function App() {
   useImageProtection();
-
   const [featuredModels, setFeaturedModels] = useState<Model[]>([]);
   const [featuredStyles, setFeaturedStyles] = useState<Style[]>([]);
   const [selectedModel, setSelectedModel] = useState<Model | null>(null);
@@ -40,9 +39,22 @@ function App() {
           apiService.getModels({ limit: 100 }).catch(() => []),
           apiService.getStyles({ limit: 6 }).catch(() => [])
         ]);
-        const taggedModels = modelsData.filter(model =>
-          model.isNew || model.isPopular || model.isComingSoon
-        );
+
+        // Sort by created_at descending and take the 3 most recently published
+        const sorted = [...modelsData].sort((a, b) => {
+          const dateA = new Date(a.createdAt || 0).getTime();
+          const dateB = new Date(b.createdAt || 0).getTime();
+          return dateB - dateA;
+        });
+        const top3 = sorted.slice(0, 3);
+
+        // Mark a model as "new" if it was published within the last 30 days
+        const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+        const taggedModels = top3.map(model => ({
+          ...model,
+          isNew: new Date(model.createdAt || 0).getTime() > thirtyDaysAgo,
+        }));
+
         setFeaturedModels(taggedModels);
         setFeaturedStyles(stylesData);
       } catch (err) {
@@ -94,7 +106,7 @@ function App() {
                     </div>
                   ) : featuredModels.length > 0 ? (
                     <>
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {featuredModels.map(model => (
                           <button
                             key={model.id}
@@ -120,7 +132,6 @@ function App() {
                   )}
                 </div>
               </div>
-
               <Footer />
             </div>
           } />
