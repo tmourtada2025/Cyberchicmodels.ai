@@ -11,14 +11,14 @@ export function HeroCarousel() {
   };
 
   return (
-    <div className="relative w-full" style={{ height: '100vh', backgroundColor: '#080808' }}>
+    <div className="relative w-full" style={{ height: 'calc(100vh - 64px)', backgroundColor: '#080808' }}>
       {/* Background image */}
       <div
         className="absolute inset-0 w-full h-full"
         style={{
           backgroundImage: `url("https://iqoifrsavdreyiixuksd.supabase.co/storage/v1/object/public/hero/hero.webp")`,
           backgroundSize: 'cover',
-          backgroundPosition: 'top center',
+          backgroundPosition: 'center center',
           backgroundRepeat: 'no-repeat',
         }}
         onContextMenu={blockContextMenu}
