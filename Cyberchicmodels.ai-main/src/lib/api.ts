@@ -38,7 +38,6 @@ class APIService {
     try {
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
       if (!supabaseUrl || !supabaseKey || supabaseKey.includes('REPLACE_WITH_YOUR_ACTUAL')) {
         console.warn('Supabase not configured. Using fallback data.');
         return [];
@@ -55,7 +54,6 @@ class APIService {
       }
 
       const { data, error } = await query;
-
       if (error) {
         console.error('Error fetching models:', error);
         return [];
@@ -89,11 +87,75 @@ class APIService {
     }
   }
 
+  async getModelsWithCampaigns(): Promise<Model[]> {
+    try {
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      if (!supabaseUrl || !supabaseKey || supabaseKey.includes('REPLACE_WITH_YOUR_ACTUAL')) {
+        console.warn('Supabase not configured.');
+        return [];
+      }
+
+      // Find all model_ids that have a campaign-type collection
+      const { data: campaignCollections, error: ccError } = await supabase
+        .from('model_collections')
+        .select('model_id')
+        .eq('collection_type', 'campaign')
+        .eq('is_visible', true);
+
+      if (ccError) {
+        console.error('Error fetching campaign collections:', ccError);
+        return [];
+      }
+
+      const modelIds = (campaignCollections || []).map(c => c.model_id);
+      if (modelIds.length === 0) return [];
+
+      // Fetch models that match those ids
+      const { data, error } = await supabase
+        .from('models')
+        .select('*')
+        .in('id', modelIds)
+        .eq('is_published', true)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching models with campaigns:', error);
+        return [];
+      }
+
+      return (data || []).map(model => ({
+        id: model.id,
+        slug: model.slug,
+        name: model.name,
+        tagline: model.tagline || '',
+        age: model.age || 0,
+        nationality: model.nationality || '',
+        ethnicity: model.ethnicity || '',
+        gender: model.gender || '',
+        height: model.height || '',
+        weight: model.weight || '',
+        specialty: model.specialty || '',
+        specialties: model.specialties || [],
+        bio: model.bio || '',
+        hobbies: model.hobbies || [],
+        image: model.thumbnail_path ? getStorageUrl('model-thumbnails', model.thumbnail_path) : '',
+        video: '',
+        isNew: model.is_new || false,
+        isPopular: model.is_popular || false,
+        isComingSoon: model.is_coming_soon || false,
+        isFeatured: model.is_featured || false
+      }));
+    } catch (error) {
+      console.error('Error in getModelsWithCampaigns:', error);
+      return [];
+    }
+  }
+
   async getStyles(options?: { limit?: number }): Promise<Style[]> {
     try {
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
       if (!supabaseUrl || !supabaseKey || supabaseKey.includes('REPLACE_WITH_YOUR_ACTUAL')) {
         console.warn('Supabase not configured. Using fallback data.');
         return [];
@@ -109,7 +171,6 @@ class APIService {
       }
 
       const { data, error } = await query;
-
       if (error) {
         console.error('Error fetching styles:', error);
         return [];
