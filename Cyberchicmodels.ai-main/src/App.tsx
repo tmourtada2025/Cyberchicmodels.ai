@@ -5,6 +5,7 @@ import { Star, ChevronRight, ArrowRight, Video, Image, Monitor, Palette, LayoutG
 import { Navbar } from './components/Navbar';
 import { ModelsPage } from './components/ModelsPage';
 import { ModelProfilePage } from './components/ModelProfilePage';
+import { PortfolioPage } from './components/PortfolioPage';
 import { StylesPage } from './components/StylesPage';
 import { StyleDetailsPage } from './components/StyleDetailsPage';
 import { AboutPage } from './components/AboutPage';
@@ -137,6 +138,7 @@ function App() {
           } />
           <Route path="/models" element={<ModelsPage />} />
           <Route path="/model/:id" element={<ModelProfilePage />} />
+          <Route path="/portfolio" element={<PortfolioPage />} />
           <Route path="/styles" element={<StylesPage />} />
           <Route path="/style/:id" element={<StyleDetailsPage />} />
           <Route path="/about" element={<AboutPage />} />
