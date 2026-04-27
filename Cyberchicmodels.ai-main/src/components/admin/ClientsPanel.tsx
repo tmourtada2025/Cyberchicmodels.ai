@@ -1,21 +1,15 @@
 /**
  * ClientsPanel — Admin panel for managing client tenants.
  *
+ * Step 4 update: adds inline Pricing section below the Active toggle
+ * in edit mode. Pricing only renders for existing clients (not during create).
+ *
  * Drop into src/components/admin/ClientsPanel.tsx
- *
- * Then in Admin.tsx:
- *   1. Add import: import { ClientsPanel } from "../components/admin/ClientsPanel";
- *   2. Add "clients" to Tab type alias
- *   3. Add { key: "clients", label: "Clients" } to tabs array
- *   4. Add {activeTab === "clients" && <ClientsPanel />} to render section
- *
- * Uses the same `colors`, `btnStyle`, `inputStyle`, `Field`, `Toggle`, `Toast`,
- * `ImageUploader` primitives as your existing Admin.tsx. These need to be either
- * exported from Admin.tsx or duplicated here. Simplest path: duplicate inline.
  */
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import { PricingPanel } from "./PricingPanel";
 
 const supabase: SupabaseClient = createClient(
   import.meta.env.VITE_SUPABASE_URL as string,
@@ -41,6 +35,7 @@ interface Client {
   default_language: string;
   default_currency: string;
   is_active: boolean;
+  is_complimentary: boolean;
   notes: string | null;
   created_at: string;
   updated_at: string;
@@ -53,7 +48,7 @@ interface ModelLite {
   slug: string;
 }
 
-// ─── Style helpers (duplicated from Admin.tsx for self-containment) ──────────
+// ─── Style helpers ───────────────────────────────────────────────────────────
 const colors = {
   bg: "#0d0d0d", surface: "#161616", border: "#2a2a2a",
   accent: "#c9a96e", accentDim: "rgba(201,169,110,0.15)",
@@ -139,11 +134,6 @@ function slugify(name: string): string {
   return name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
 }
 
-function formatDate(d: string) {
-  return new Date(d).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
-}
-
-// Fetch with auth header
 async function authedFetch(path: string, init: RequestInit = {}) {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) throw new Error("Not authenticated");
@@ -155,7 +145,7 @@ async function authedFetch(path: string, init: RequestInit = {}) {
   return fetch(path, { ...init, headers });
 }
 
-// ─── ImageUploader (duplicated, simplified) ──────────────────────────────────
+// ─── ImageUploader ───────────────────────────────────────────────────────────
 function ImageUploader({ bucket, folder, currentPath, onUploaded, label }: {
   bucket: string; folder: string; currentPath?: string | null;
   onUploaded: (path: string) => void; label: string;
@@ -194,7 +184,7 @@ const emptyClient = (): Partial<Client> => ({
   name: "", slug: "", contact_email: "", contact_name: "",
   logo_url: "", hero_image_url: "", assigned_model_id: null,
   default_language: "en", default_currency: "USD",
-  is_active: true, notes: "",
+  is_active: true, is_complimentary: false, notes: "",
 });
 
 function ClientForm({ initial, models, onSaved, onCancel }: {
@@ -206,6 +196,7 @@ function ClientForm({ initial, models, onSaved, onCancel }: {
   const [form, setForm] = useState<Partial<Client>>(initial || emptyClient());
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [pricingExpanded, setPricingExpanded] = useState(false);
   const isEdit = !!initial?.id;
 
   const set = (key: keyof Client, val: unknown) => setForm(prev => ({ ...prev, [key]: val }));
@@ -315,18 +306,83 @@ function ClientForm({ initial, models, onSaved, onCancel }: {
           placeholder="Notes about this client — visible only to admin" />
       </Field>
 
-      <div style={{ padding: "12px 16px", background: "#1a1a1a", borderRadius: 8 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 10, padding: "12px 16px", background: "#1a1a1a", borderRadius: 8 }}>
         <Toggle label="Active (client can access portal)" checked={!!form.is_active} onChange={v => set("is_active", v)} />
+        <Toggle label="Complimentary (no Stripe billing)" checked={!!form.is_complimentary} onChange={v => set("is_complimentary", v)} />
       </div>
 
       {error && <div style={{ fontSize: 12, color: colors.danger, padding: "8px 12px", background: "rgba(239,68,68,0.1)", borderRadius: 6 }}>{error}</div>}
 
-      <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", paddingTop: 20, marginTop: "auto", borderTop: `1px solid ${colors.border}` }}>
+      <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", paddingTop: 20, borderTop: `1px solid ${colors.border}` }}>
         <button type="button" onClick={onCancel} style={btnStyle("ghost")}>Cancel</button>
         <button type="button" onClick={save} disabled={saving} style={btnStyle("primary")}>
           {saving ? "Saving…" : isEdit ? "Save Changes" : "Create Client"}
         </button>
       </div>
+
+      {/* ─── Pricing section (edit mode only) ─────────────────────────── */}
+      {isEdit && form.id && (
+        <div style={{
+          marginTop: 24,
+          border: `1px solid ${colors.border}`,
+          borderRadius: 10,
+          overflow: "hidden",
+        }}>
+          <button
+            type="button"
+            onClick={() => setPricingExpanded(e => !e)}
+            style={{
+              width: "100%",
+              padding: "14px 16px",
+              background: pricingExpanded ? colors.accentDim : "#1a1a1a",
+              border: "none",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              fontFamily: "inherit",
+              transition: "background 0.15s",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <span style={{
+                fontSize: 11,
+                color: colors.accent,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                fontWeight: 600,
+              }}>
+                Pricing &amp; Stripe
+              </span>
+              {form.is_complimentary && (
+                <span style={{
+                  fontSize: 10,
+                  padding: "2px 8px",
+                  background: colors.accentDim,
+                  color: colors.accent,
+                  borderRadius: 4,
+                  fontWeight: 600,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                }}>
+                  Complimentary
+                </span>
+              )}
+            </div>
+            <span style={{ color: colors.muted, fontSize: 16 }}>
+              {pricingExpanded ? "▲" : "▼"}
+            </span>
+          </button>
+          {pricingExpanded && (
+            <div style={{ padding: 16, background: colors.bg }}>
+              <PricingPanel
+                clientId={form.id}
+                clientName={form.name || ""}
+              />
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -456,6 +512,9 @@ export function ClientsPanel() {
                     <span style={{ fontSize: 10, padding: "2px 6px", background: "rgba(74,222,128,0.15)", color: colors.success, borderRadius: 4 }}>ACTIVE</span>
                   ) : (
                     <span style={{ fontSize: 10, padding: "2px 6px", background: "rgba(136,136,136,0.15)", color: colors.muted, borderRadius: 4 }}>INACTIVE</span>
+                  )}
+                  {c.is_complimentary && (
+                    <span style={{ fontSize: 10, padding: "2px 6px", background: colors.accentDim, color: colors.accent, borderRadius: 4 }}>COMP</span>
                   )}
                   <span style={{ fontSize: 10, padding: "2px 6px", background: colors.accentDim, color: colors.accent, borderRadius: 4, fontFamily: "monospace" }}>
                     /{c.slug}
