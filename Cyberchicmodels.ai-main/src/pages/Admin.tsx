@@ -116,7 +116,7 @@ interface ClientRequest {
   created_at: string;
 }
 
-type Tab = "models" | "styles" | "hero" | "prompts" | "campaigns" | "requests";
+type Tab = "models" | "styles" | "hero" | "prompts" | "campaigns" | "requests" | "clients";
 
 // FIXED: was recursive, calling itself instead of navigator.clipboard.writeText
 function copyToClipboard(text: string): void {
@@ -4085,6 +4085,7 @@ export default function AdminPage() {
     { key: "prompts", label: "Prompts" },
     { key: "campaigns", label: "Campaigns" },
     { key: "requests", label: "Requests" },
+    { key: "clients", label: "Clients" },
   ];
 
   return (
@@ -4119,6 +4120,7 @@ export default function AdminPage() {
         {activeTab === "prompts" && <PromptsPanel />}
         {activeTab === "campaigns" && <CampaignsPanel />}
         {activeTab === "requests" && <RequestsPanel />}
+        {activeTab === "clients" && <ClientsPanel />}
       </div>
     </div>
   );
