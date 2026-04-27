@@ -1,12 +1,10 @@
 /**
- * Test endpoint — verifies Supabase admin client and Stripe SDK are wired correctly.
- *
- * Hit this once after deploy:
- *   GET https://www.cyberchicmodels.ai/api/test-connections
+ * Test endpoint - verifies Supabase admin and Stripe SDK are wired.
+ * Self-contained: no imports from src/lib to avoid ESM resolution issues.
  */
 
-import { getSupabaseAdmin } from "../src/lib/supabase-server.js";
-import { getStripe } from "../src/lib/stripe.js";
+import { createClient } from "@supabase/supabase-js";
+import Stripe from "stripe";
 
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -22,13 +20,21 @@ export default async function handler(req, res) {
 
   // Supabase check
   try {
-    const supabase = getSupabaseAdmin();
+    if (!process.env.VITE_SUPABASE_URL) {
+      throw new Error("VITE_SUPABASE_URL not set");
+    }
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      throw new Error("SUPABASE_SERVICE_ROLE_KEY not set");
+    }
+    const supabase = createClient(
+      process.env.VITE_SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY,
+      { auth: { autoRefreshToken: false, persistSession: false } }
+    );
     const { count, error } = await supabase
       .from("clients")
       .select("*", { count: "exact", head: true });
-
     if (error) throw error;
-
     result.supabase = {
       ok: true,
       clients_table_row_count: count,
@@ -43,7 +49,12 @@ export default async function handler(req, res) {
 
   // Stripe check
   try {
-    const stripe = getStripe();
+    if (!process.env.STRIPE_SECRET_KEY) {
+      throw new Error("STRIPE_SECRET_KEY not set");
+    }
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: "2024-11-20.acacia",
+    });
     const account = await stripe.accounts.retrieve();
     result.stripe = {
       ok: true,
@@ -60,7 +71,7 @@ export default async function handler(req, res) {
     };
   }
 
-  // Env vars sanity check (never log values)
+  // Env vars sanity check
   result.env = {
     VITE_SUPABASE_URL_set: !!process.env.VITE_SUPABASE_URL,
     SUPABASE_SERVICE_ROLE_KEY_set: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
