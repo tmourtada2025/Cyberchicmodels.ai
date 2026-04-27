@@ -5,13 +5,6 @@
  * Drop this file into: src/pages/Admin.tsx
  */
 
-/**
- * CyberChicModels Admin Panel — Phase 1 Update
- * Added: LoRA fields, Prompt Library, Collections Tracker, Client Requests
- * Added: Affogato FaceLock Session Generator (Phase 2)
- * Drop this file into: src/pages/Admin.tsx
- */
-
 import { useState, useEffect, useCallback, useRef } from "react";
 import { createClient, SupabaseClient, User } from "@supabase/supabase-js";
 import { ClientsPanel } from "../components/admin/ClientsPanel";
