@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { Star, ChevronRight, ArrowRight, Video, Image, Monitor, Palette, LayoutGrid, FileCheck, Paintbrush } from 'lucide-react';
 import { Navbar } from './components/Navbar';
 import { ModelsPage } from './components/ModelsPage';
@@ -15,6 +15,9 @@ import { FavoritesPage } from './components/FavoritesPage';
 import { HeroCarousel } from './components/HeroCarousel';
 import AdminPage from './pages/Admin';
 import StudioPage from './pages/StudioPage';
+import ClientLogin from './pages/ClientLogin';
+import AuthCallback from './pages/AuthCallback';
+import ClientPortalShell from './pages/ClientPortalShell';
 import { Footer } from './components/Footer';
 import { ModelCard } from './components/ModelCard';
 import { ModelDetailModal } from './components/ModelDetailModal';
@@ -22,6 +25,17 @@ import { StylesCarousel } from './components/StylesCarousel';
 import { apiService } from './lib/api';
 import type { Model, Style } from './lib/api';
 import { useImageProtection } from './hooks/useImageProtection';
+
+// ─── Conditional Navbar ──────────────────────────────────────────────────────
+// Hide public-site Navbar on client portal routes and auth flow.
+function ConditionalNavbar() {
+  const { pathname } = useLocation();
+  const hideOnPrefixes = ['/portal/', '/auth/'];
+  if (hideOnPrefixes.some(p => pathname.startsWith(p))) {
+    return null;
+  }
+  return <Navbar />;
+}
 
 function App() {
   useImageProtection();
@@ -76,7 +90,7 @@ function App() {
   return (
     <Router>
       <div className="min-h-screen bg-white">
-        <Navbar />
+        <ConditionalNavbar />
         <Routes>
           <Route path="/" element={
             <div>
@@ -147,6 +161,11 @@ function App() {
           <Route path="/favorites" element={<FavoritesPage />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/admin/studio" element={<StudioPage />} />
+
+          {/* ─── Step 5: Client portal routes ─────────────────────────── */}
+          <Route path="/auth/callback" element={<AuthCallback />} />
+          <Route path="/portal/:slug/login" element={<ClientLogin />} />
+          <Route path="/portal/:slug" element={<ClientPortalShell />} />
         </Routes>
         {selectedModel && (
           <ModelDetailModal
