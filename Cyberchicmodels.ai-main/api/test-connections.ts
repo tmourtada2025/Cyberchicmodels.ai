@@ -5,8 +5,8 @@
  *   GET https://www.cyberchicmodels.ai/api/test-connections
  */
 
-import { getSupabaseAdmin } from "../src/lib/supabase-server";
-import { getStripe } from "../src/lib/stripe";
+import { getSupabaseAdmin } from "../src/lib/supabase-server.js";
+import { getStripe } from "../src/lib/stripe.js";
 
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
