@@ -3,26 +3,26 @@
  *
  * Hit this once after deploy:
  *   GET https://www.cyberchicmodels.ai/api/test-connections
- *
- * Expected response:
- *   { supabase: { ok: true, clients_table: ... }, stripe: { ok: true, account: ... } }
- *
- * DELETE THIS FILE before going to production. It exposes diagnostic info.
- * It's only here to confirm Step 2 wiring works.
  */
 
-import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { getSupabaseAdmin } from "../src/lib/supabase-server";
 import { getStripe } from "../src/lib/stripe";
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const result: Record<string, unknown> = {};
+export default async function handler(req, res) {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-  // ── Supabase check ──
+  if (req.method === "OPTIONS") {
+    res.status(200).end();
+    return;
+  }
+
+  const result = {};
+
+  // Supabase check
   try {
     const supabase = getSupabaseAdmin();
-    // Service-role query: count rows in `clients` table.
-    // RLS would block this with anon key. If service role works, count succeeds.
     const { count, error } = await supabase
       .from("clients")
       .select("*", { count: "exact", head: true });
@@ -41,7 +41,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     };
   }
 
-  // ── Stripe check ──
+  // Stripe check
   try {
     const stripe = getStripe();
     const account = await stripe.accounts.retrieve();
@@ -60,7 +60,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     };
   }
 
-  // ── Env vars sanity check (never log values, only presence) ──
+  // Env vars sanity check (never log values)
   result.env = {
     VITE_SUPABASE_URL_set: !!process.env.VITE_SUPABASE_URL,
     SUPABASE_SERVICE_ROLE_KEY_set: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
