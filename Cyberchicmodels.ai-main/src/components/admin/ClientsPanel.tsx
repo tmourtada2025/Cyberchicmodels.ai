@@ -1,8 +1,7 @@
 /**
  * ClientsPanel — Admin panel for managing client tenants.
  *
- * Step 4 update: adds inline Pricing section below the Active toggle
- * in edit mode. Pricing only renders for existing clients (not during create).
+ * Step 5 update: adds Send Invite button + invite status indicator.
  *
  * Drop into src/components/admin/ClientsPanel.tsx
  */
@@ -37,6 +36,7 @@ interface Client {
   is_active: boolean;
   is_complimentary: boolean;
   notes: string | null;
+  invite_sent_at: string | null;
   created_at: string;
   updated_at: string;
   models?: { id: string; name: string; slug: string } | null;
@@ -134,6 +134,10 @@ function slugify(name: string): string {
   return name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
 }
 
+function formatDate(d: string) {
+  return new Date(d).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+}
+
 async function authedFetch(path: string, init: RequestInit = {}) {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) throw new Error("Not authenticated");
@@ -185,6 +189,7 @@ const emptyClient = (): Partial<Client> => ({
   logo_url: "", hero_image_url: "", assigned_model_id: null,
   default_language: "en", default_currency: "USD",
   is_active: true, is_complimentary: false, notes: "",
+  invite_sent_at: null,
 });
 
 function ClientForm({ initial, models, onSaved, onCancel }: {
@@ -396,6 +401,7 @@ export function ClientsPanel() {
   const [creating, setCreating] = useState(false);
   const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
   const [search, setSearch] = useState("");
+  const [invitingId, setInvitingId] = useState<string | null>(null);
 
   const showToast = (msg: string, type: "success" | "error" = "success") => {
     setToast({ msg, type });
@@ -438,6 +444,30 @@ export function ClientsPanel() {
       load();
     } catch (e) {
       showToast(e instanceof Error ? e.message : "Delete failed", "error");
+    }
+  };
+
+  const sendInvite = async (c: Client) => {
+    const isResend = !!c.invite_sent_at;
+    const message = isResend
+      ? `Re-send magic link to ${c.contact_email}?\n\n(Previous invite sent ${formatDate(c.invite_sent_at!)}.)`
+      : `Send portal invite to ${c.contact_email}?\n\nThis creates an account and emails them a magic link.`;
+    if (!confirm(message)) return;
+
+    setInvitingId(c.id);
+    try {
+      const res = await authedFetch(`/api/admin/clients/${c.id}/invite`, { method: "POST" });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || "Invite failed");
+      }
+      const body = await res.json();
+      showToast(body.message || "Invite sent");
+      load();
+    } catch (e) {
+      showToast(e instanceof Error ? e.message : "Invite failed", "error");
+    } finally {
+      setInvitingId(null);
     }
   };
 
@@ -516,6 +546,13 @@ export function ClientsPanel() {
                   {c.is_complimentary && (
                     <span style={{ fontSize: 10, padding: "2px 6px", background: colors.accentDim, color: colors.accent, borderRadius: 4 }}>COMP</span>
                   )}
+                  {c.invite_sent_at ? (
+                    <span style={{ fontSize: 10, padding: "2px 6px", background: "rgba(74,222,128,0.15)", color: colors.success, borderRadius: 4 }}>
+                      INVITED {formatDate(c.invite_sent_at)}
+                    </span>
+                  ) : (
+                    <span style={{ fontSize: 10, padding: "2px 6px", background: "rgba(250,204,21,0.15)", color: "#facc15", borderRadius: 4 }}>NOT INVITED</span>
+                  )}
                   <span style={{ fontSize: 10, padding: "2px 6px", background: colors.accentDim, color: colors.accent, borderRadius: 4, fontFamily: "monospace" }}>
                     /{c.slug}
                   </span>
@@ -527,6 +564,19 @@ export function ClientsPanel() {
                 </div>
               </div>
               <div style={{ display: "flex", gap: 6 }}>
+                <button
+                  type="button"
+                  onClick={() => sendInvite(c)}
+                  disabled={invitingId === c.id || !c.is_active}
+                  style={{
+                    ...btnStyle("secondary"),
+                    opacity: invitingId === c.id || !c.is_active ? 0.5 : 1,
+                    fontSize: 12,
+                  }}
+                  title={!c.is_active ? "Activate client first" : c.invite_sent_at ? "Re-send invite" : "Send portal invite"}
+                >
+                  {invitingId === c.id ? "Sending…" : c.invite_sent_at ? "Re-invite" : "Invite"}
+                </button>
                 <button type="button" onClick={() => setEditing(c)} style={btnStyle("secondary")}>Edit</button>
                 <button type="button" onClick={() => deleteClient(c)} style={btnStyle("danger")}>Delete</button>
               </div>
