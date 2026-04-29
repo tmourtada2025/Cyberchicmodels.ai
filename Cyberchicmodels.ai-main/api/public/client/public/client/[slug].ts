@@ -1,0 +1,1 @@
+public/client/[slug].ts
