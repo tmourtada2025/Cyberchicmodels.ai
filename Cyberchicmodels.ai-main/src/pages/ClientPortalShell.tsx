@@ -1,10 +1,12 @@
 // src/pages/ClientPortalShell.tsx
-// Step 6: Real quote page (replaces the "your portal is being prepared" stub).
-// Shows client info, assigned model, complimentary grant state, and pricing packages.
-// Select buttons are placeholders — Step 7 will wire them to Stripe Checkout.
+// Step 7: Real quote page with Stripe Checkout integration.
+// - Global Monthly / Annual toggle for subscription packages
+// - Select buttons create Stripe Checkout Session and redirect
+// - Detects ?status=success / ?status=cancel URL params after Stripe redirect
+// - Real package feature descriptions
 
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
@@ -52,13 +54,62 @@ const PACKAGE_LABELS: Record<string, string> = {
   single_video: "Single Video",
 };
 
-const PACKAGE_DESCRIPTIONS: Record<string, string> = {
-  basic: "Entry tier — limited library access for emerging brands.",
-  standard: "Mid-tier — broader content rights, faster turnaround.",
-  exclusive: "Full access — exclusivity windows, priority support.",
-  campaign: "One-time campaign shoot — fully licensed, custom direction.",
-  single_image: "Per-image purchase — extend an existing campaign.",
-  single_video: "Per-video purchase — short-form content, fully licensed.",
+// Real feature lists from Hairvella package definitions
+const PACKAGE_DETAILS: Record<string, { tagline: string; features: string[] }> = {
+  basic: {
+    tagline: "Steady presence on social.",
+    features: [
+      "10 branded images per month",
+      "Your assigned model + your product",
+      "Captions ready to publish (EN/ES/PT)",
+      "Ideal for consistent brand presence",
+    ],
+  },
+  standard: {
+    tagline: "Active content calendar.",
+    features: [
+      "20 images + 2 videos per month",
+      "Mix of feed posts, reels, and stories",
+      "Captions ready to publish (EN/ES/PT)",
+      "For brands posting multiple times per week",
+    ],
+  },
+  exclusive: {
+    tagline: "Full access. Category exclusivity.",
+    features: [
+      "Unlimited images and videos",
+      "Your model does not appear with competing brands in your category",
+      "Priority on new collections and features",
+      "Direct line to creative direction team",
+    ],
+  },
+  campaign: {
+    tagline: "One-time launch package.",
+    features: [
+      "30 images + 4 videos",
+      "Posting schedule and captions delivered",
+      "Use across paid ads, organic, and storefront",
+      "Ideal for product launches or seasonal campaigns",
+    ],
+  },
+  single_image: {
+    tagline: "One image, fully licensed.",
+    features: [
+      "1 custom image with your product",
+      "Your assigned model",
+      "Full commercial use",
+      "Top-up for an existing campaign",
+    ],
+  },
+  single_video: {
+    tagline: "One video, fully licensed.",
+    features: [
+      "1 × 15-second vertical video",
+      "Reels / Stories / TikTok format",
+      "Full commercial use",
+      "Top-up for an existing campaign",
+    ],
+  },
 };
 
 // ─── Types ────────────────────────────────────────────────────────────────
@@ -110,20 +161,49 @@ type QuoteData = {
   };
 };
 
+type BillingPeriod = "monthly" | "annual";
+
 // ─── Component ────────────────────────────────────────────────────────────
 
 export default function ClientPortalShell() {
   const navigate = useNavigate();
   const { slug } = useParams<{ slug: string }>();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [quote, setQuote] = useState<QuoteData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activating, setActivating] = useState(false);
-  const [toast, setToast] = useState<string | null>(null);
+  const [checkingOut, setCheckingOut] = useState<string | null>(null); // package_type while checkout is running
+  const [toast, setToast] = useState<{ msg: string; tone: "success" | "info" | "error" } | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>("monthly");
 
-  // Session check + initial load
+  // ─── Detect ?status=success / ?status=cancel and show banner ─────────
+  useEffect(() => {
+    const status = searchParams.get("status");
+    if (status === "success") {
+      setToast({
+        msg: "Payment received. Your subscription is being activated — refresh in a few seconds to see updated status.",
+        tone: "success",
+      });
+      // Clean the URL but keep slug
+      const next = new URLSearchParams(searchParams);
+      next.delete("status");
+      next.delete("session_id");
+      setSearchParams(next, { replace: true });
+    } else if (status === "cancel") {
+      setToast({
+        msg: "Checkout cancelled. No charge was made.",
+        tone: "info",
+      });
+      const next = new URLSearchParams(searchParams);
+      next.delete("status");
+      setSearchParams(next, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
+
+  // ─── Initial load ────────────────────────────────────────────────────
   useEffect(() => {
     let mounted = true;
 
@@ -164,18 +244,20 @@ export default function ClientPortalShell() {
     return () => { mounted = false; };
   }, [slug, navigate]);
 
-  // Auto-clear toast
+  // ─── Auto-clear toast ────────────────────────────────────────────────
   useEffect(() => {
     if (!toast) return;
-    const t = setTimeout(() => setToast(null), 3500);
+    const t = setTimeout(() => setToast(null), 6000);
     return () => clearTimeout(t);
   }, [toast]);
 
+  // ─── Sign out ────────────────────────────────────────────────────────
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     navigate("/", { replace: true });
   };
 
+  // ─── Activate complimentary grant ────────────────────────────────────
   const handleActivateGrant = async () => {
     setActivating(true);
     try {
@@ -192,12 +274,11 @@ export default function ClientPortalShell() {
       const body = await r.json();
 
       if (!r.ok) {
-        setToast(body?.error || "Failed to activate. Please try again.");
+        setToast({ msg: body?.error || "Failed to activate. Please try again.", tone: "error" });
         setActivating(false);
         return;
       }
 
-      // Refresh quote
       setQuote(prev => prev
         ? {
             ...prev,
@@ -208,18 +289,60 @@ export default function ClientPortalShell() {
           }
         : prev);
 
-      setToast(body.already_activated
-        ? "Your complimentary package was already active."
-        : "Your complimentary package is now active.");
+      setToast({
+        msg: body.already_activated
+          ? "Your complimentary package was already active."
+          : "Your complimentary package is now active.",
+        tone: "success",
+      });
     } catch (e: any) {
-      setToast("Network error: " + (e?.message || ""));
+      setToast({ msg: "Network error: " + (e?.message || ""), tone: "error" });
     } finally {
       setActivating(false);
     }
   };
 
-  const handleSelectPackage = (label: string) => {
-    setToast(`${label} — checkout coming soon. Your representative will be in touch.`);
+  // ─── Stripe Checkout flow ────────────────────────────────────────────
+  const handleCheckout = async (packageType: string, cycle: "monthly" | "annual" | "one_time") => {
+    setCheckingOut(packageType);
+    try {
+      const { data: sessData } = await supabase.auth.getSession();
+      if (!sessData.session) {
+        navigate(`/portal/${slug}/login`, { replace: true });
+        return;
+      }
+
+      const r = await fetch("/api/portal/checkout", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${sessData.session.access_token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ package_type: packageType, billing_cycle: cycle }),
+      });
+      const body = await r.json();
+
+      if (!r.ok) {
+        setToast({
+          msg: body?.error || "Could not start checkout. Please try again or contact your representative.",
+          tone: "error",
+        });
+        setCheckingOut(null);
+        return;
+      }
+
+      if (!body.url) {
+        setToast({ msg: "Checkout URL was not returned. Contact your representative.", tone: "error" });
+        setCheckingOut(null);
+        return;
+      }
+
+      // Redirect to Stripe-hosted checkout
+      window.location.href = body.url;
+    } catch (e: any) {
+      setToast({ msg: "Network error: " + (e?.message || ""), tone: "error" });
+      setCheckingOut(null);
+    }
   };
 
   // ─── Loading ─────────────────────────────────────────────────────────
@@ -351,7 +474,7 @@ export default function ClientPortalShell() {
         margin: "0 auto",
         padding: "40px 40px 80px",
       }}>
-        {/* Welcome / intro */}
+        {/* Welcome */}
         <section style={{ marginBottom: 32 }}>
           <h1 style={{
             fontSize: 32, fontWeight: 400, margin: 0, marginBottom: 8,
@@ -466,42 +589,112 @@ export default function ClientPortalShell() {
           </section>
         )}
 
-        {/* Subscription packages */}
-        {offeredSubs.length > 0 && (
+        {/* Subscription packages — only if NOT complimentary */}
+        {!isComplimentary && offeredSubs.length > 0 && (
           <section style={{ marginBottom: 32 }}>
-            <h2 style={{
-              fontSize: 14, fontWeight: 400,
-              letterSpacing: "0.3em", textTransform: "uppercase",
-              color: colors.accent, marginBottom: 16,
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: 16,
+              flexWrap: "wrap",
+              gap: 12,
             }}>
-              Subscription Packages
-            </h2>
+              <h2 style={{
+                fontSize: 14, fontWeight: 400,
+                letterSpacing: "0.3em", textTransform: "uppercase",
+                color: colors.accent, margin: 0,
+              }}>
+                Subscription Packages
+              </h2>
+
+              {/* Monthly / Annual toggle */}
+              <div style={{
+                display: "inline-flex",
+                background: colors.surface,
+                border: `1px solid ${colors.border}`,
+                borderRadius: 999,
+                padding: 4,
+              }}>
+                {(["monthly", "annual"] as const).map(period => (
+                  <button
+                    key={period}
+                    type="button"
+                    onClick={() => setBillingPeriod(period)}
+                    style={{
+                      padding: "8px 18px",
+                      background: billingPeriod === period ? colors.accent : "transparent",
+                      color: billingPeriod === period ? "#0d0d0d" : colors.text,
+                      border: "none",
+                      borderRadius: 999,
+                      cursor: "pointer",
+                      fontSize: 12,
+                      letterSpacing: "0.05em",
+                      fontFamily: "inherit",
+                      textTransform: "capitalize",
+                      fontWeight: billingPeriod === period ? 600 : 400,
+                      transition: "background 0.15s, color 0.15s",
+                    }}
+                  >
+                    {period}
+                    {period === "annual" && (
+                      <span style={{
+                        marginLeft: 6,
+                        fontSize: 10,
+                        fontWeight: 600,
+                        color: billingPeriod === period ? "#0d0d0d" : colors.accent,
+                      }}>
+                        SAVE 20%
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <div style={{
               display: "grid",
               gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
               gap: 16,
             }}>
-              {offeredSubs.map(pkg => (
-                <PackageCard
-                  key={pkg.package_type}
-                  title={PACKAGE_LABELS[pkg.package_type] || pkg.package_type}
-                  description={PACKAGE_DESCRIPTIONS[pkg.package_type] || ""}
-                  primaryPrice={formatPrice(pkg.monthly_price_cents, pkg.currency)}
-                  primaryLabel="per month"
-                  secondaryPrice={
-                    pkg.annual_price_cents != null
-                      ? formatPrice(pkg.annual_price_cents, pkg.currency) + " billed annually"
-                      : null
-                  }
-                  onSelect={() => handleSelectPackage(PACKAGE_LABELS[pkg.package_type])}
-                />
-              ))}
+              {offeredSubs.map(pkg => {
+                const detail = PACKAGE_DETAILS[pkg.package_type] || { tagline: "", features: [] };
+                const cents = billingPeriod === "monthly"
+                  ? pkg.monthly_price_cents
+                  : pkg.annual_price_cents;
+                const stripeReady = billingPeriod === "monthly"
+                  ? pkg.has_stripe_monthly
+                  : pkg.has_stripe_annual;
+                const monthlyEquivalent = billingPeriod === "annual" && pkg.annual_price_cents
+                  ? Math.round(pkg.annual_price_cents / 12)
+                  : null;
+
+                return (
+                  <PackageCard
+                    key={pkg.package_type}
+                    title={PACKAGE_LABELS[pkg.package_type] || pkg.package_type}
+                    tagline={detail.tagline}
+                    features={detail.features}
+                    primaryPrice={formatPrice(cents, pkg.currency)}
+                    primaryLabel={billingPeriod === "monthly" ? "per month" : "per year"}
+                    secondaryPrice={
+                      monthlyEquivalent != null
+                        ? formatPrice(monthlyEquivalent, pkg.currency) + "/mo equivalent"
+                        : null
+                    }
+                    isLoading={checkingOut === pkg.package_type}
+                    isDisabled={!stripeReady || checkingOut !== null}
+                    disabledReason={!stripeReady ? "Pricing pending — contact your rep" : null}
+                    onSelect={() => handleCheckout(pkg.package_type, billingPeriod)}
+                  />
+                );
+              })}
             </div>
           </section>
         )}
 
-        {/* One-time packages */}
-        {offeredOneTime.length > 0 && (
+        {/* One-time packages — only if NOT complimentary */}
+        {!isComplimentary && offeredOneTime.length > 0 && (
           <section style={{ marginBottom: 32 }}>
             <h2 style={{
               fontSize: 14, fontWeight: 400,
@@ -515,23 +708,33 @@ export default function ClientPortalShell() {
               gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
               gap: 16,
             }}>
-              {offeredOneTime.map(pkg => (
-                <PackageCard
-                  key={pkg.package_type}
-                  title={PACKAGE_LABELS[pkg.package_type] || pkg.package_type}
-                  description={PACKAGE_DESCRIPTIONS[pkg.package_type] || ""}
-                  primaryPrice={formatPrice(pkg.one_time_price_cents, pkg.currency)}
-                  primaryLabel="one-time"
-                  secondaryPrice={null}
-                  onSelect={() => handleSelectPackage(PACKAGE_LABELS[pkg.package_type])}
-                />
-              ))}
+              {offeredOneTime.map(pkg => {
+                const detail = PACKAGE_DETAILS[pkg.package_type] || { tagline: "", features: [] };
+                return (
+                  <PackageCard
+                    key={pkg.package_type}
+                    title={PACKAGE_LABELS[pkg.package_type] || pkg.package_type}
+                    tagline={detail.tagline}
+                    features={detail.features}
+                    primaryPrice={formatPrice(pkg.one_time_price_cents, pkg.currency)}
+                    primaryLabel="one-time"
+                    secondaryPrice={null}
+                    isLoading={checkingOut === pkg.package_type}
+                    isDisabled={!pkg.has_stripe_one_time || checkingOut !== null}
+                    disabledReason={!pkg.has_stripe_one_time ? "Pricing pending — contact your rep" : null}
+                    onSelect={() => handleCheckout(pkg.package_type, "one_time")}
+                  />
+                );
+              })}
             </div>
           </section>
         )}
 
-        {/* Empty state */}
-        {offeredSubs.length === 0 && offeredOneTime.length === 0 && !isComplimentary && (
+        {/* Empty state for complimentary clients (no packages section shown) */}
+        {/* (intentionally blank — complimentary section handles their case) */}
+
+        {/* Empty state for non-complimentary with nothing offered */}
+        {!isComplimentary && offeredSubs.length === 0 && offeredOneTime.length === 0 && (
           <section style={{
             background: colors.surface,
             border: `1px solid ${colors.border}`,
@@ -546,7 +749,6 @@ export default function ClientPortalShell() {
           </section>
         )}
 
-        {/* Footer */}
         <footer style={{
           marginTop: 64,
           paddingTop: 24,
@@ -560,23 +762,29 @@ export default function ClientPortalShell() {
         </footer>
       </main>
 
-      {/* Toast */}
+      {/* Toast banner — bottom of viewport */}
       {toast && (
         <div style={{
           position: "fixed",
           bottom: 24, left: "50%",
           transform: "translateX(-50%)",
           background: colors.surface,
-          border: `1px solid ${colors.accent}`,
+          border: `1px solid ${
+            toast.tone === "success" ? colors.success
+              : toast.tone === "error" ? colors.danger
+                : colors.accent
+          }`,
           color: colors.text,
-          padding: "12px 20px",
+          padding: "14px 22px",
           borderRadius: 8,
           fontSize: 13,
-          maxWidth: 480,
+          maxWidth: 560,
           zIndex: 1000,
           fontFamily: "inherit",
+          lineHeight: 1.5,
+          boxShadow: "0 6px 24px rgba(0,0,0,0.4)",
         }}>
-          {toast}
+          {toast.msg}
         </div>
       )}
     </div>
@@ -587,10 +795,14 @@ export default function ClientPortalShell() {
 
 function PackageCard(props: {
   title: string;
-  description: string;
+  tagline: string;
+  features: string[];
   primaryPrice: string;
   primaryLabel: string;
   secondaryPrice: string | null;
+  isLoading: boolean;
+  isDisabled: boolean;
+  disabledReason: string | null;
   onSelect: () => void;
 }) {
   return (
@@ -615,43 +827,79 @@ function PackageCard(props: {
           color: colors.muted,
           lineHeight: 1.5,
           margin: 0,
+          fontStyle: "italic",
         }}>
-          {props.description}
+          {props.tagline}
         </p>
       </div>
-      <div>
+
+      <ul style={{
+        margin: 0,
+        padding: 0,
+        listStyle: "none",
+        display: "flex",
+        flexDirection: "column",
+        gap: 8,
+      }}>
+        {props.features.map((feat, i) => (
+          <li key={i} style={{
+            display: "flex",
+            gap: 8,
+            alignItems: "flex-start",
+            fontSize: 12,
+            color: colors.textSoft,
+            lineHeight: 1.5,
+          }}>
+            <span style={{
+              color: colors.accent,
+              flexShrink: 0,
+              marginTop: 2,
+            }}>·</span>
+            <span>{feat}</span>
+          </li>
+        ))}
+      </ul>
+
+      <div style={{ marginTop: "auto" }}>
         <div style={{
-          fontSize: 28, fontWeight: 400,
+          fontSize: 26, fontWeight: 400,
           color: colors.text, marginBottom: 4,
         }}>
           {props.primaryPrice}
-          <span style={{ fontSize: 12, color: colors.muted, marginLeft: 6 }}>
+          <span style={{ fontSize: 11, color: colors.muted, marginLeft: 6 }}>
             {props.primaryLabel}
           </span>
         </div>
         {props.secondaryPrice && (
-          <div style={{ fontSize: 11, color: colors.mutedDeep }}>
+          <div style={{ fontSize: 11, color: colors.mutedDeep, marginBottom: 4 }}>
             {props.secondaryPrice}
           </div>
         )}
+        {props.disabledReason && (
+          <div style={{ fontSize: 10, color: colors.muted, fontStyle: "italic", marginBottom: 4 }}>
+            {props.disabledReason}
+          </div>
+        )}
       </div>
+
       <button
         type="button"
         onClick={props.onSelect}
+        disabled={props.isDisabled}
         style={{
           padding: "10px 16px",
-          background: "transparent",
+          background: props.isLoading ? colors.accentSoft : "transparent",
           color: colors.accent,
           border: `1px solid ${colors.accent}`,
           borderRadius: 6,
-          cursor: "pointer",
+          cursor: props.isDisabled ? "not-allowed" : "pointer",
           fontSize: 12,
           fontFamily: "inherit",
           letterSpacing: "0.05em",
-          marginTop: "auto",
+          opacity: props.isDisabled ? 0.4 : 1,
         }}
       >
-        Select package
+        {props.isLoading ? "Starting checkout…" : "Select package"}
       </button>
     </div>
   );
