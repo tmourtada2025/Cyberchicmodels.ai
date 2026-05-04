@@ -1,6 +1,10 @@
 // api/portal/quote.ts
 // GET: returns the data needed for the client quote page.
-// Auth-gated: only the logged-in client can fetch their own quote.
+// Auth-gated: only the logged-in client can fetch their own data.
+//
+// STEP 9 LITE UPDATE:
+// Now includes `deliveries` array with scheduled posts, captions, hashtags,
+// and signed download URLs for any uploaded files.
 
 import { createClient } from "@supabase/supabase-js";
 
@@ -14,6 +18,10 @@ if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
 const supabaseAdmin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
   auth: { autoRefreshToken: false, persistSession: false },
 });
+
+// Signed URLs expire after 1 hour — long enough to browse, short enough that
+// a leaked URL has limited utility.
+const SIGNED_URL_EXPIRY_SECONDS = 3600;
 
 export default async function handler(req: any, res: any) {
   if (req.method !== "GET") {
@@ -45,7 +53,6 @@ export default async function handler(req: any, res: any) {
 
   const clientId = clientUserRow.client_id;
 
-  // Optional path: allow ?slug=xyz to be passed for verification, must match
   const requestedSlug = (req.query.slug as string | undefined)?.toLowerCase();
 
   // ─── Fetch client ──────────────────────────────────────────────────────
@@ -102,7 +109,6 @@ export default async function handler(req: any, res: any) {
     return res.status(500).json({ error: "Failed to load pricing" });
   }
 
-  // Group into subscription vs one-time
   const SUBSCRIPTION_TYPES = ["basic", "standard", "exclusive"];
   const ONE_TIME_TYPES = ["campaign", "single_image", "single_video"];
 
@@ -132,6 +138,79 @@ export default async function handler(req: any, res: any) {
       display_order: p.display_order,
     }));
 
+  // ─── STEP 9 LITE: Fetch deliveries ─────────────────────────────────────
+  // Returns all deliveries (pending + delivered) so the client sees the
+  // full posting calendar, with download links activated only on delivered ones.
+  const { data: deliveryRows, error: dErr } = await supabaseAdmin
+    .from("client_deliveries")
+    .select(`
+      id, filename, content_type, storage_path, storage_bucket,
+      scheduled_post_date, scheduled_post_time, scheduled_post_label,
+      caption_es, caption_pt, caption_en, hashtags, required_tags,
+      status, delivered_at, is_complimentary, package_reference,
+      display_order, notes
+    `)
+    .eq("client_id", clientId)
+    .neq("status", "archived")
+    .order("display_order", { ascending: true });
+
+  if (dErr) {
+    console.error("Failed to load deliveries:", dErr);
+    // Don't fail the whole request — just return empty deliveries
+  }
+
+  // Generate signed URLs for delivered files. We do this in parallel.
+  const deliveries = await Promise.all(
+    (deliveryRows || []).map(async (d) => {
+      let downloadUrl: string | null = null;
+
+      if (d.status === "delivered" && d.storage_path && d.storage_bucket) {
+        try {
+          const { data: signed, error: sErr } = await supabaseAdmin
+            .storage
+            .from(d.storage_bucket)
+            .createSignedUrl(d.storage_path, SIGNED_URL_EXPIRY_SECONDS);
+
+          if (!sErr && signed) {
+            downloadUrl = signed.signedUrl;
+          }
+        } catch (e) {
+          // Don't fail the whole row — just leave downloadUrl null
+          console.error(`Failed to sign URL for ${d.filename}:`, e);
+        }
+      }
+
+      return {
+        id: d.id,
+        filename: d.filename,
+        content_type: d.content_type,
+        scheduled_post_date: d.scheduled_post_date,
+        scheduled_post_time: d.scheduled_post_time,
+        scheduled_post_label: d.scheduled_post_label,
+        caption_es: d.caption_es,
+        caption_pt: d.caption_pt,
+        caption_en: d.caption_en,
+        hashtags: d.hashtags,
+        required_tags: d.required_tags,
+        status: d.status,
+        delivered_at: d.delivered_at,
+        is_complimentary: d.is_complimentary,
+        package_reference: d.package_reference,
+        display_order: d.display_order,
+        notes: d.notes,
+        download_url: downloadUrl,
+      };
+    })
+  );
+
+  // Summary counters for the deliveries section
+  const deliverySummary = {
+    total: deliveries.length,
+    delivered: deliveries.filter(d => d.status === "delivered").length,
+    pending: deliveries.filter(d => d.status === "pending").length,
+    in_production: deliveries.filter(d => d.status === "in_production").length,
+  };
+
   // ─── Response ──────────────────────────────────────────────────────────
   return res.status(200).json({
     client: {
@@ -149,5 +228,7 @@ export default async function handler(req: any, res: any) {
       subscriptions: subscriptionPackages,
       one_time: oneTimePackages,
     },
+    deliveries,
+    delivery_summary: deliverySummary,
   });
 }
