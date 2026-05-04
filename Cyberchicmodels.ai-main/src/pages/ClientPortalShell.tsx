@@ -472,7 +472,9 @@ export default function ClientPortalShell() {
                 border: `1px solid ${colors.borderSoft}`,
               }}>
                 <img
-                  src={`https://iqoifrsavdreyiixuksd.supabase.co/storage/v1/object/public/${assigned_model.thumbnail_path}`}
+                  src={assigned_model.thumbnail_path.startsWith("http")
+                    ? assigned_model.thumbnail_path
+                    : `https://iqoifrsavdreyiixuksd.supabase.co/storage/v1/object/public/${assigned_model.thumbnail_path}`}
                   alt={assigned_model.name}
                   style={{ width: "100%", height: "100%", objectFit: "cover" }}
                   onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
@@ -787,14 +789,76 @@ function DeliveryCard({
       alignItems: "flex-start",
       flexWrap: "wrap",
     }}>
-      {/* Left: Type icon + filename */}
-      <div style={{ flexShrink: 0, width: 60, textAlign: "center" }}>
-        <div style={{
-          fontSize: 24, marginBottom: 4,
-          opacity: delivery.status === "delivered" ? 1 : 0.4,
-        }}>
-          {isVideo ? "🎬" : "📸"}
-        </div>
+      {/* Left: Preview thumbnail */}
+      <div style={{ flexShrink: 0, width: 90, textAlign: "center" }}>
+        {delivery.download_url && delivery.content_type === "image" ? (
+          <a
+            href={delivery.download_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ display: "block" }}
+            title="Open full size"
+          >
+            <div style={{
+              width: 80, height: 80, borderRadius: 6, overflow: "hidden",
+              border: `1px solid ${colors.border}`, background: colors.surfaceAlt,
+              marginBottom: 6, cursor: "pointer",
+            }}>
+              <img
+                src={delivery.download_url}
+                alt={delivery.filename}
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                loading="lazy"
+                onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+              />
+            </div>
+          </a>
+        ) : delivery.download_url && delivery.content_type === "video" ? (
+          <a
+            href={delivery.download_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ display: "block" }}
+            title="Open video"
+          >
+            <div style={{
+              width: 80, height: 80, borderRadius: 6, overflow: "hidden",
+              border: `1px solid ${colors.border}`, background: "#000",
+              marginBottom: 6, cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              position: "relative",
+            }}>
+              <video
+                src={delivery.download_url}
+                style={{
+                  width: "100%", height: "100%", objectFit: "cover",
+                  pointerEvents: "none",
+                }}
+                preload="metadata"
+                muted
+                playsInline
+              />
+              <div style={{
+                position: "absolute", inset: 0,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                background: "rgba(0,0,0,0.3)",
+                fontSize: 28,
+              }}>
+                ▶
+              </div>
+            </div>
+          </a>
+        ) : (
+          <div style={{
+            width: 80, height: 80, borderRadius: 6,
+            border: `1px solid ${colors.borderSoft}`, background: colors.surfaceAlt,
+            marginBottom: 6,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 28, opacity: 0.4,
+          }}>
+            {isVideo ? "🎬" : "📸"}
+          </div>
+        )}
         <div style={{
           fontSize: 9, color: colors.muted, fontFamily: "monospace",
           letterSpacing: "0.05em",
