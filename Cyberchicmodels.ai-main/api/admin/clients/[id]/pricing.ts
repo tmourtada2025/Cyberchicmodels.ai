@@ -15,6 +15,14 @@ const supabaseAdmin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
   auth: { autoRefreshToken: false, persistSession: false },
 });
 
+type PackageType =
+  | "basic"
+  | "standard"
+  | "exclusive"
+  | "campaign"
+  | "single_image"
+  | "single_video";
+
 const PACKAGE_DEFS = [
   { type: "basic",        kind: "subscription", display_order: 1, default_monthly: 15000, default_annual: 144000, default_one_time: null },
   { type: "standard",     kind: "subscription", display_order: 2, default_monthly: 35000, default_annual: 336000, default_one_time: null },
@@ -118,7 +126,7 @@ export default async function handler(req: any, res: any) {
   if (req.method === "PUT") {
     const body = req.body || {};
     const updates: Array<{
-      package_type: string;
+      package_type: PackageType;
       currency: string;
       monthly_price_cents: number | null;
       annual_price_cents: number | null;
@@ -130,7 +138,7 @@ export default async function handler(req: any, res: any) {
       return res.status(400).json({ error: "Body must include pricing array" });
     }
 
-    const validTypes = new Set(PACKAGE_DEFS.map(p => p.type));
+    const validTypes = new Set<PackageType>(PACKAGE_DEFS.map(p => p.type));
     for (const u of updates) {
       if (!validTypes.has(u.package_type)) {
         return res.status(400).json({ error: `Invalid package_type: ${u.package_type}` });

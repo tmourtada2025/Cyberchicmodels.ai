@@ -9,7 +9,7 @@
 //   - Rolls back auth.users + client_users on email send failure (clean retries)
 //   - Returns 429 with friendly message on rate limit instead of 500
 
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type User } from "@supabase/supabase-js";
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY;
@@ -127,8 +127,8 @@ export default async function handler(req: any, res: any) {
       return res.status(500).json({ error: "Auth lookup failed: " + lookupErr.message });
     }
 
-    const existingUser = existing.users.find(
-      u => u.email?.toLowerCase() === email
+    const existingUser = (existing?.users as User[] | undefined)?.find(
+      (u: User) => u.email?.toLowerCase() === email
     );
 
     if (existingUser) {
