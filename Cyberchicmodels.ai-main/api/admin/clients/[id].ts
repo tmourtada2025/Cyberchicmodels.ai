@@ -9,7 +9,21 @@
 
 import { requireAdmin, getAdminClient } from "../_auth.js";
 
-export default async function handler(req, res) {
+type ClientUpdates = {
+  name?: string;
+  slug?: string;
+  contact_email?: string;
+  contact_name?: string;
+  logo_url?: string | null;
+  hero_image_url?: string | null;
+  assigned_model_id?: string | null;
+  default_language?: string;
+  default_currency?: string;
+  notes?: string | null;
+  is_active?: boolean;
+};
+
+export default async function handler(req: any, res: any) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, PATCH, DELETE, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
@@ -67,7 +81,7 @@ export default async function handler(req, res) {
     }
 
     // Allowlist of fields the client can patch
-    const allowed = [
+    const allowed: (keyof ClientUpdates)[] = [
       "name",
       "slug",
       "contact_email",
@@ -81,9 +95,11 @@ export default async function handler(req, res) {
       "is_active",
     ];
 
-    const updates = {};
+    const updates: ClientUpdates = {};
     for (const k of allowed) {
-      if (k in body) updates[k] = body[k];
+      if (k in body) {
+        (updates as any)[k] = body[k];
+      }
     }
 
     if (Object.keys(updates).length === 0) {
