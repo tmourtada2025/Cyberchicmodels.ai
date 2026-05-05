@@ -6,7 +6,32 @@
 import { createClient } from "@supabase/supabase-js";
 import Stripe from "stripe";
 
-export default async function handler(req, res) {
+type ResultShape = {
+  supabase?: {
+    ok: boolean;
+    clients_table_row_count?: number | null;
+    service_role_active?: boolean;
+    error?: string;
+  };
+  stripe?: {
+    ok: boolean;
+    account_id?: string;
+    account_country?: string | null;
+    account_default_currency?: string | null;
+    charges_enabled?: boolean;
+    details_submitted?: boolean;
+    error?: string;
+  };
+  env?: {
+    VITE_SUPABASE_URL_set: boolean;
+    SUPABASE_SERVICE_ROLE_KEY_set: boolean;
+    STRIPE_SECRET_KEY_set: boolean;
+    VITE_STRIPE_PUBLISHABLE_KEY_set: boolean;
+    APP_URL_set: boolean;
+  };
+};
+
+export default async function handler(req: any, res: any) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -16,7 +41,7 @@ export default async function handler(req, res) {
     return;
   }
 
-  const result = {};
+  const result: ResultShape = {};
 
   // Supabase check
   try {
@@ -53,7 +78,7 @@ export default async function handler(req, res) {
       throw new Error("STRIPE_SECRET_KEY not set");
     }
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: "2024-11-20.acacia",
+      apiVersion: "2025-02-24.acacia" as any,
     });
     const account = await stripe.accounts.retrieve();
     result.stripe = {
