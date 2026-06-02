@@ -8,8 +8,6 @@ import { ModelProfilePage } from './components/ModelProfilePage';
 import { AboutPage } from './components/AboutPage';
 import { ContactPage } from './components/ContactPage';
 import { HeroCarousel } from './components/HeroCarousel';
-import AdminPage from './pages/Admin';
-import StudioPage from './pages/StudioPage';
 import { Footer } from './components/Footer';
 import { ModelCard } from './components/ModelCard';
 import { ModelDetailModal } from './components/ModelDetailModal';
@@ -110,8 +108,6 @@ function App() {
           <Route path="/model/:id" element={<ModelProfilePage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
-          <Route path="/admin" element={<AdminPage />} />
-          <Route path="/admin/studio" element={<StudioPage />} />
         </Routes>
         {selectedModel && (
           <ModelDetailModal model={selectedModel} allModels={featuredModels} onClose={handleCloseModal} onModelChange={handleModelClick} />
