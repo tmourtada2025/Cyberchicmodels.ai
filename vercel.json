@@ -1,4 +1,7 @@
 {
+  "buildCommand": "cd Cyberchicmodels.ai-main && npm install && npm run build",
+  "outputDirectory": "Cyberchicmodels.ai-main/dist",
+  "framework": null,
   "rewrites": [
     {
       "source": "/(.*)",
