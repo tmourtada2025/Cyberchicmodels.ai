@@ -17,7 +17,7 @@ export function HeroCarousel() {
         className="absolute inset-0 w-full h-full"
         style={{
           backgroundImage: `url("https://iqoifrsavdreyiixuksd.supabase.co/storage/v1/object/public/hero/hero.webp")`,
-          backgroundSize: 'auto 100%',
+          backgroundSize: 'contain',
           backgroundPosition: 'center center',
           backgroundRepeat: 'no-repeat',
         }}
