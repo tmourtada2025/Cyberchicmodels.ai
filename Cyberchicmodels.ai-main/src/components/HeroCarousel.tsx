@@ -12,7 +12,7 @@ export function HeroCarousel() {
 
   return (
     <div
-      className="relative w-full h-[80vh] min-h-[600px] max-h-[900px]"
+      className="relative w-full h-[80vh] min-h-[600px] max-h-[900px] mt-16"
       style={{ backgroundColor: '#080808' }}
     >
       {/* Background image */}
