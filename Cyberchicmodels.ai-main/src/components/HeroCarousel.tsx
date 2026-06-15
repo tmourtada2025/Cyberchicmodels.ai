@@ -20,7 +20,7 @@ export function HeroCarousel() {
         src="https://iqoifrsavdreyiixuksd.supabase.co/storage/v1/object/public/hero/hero.webp"
         alt=""
         aria-hidden="true"
-        className="absolute inset-0 h-full w-full object-cover object-[50%_35%] md:object-[50%_38%]"
+        className="absolute inset-0 h-full w-full object-cover object-[50%_10%] md:object-[50%_12%]"
         onContextMenu={blockContextMenu}
         onDragStart={blockContextMenu}
       />
