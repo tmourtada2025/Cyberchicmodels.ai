@@ -12,27 +12,29 @@ export function HeroCarousel() {
 
   return (
     <div
-      className="relative w-full h-[50vh] min-h-[360px] max-h-[520px] md:h-[65vh] md:min-h-[480px] md:max-h-[720px]"
+      className="relative w-full h-[72vh] min-h-[520px] max-h-[680px] md:h-[58vh] md:min-h-[440px] md:max-h-[620px]"
       style={{ backgroundColor: '#080808' }}
     >
       {/* Background image */}
-      <div
-        className="absolute inset-0 w-full h-full"
-        style={{
-          backgroundImage: `url("https://iqoifrsavdreyiixuksd.supabase.co/storage/v1/object/public/hero/hero.webp")`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center center',
-          backgroundRepeat: 'no-repeat',
-        }}
+      <img
+        src="https://iqoifrsavdreyiixuksd.supabase.co/storage/v1/object/public/hero/hero.webp"
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 h-full w-full object-cover object-[50%_35%] md:object-[50%_38%]"
         onContextMenu={blockContextMenu}
         onDragStart={blockContextMenu}
       />
       {/* Fallback dark overlay — ensures text is always readable */}
-      <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, rgba(8,8,8,0.3) 0%, rgba(8,8,8,0.15) 60%, rgba(8,8,8,0.6) 100%)' }} />
+      <div
+        className="absolute inset-0"
+        style={{
+          background: 'linear-gradient(to top, rgba(8,8,8,0.9) 0%, rgba(8,8,8,0.1) 60%), linear-gradient(to right, rgba(8,8,8,0.15) 0%, rgba(8,8,8,0.05) 55%, rgba(8,8,8,0.55) 100%)',
+        }}
+      />
 
       {/* Content — right-aligned to mirror banner layout */}
-      <div className="absolute inset-0 flex items-center justify-end px-6 md:px-16 z-20">
-        <div className="text-right max-w-lg">
+      <div className="absolute inset-0 z-20 flex items-end justify-center px-6 pb-10 md:items-center md:justify-end md:px-16 md:pb-0">
+        <div className="max-w-lg text-center md:text-right">
           <p
             className="mb-2 tracking-widest uppercase"
             style={{ fontSize: '11px', color: '#c8a96e', letterSpacing: '0.2em' }}
@@ -51,7 +53,7 @@ export function HeroCarousel() {
           >
             A licensable roster.
           </h2>
-          <div className="flex flex-col items-end gap-3">
+          <div className="flex flex-col items-center gap-3 md:items-end">
             <button
               onClick={() => navigate('/models')}
               className="flex items-center gap-2 transition-all"
