@@ -28,7 +28,7 @@ export function HeroCarousel() {
       <div
         className="absolute inset-0"
         style={{
-          background: 'linear-gradient(to top, rgba(8,8,8,0.9) 0%, rgba(8,8,8,0.1) 60%), linear-gradient(to right, rgba(8,8,8,0.15) 0%, rgba(8,8,8,0.05) 55%, rgba(8,8,8,0.55) 100%)',
+          background: 'linear-gradient(to top, rgba(8,8,8,0.4) 0%, rgba(8,8,8,0.1) 60%), linear-gradient(to right, rgba(8,8,8,0.15) 0%, rgba(8,8,8,0.05) 55%, rgba(8,8,8,0.55) 100%)',
         }}
       />
 
