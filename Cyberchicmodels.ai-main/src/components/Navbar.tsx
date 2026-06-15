@@ -9,7 +9,7 @@ export function Navbar() {
   const favorites = useSelector((state: RootState) => state.favorites.items);
   const location = useLocation();
   return (
-    <nav className="fixed w-full z-50" style={{ background: 'rgba(8,8,8,0.85)', backdropFilter: 'blur(8px)' }}>
+    <nav className="fixed top-0 w-full z-50" style={{ background: 'rgba(8,8,8,0.85)', backdropFilter: 'blur(8px)' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
