@@ -11,13 +11,16 @@ export function HeroCarousel() {
   };
 
   return (
-    <div className="relative w-full" style={{ height: '60vh', backgroundColor: '#080808' }}>
+    <div
+      className="relative w-full h-[50vh] min-h-[360px] max-h-[520px] md:h-[65vh] md:min-h-[480px] md:max-h-[720px]"
+      style={{ backgroundColor: '#080808' }}
+    >
       {/* Background image */}
       <div
         className="absolute inset-0 w-full h-full"
         style={{
           backgroundImage: `url("https://iqoifrsavdreyiixuksd.supabase.co/storage/v1/object/public/hero/hero.webp")`,
-          backgroundSize: 'contain',
+          backgroundSize: 'cover',
           backgroundPosition: 'center center',
           backgroundRepeat: 'no-repeat',
         }}
@@ -28,7 +31,7 @@ export function HeroCarousel() {
       <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, rgba(8,8,8,0.3) 0%, rgba(8,8,8,0.15) 60%, rgba(8,8,8,0.6) 100%)' }} />
 
       {/* Content — right-aligned to mirror banner layout */}
-      <div className="absolute inset-0 flex items-center justify-end px-16 z-20">
+      <div className="absolute inset-0 flex items-center justify-end px-6 md:px-16 z-20">
         <div className="text-right max-w-lg">
           <p
             className="mb-2 tracking-widest uppercase"
