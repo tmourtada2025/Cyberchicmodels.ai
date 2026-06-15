@@ -15,7 +15,7 @@ export function getStripe() {
     throw new Error("STRIPE_SECRET_KEY is not set in Vercel env vars");
   }
   cached = new Stripe(secretKey, {
-    apiVersion: "2024-11-20.acacia",
+    apiVersion: "2025-02-24.acacia",
     appInfo: {
       name: "CyberChicModels",
       version: "1.0.0",
