@@ -2,8 +2,11 @@
 .env*
 !.env.example
 
-# Local training assets
+# Local training assets — images live in Supabase, never the repo
 Lora Models/
+New Models/
+Models Collection/
+_preview/
 
 # Dependencies
 node_modules/
