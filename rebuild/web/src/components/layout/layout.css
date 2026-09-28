@@ -10,9 +10,17 @@
 
 /* Wordmark */
 .wordmark {
-  font-size: 26px;
-  letter-spacing: 0.02em;
   line-height: 1;
+}
+
+.wordmark-sm {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.wordmark-lg {
+  font-size: 34px;
+  letter-spacing: 0.02em;
 }
 
 .wordmark-accent {
@@ -46,8 +54,7 @@
 .nav-link {
   position: relative;
   color: var(--grey);
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 12px;
   padding-block: 6px;
   transition: color 0.2s ease;
 }
@@ -86,8 +93,7 @@
   align-items: center;
   gap: 8px;
   color: var(--grey);
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 11px;
 }
 
 .casting-dot-pulse {
@@ -158,7 +164,7 @@
   }
 
   .nav-link {
-    font-size: 16px;
+    font-size: 13px;
     padding-block: 14px;
     border-bottom: 1px solid var(--line);
   }
@@ -190,7 +196,6 @@
 }
 
 .footer-wordmark {
-  font-size: 34px;
   margin-right: auto;
 }
 

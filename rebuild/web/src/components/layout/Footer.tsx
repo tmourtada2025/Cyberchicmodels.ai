@@ -4,7 +4,9 @@ export function Footer() {
   return (
     <footer className="footer">
       <div className="container footer-inner">
-        <Wordmark className="footer-wordmark" />
+        <div className="footer-wordmark">
+          <Wordmark size="lg" />
+        </div>
         <p className="footer-disclosure">AI models · No real person is depicted.</p>
       </div>
     </footer>

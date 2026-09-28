@@ -14,8 +14,10 @@
   --radius: 12px;
   --radius-sm: 10px;
 
+  /* Anton is display-only, >= ~28px (never below ~20px). Small bold text uses the label style. */
   --font-display: 'Anton', Impact, 'Arial Narrow', sans-serif;
   --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --tracking-label: 0.13em;
 
   --fs-hero: clamp(52px, 12vw, 168px);
   --fs-section: clamp(30px, 5.5vw, 64px);

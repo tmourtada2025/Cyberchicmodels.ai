@@ -29,6 +29,11 @@ Carry the **look**. Bind the **data to real published rows**. The prototype ship
 
 **Type:** Anton (display, uppercase, `line-height:.9`) + Inter 400–700 (body). Display scale runs large — hero `clamp(52px,12vw,168px)`, section heads `clamp(30px,5.5vw,64px)`, final CTA `clamp(44px,10vw,150px)`. Radius 10–12px on tiles/cards. The accent is a scalpel, not a bucket — one loud element per viewport, never competing limes.
 
+**Typography rule (locked):**
+- **Anton = DISPLAY ONLY, ≥ ~28px:** hero, section headings, large model names, big numbers.
+- **Anything small and bold** — section labels, nav, buttons, tags, eyebrows, the nav wordmark — is **Inter 600/700, uppercase, letter-spacing ~.12–.14em**.
+- **Never Anton below ~20px.**
+
 ---
 
 ## 2. Section order (locked)
