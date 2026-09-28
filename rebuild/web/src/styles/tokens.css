@@ -14,7 +14,8 @@
   --radius: 12px;
   --radius-sm: 10px;
 
-  /* Anton is display-only, >= ~28px (never below ~20px). Small bold text uses the label style. */
+  /* Anton is display-only, >= ~28px (never below ~20px). Small bold text uses the label style.
+     Exemption: the wordmark logo is always Anton. */
   --font-display: 'Anton', Impact, 'Arial Narrow', sans-serif;
   --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --tracking-label: 0.13em;

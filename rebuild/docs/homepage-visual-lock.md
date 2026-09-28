@@ -31,8 +31,9 @@ Carry the **look**. Bind the **data to real published rows**. The prototype ship
 
 **Typography rule (locked):**
 - **Anton = DISPLAY ONLY, ≥ ~28px:** hero, section headings, large model names, big numbers.
-- **Anything small and bold** — section labels, nav, buttons, tags, eyebrows, the nav wordmark — is **Inter 600/700, uppercase, letter-spacing ~.12–.14em**.
+- **Anything small and bold** — section labels, nav links, buttons, tags, eyebrows — is **Inter 600/700, uppercase, letter-spacing ~.12–.14em**.
 - **Never Anton below ~20px.**
+- **Logo exemption:** the CYBERCHIC wordmark is the logo, not text, so it is always Anton with CHIC in lime. It's ~20px in the nav and 34px in the footer. The size floor and the small=Inter rule don't apply to it.
 
 ---
 

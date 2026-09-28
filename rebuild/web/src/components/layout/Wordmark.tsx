@@ -1,10 +1,9 @@
 import { Link } from 'react-router-dom'
 
-// sm (nav) is below the Anton floor, so it uses the Inter label style; lg (footer) is display size.
+// The wordmark is the logo: always Anton, exempt from the small=Inter rule (visual-lock §1).
 export function Wordmark({ size = 'sm' }: { size?: 'sm' | 'lg' }) {
-  const type = size === 'lg' ? 'display wordmark-lg' : 'label wordmark-sm'
   return (
-    <Link to="/" className={`wordmark ${type}`} aria-label="CyberChic home">
+    <Link to="/" className={`wordmark display wordmark-${size}`} aria-label="CyberChic home">
       CYBER<span className="wordmark-accent">CHIC</span>
     </Link>
   )

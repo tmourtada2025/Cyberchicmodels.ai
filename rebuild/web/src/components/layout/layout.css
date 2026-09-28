@@ -11,16 +11,15 @@
 /* Wordmark */
 .wordmark {
   line-height: 1;
+  letter-spacing: 0.02em;
 }
 
 .wordmark-sm {
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 20px;
 }
 
 .wordmark-lg {
   font-size: 34px;
-  letter-spacing: 0.02em;
 }
 
 .wordmark-accent {
