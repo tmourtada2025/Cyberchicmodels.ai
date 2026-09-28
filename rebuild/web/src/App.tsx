@@ -1,6 +1,8 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { Layout } from './components/layout/Layout'
 import { HomePage } from './pages/HomePage'
+import { ModelProfilePage } from './pages/ModelProfilePage'
+import { ModelsPage } from './pages/ModelsPage'
 import { PlaceholderPage } from './pages/PlaceholderPage'
 
 export default function App() {
@@ -9,8 +11,8 @@ export default function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route index element={<HomePage />} />
-          <Route path="models" element={<PlaceholderPage eyebrow="Roster" title="Models" />} />
-          <Route path="models/:slug" element={<PlaceholderPage eyebrow="Roster" title="Model profile" />} />
+          <Route path="models" element={<ModelsPage />} />
+          <Route path="models/:slug" element={<ModelProfilePage />} />
           <Route path="campaigns" element={<PlaceholderPage eyebrow="Work" title="Campaigns" />} />
           <Route path="campaigns/:slug" element={<PlaceholderPage eyebrow="Work" title="Campaign" />} />
           <Route path="proof" element={<PlaceholderPage eyebrow="Consistency" title="Proof" />} />

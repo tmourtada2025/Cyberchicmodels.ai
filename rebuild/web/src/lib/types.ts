@@ -12,6 +12,11 @@ export type RosterModel = {
   display_order: number
 }
 
+export type ModelProfile = RosterModel & {
+  age_range_min: number | null
+  age_range_max: number | null
+}
+
 export type CampaignImage = {
   storage_path: string
   register: ImageRegister
@@ -26,5 +31,12 @@ export type HomeCampaign = {
   name: string
   description: string | null
   model: { name: string } | null
+  images: CampaignImage[]
+}
+
+export type ModelCampaign = {
+  id: string
+  slug: string
+  name: string
   images: CampaignImage[]
 }

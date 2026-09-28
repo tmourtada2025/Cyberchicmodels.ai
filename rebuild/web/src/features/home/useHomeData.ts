@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { publishedModels } from '../../lib/roster'
 import { supabase } from '../../lib/supabase'
 import type { HomeCampaign, RosterModel } from '../../lib/types'
 
@@ -19,13 +20,7 @@ const CAMPAIGN_LIMIT = 3
 // Read-only, published-only. RLS enforces visibility; the explicit status filters restate it.
 async function loadHome(): Promise<HomeData> {
   const [models, campaigns] = await Promise.all([
-    supabase
-      .from('models')
-      .select('id, slug, name, ethnicity, specialties, portrait_path, display_order', { count: 'exact' })
-      .eq('roster_status', 'published')
-      .order('display_order', { ascending: true })
-      .order('name', { ascending: true })
-      .limit(WALL_LIMIT),
+    publishedModels().limit(WALL_LIMIT),
     supabase
       .from('campaigns')
       .select(

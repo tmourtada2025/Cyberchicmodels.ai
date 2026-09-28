@@ -11,6 +11,10 @@
   --maxw: 1320px;
   --pad: clamp(18px, 4.5vw, 72px);
 
+  /* Model card width — shared by the Home marquee and the Models grid. */
+  --card-w: clamp(190px, 20vw, 248px);
+  --card-gap: 16px;
+
   --radius: 12px;
   --radius-sm: 10px;
 

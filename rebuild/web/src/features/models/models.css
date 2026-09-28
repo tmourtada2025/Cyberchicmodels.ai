@@ -1,0 +1,220 @@
+/* Models roster (/models) and profile (/models/:slug). */
+
+/* ---------- page head ---------- */
+.page-head {
+  margin-bottom: clamp(28px, 4vw, 44px);
+}
+
+.page-title {
+  font-size: var(--fs-section);
+  margin: 0;
+}
+
+.page-lede {
+  max-width: 52ch;
+  margin: 18px 0 0;
+  color: var(--grey);
+}
+
+/* ---------- filters ---------- */
+.filters {
+  display: grid;
+  gap: 18px;
+  padding-block: 22px;
+  border-block: 1px solid var(--line);
+}
+
+.filter-group {
+  display: grid;
+  gap: 10px;
+}
+
+.filter-label {
+  font-size: 11px;
+  color: var(--grey);
+  padding-top: 9px;
+}
+
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--grey);
+  font-size: 11px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+}
+
+.chip:hover {
+  color: var(--white);
+  border-color: var(--grey);
+}
+
+/* Active state is white, not lime — the accent stays reserved for one element per viewport. */
+.chip[aria-pressed='true'] {
+  background: var(--white);
+  border-color: var(--white);
+  color: var(--bg);
+}
+
+.chip.is-static {
+  cursor: default;
+}
+
+.chip.is-static:hover {
+  color: var(--grey);
+  border-color: var(--line);
+}
+
+.chip-count {
+  opacity: 0.6;
+}
+
+.results-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-block: 18px 26px;
+}
+
+.results-count {
+  font-size: 11px;
+  color: var(--grey);
+}
+
+.link-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--white);
+  font-size: 11px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* ---------- grid ---------- */
+/* Roster spans the full page width between the page margins (not the 1320px content column). */
+.container.is-wide {
+  max-width: none;
+}
+
+/* Cards keep the marquee card size; as many columns as fit (6 at ~1650px+, 4–5 on laptops),
+   spread edge to edge within the margins. */
+.models-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, var(--card-w));
+  justify-content: space-between;
+  gap: 28px var(--card-gap);
+}
+
+/* Phones: the 190px floor would leave one lonely column — use two fluid columns instead. */
+@media (max-width: 640px) {
+  .models-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px 12px;
+  }
+}
+
+/* ---------- profile ---------- */
+.profile {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: clamp(28px, 5vw, 72px);
+  align-items: start;
+}
+
+.profile-portrait {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--bg-2);
+}
+
+.profile-portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile.is-skeleton .profile-portrait {
+  animation: shimmer 1.6s ease-in-out infinite;
+  max-width: 480px;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 28px;
+  font-size: 11px;
+  color: var(--grey);
+}
+
+.back-link:hover {
+  color: var(--white);
+}
+
+.profile-info .eyebrow {
+  display: flex;
+}
+
+.profile-name {
+  font-size: clamp(48px, 8vw, 112px);
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.profile-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 18px;
+  margin: 34px 0 0;
+  padding-top: 26px;
+  border-top: 1px solid var(--line);
+}
+
+.profile-facts dt {
+  font-size: 11px;
+  color: var(--grey);
+}
+
+.profile-facts dd {
+  margin: 6px 0 0;
+  font-size: 17px;
+}
+
+.profile-registers {
+  display: grid;
+  gap: 10px;
+  margin: 26px 0 34px;
+}
+
+.profile-registers .filter-label {
+  padding-top: 0;
+}
+
+.profile-campaigns {
+  padding-top: 0;
+}
+
+@media (max-width: 820px) {
+  .profile {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-portrait {
+    max-width: 480px;
+  }
+}

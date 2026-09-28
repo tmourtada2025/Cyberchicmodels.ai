@@ -1,6 +1,6 @@
 import type { RosterModel } from '../../lib/types'
-import { ModelCard, ModelCardSkeleton } from './ModelCard'
-import { EmptyState, SectionHead } from './SectionHead'
+import { ModelCard, ModelCardSkeleton } from '../../components/model/ModelCard'
+import { EmptyState, SectionHead } from '../../components/ui/SectionHead'
 
 // Below this many published models a marquee looks sparse and repetitive; show a static row instead.
 const MARQUEE_MIN = 8

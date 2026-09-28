@@ -1,7 +1,6 @@
-import { Link } from 'react-router-dom'
-import { mediaUrl } from '../../lib/media'
-import type { CampaignImage, HomeCampaign } from '../../lib/types'
-import { EmptyState, SectionHead } from './SectionHead'
+import { CampaignBlock } from '../../components/campaign/CampaignBlock'
+import { EmptyState, SectionHead } from '../../components/ui/SectionHead'
+import type { HomeCampaign } from '../../lib/types'
 
 type CampaignsProps =
   | { status: 'loading' }
@@ -50,31 +49,15 @@ function CampaignsBody(props: CampaignsProps) {
   return (
     <div className={`cams cams-${campaigns.length}`}>
       {campaigns.map((c, i) => (
-        <CampaignBlock key={c.id} campaign={c} tall={campaigns.length === 3 && i === 0} />
+        <CampaignBlock
+          key={c.id}
+          slug={c.slug}
+          name={c.name}
+          images={c.images}
+          modelName={c.model?.name}
+          tall={campaigns.length === 3 && i === 0}
+        />
       ))}
     </div>
-  )
-}
-
-// Hero-flagged image first, then curated order.
-function coverImage(images: CampaignImage[]): CampaignImage | undefined {
-  return [...images].sort((a, b) => Number(b.is_hero) - Number(a.is_hero) || a.display_order - b.display_order)[0]
-}
-
-function CampaignBlock({ campaign, tall }: { campaign: HomeCampaign; tall: boolean }) {
-  const cover = coverImage(campaign.images)
-  const kicker = [cover?.register, campaign.model?.name].filter(Boolean).join(' · ')
-
-  return (
-    <Link to={`/campaigns/${campaign.slug}`} className={`cam ${tall ? 'cam-tall' : ''}`}>
-      {cover && (
-        <img className="cam-img" src={mediaUrl(cover.storage_path)} alt={cover.alt_text ?? ''} loading="lazy" />
-      )}
-      <div className="cam-shade" />
-      <div className="cam-txt">
-        {kicker && <div className="label cam-kicker">{kicker}</div>}
-        <div className="display cam-title">{campaign.name}</div>
-      </div>
-    </Link>
   )
 }
