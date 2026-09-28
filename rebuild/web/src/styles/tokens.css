@@ -1,0 +1,23 @@
+/* Design tokens — locked in rebuild/docs/homepage-visual-lock.md §1. Do not add colours. */
+:root {
+  --bg: #0d0d0f;
+  --bg-2: #141418;
+  --line: #26262c;
+  --white: #f7f5f1;
+  --grey: #9a97a2;
+  --lime: #c6ff3a; /* the single hot accent — one loud element per viewport */
+  --lime-dim: #8fbf1f;
+
+  --maxw: 1320px;
+  --pad: clamp(18px, 4.5vw, 72px);
+
+  --radius: 12px;
+  --radius-sm: 10px;
+
+  --font-display: 'Anton', Impact, 'Arial Narrow', sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --fs-hero: clamp(52px, 12vw, 168px);
+  --fs-section: clamp(30px, 5.5vw, 64px);
+  --fs-cta: clamp(44px, 10vw, 150px);
+}
