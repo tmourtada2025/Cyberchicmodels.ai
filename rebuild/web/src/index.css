@@ -86,6 +86,53 @@ a {
   background: var(--lime-dim);
 }
 
+.btn-ghost {
+  border: 1px solid var(--line);
+  color: var(--white);
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.btn-ghost:hover,
+.btn-ghost:focus-visible {
+  border-color: var(--lime);
+  color: var(--lime);
+}
+
+.cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.cta-row.is-center {
+  justify-content: center;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--lime);
+  margin-bottom: 22px;
+}
+
+.eyebrow::before {
+  content: '';
+  width: 34px;
+  height: 1px;
+  background: currentColor;
+}
+
+.section {
+  padding-block: clamp(56px, 9vw, 110px);
+}
+
+.display em {
+  color: var(--lime);
+  font-style: normal;
+}
+
 :focus-visible {
   outline: 2px solid var(--lime);
   outline-offset: 3px;

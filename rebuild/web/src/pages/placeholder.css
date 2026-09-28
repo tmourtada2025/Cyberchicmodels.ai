@@ -1,0 +1,13 @@
+.placeholder {
+  padding-block: clamp(72px, 12vw, 160px);
+}
+
+.placeholder-title {
+  font-size: var(--fs-section);
+  margin: 0;
+}
+
+.placeholder-body {
+  color: var(--grey);
+  margin: 18px 0 30px;
+}
