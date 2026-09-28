@@ -12,7 +12,7 @@ export function Footer() {
         </div>
         <p className="footer-disclosure">AI models · No real person is depicted.</p>
         {CREATE_URL && (
-          <a href={`${CREATE_URL.replace(/\/$/, '')}/login`} className="label footer-admin" rel="nofollow">
+          <a href={`${CREATE_URL.replace(/\/$/, '')}/auth?next=/admin`} className="label footer-admin" rel="nofollow">
             Admin
           </a>
         )}
