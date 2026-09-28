@@ -24,6 +24,9 @@ out/
 supabase/.temp/
 **/supabase/.temp/
 
+# Generated throwaway verify output
+rebuild/supabase/verify/00_parsecheck_init_schema.sql
+
 # Logs
 *.log
 npm-debug.log*
