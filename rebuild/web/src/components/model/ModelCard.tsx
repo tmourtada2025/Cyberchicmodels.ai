@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { mediaUrl } from '../../lib/media'
+import { portraitSrc } from '../../lib/media'
 import type { RosterModel } from '../../lib/types'
 
 type ModelCardProps = {
@@ -24,7 +24,7 @@ export function ModelCard({ model, duplicate = false, fluid = false }: ModelCard
       <div className="card-tile">
         {model.portrait_path ? (
           <img
-            src={model.href ? model.portrait_path : mediaUrl(model.portrait_path)}
+            src={portraitSrc({ href: model.href, portrait_path: model.portrait_path })}
             alt={duplicate ? '' : alt}
             loading="lazy"
           />

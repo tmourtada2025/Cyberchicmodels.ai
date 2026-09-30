@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
-import { mediaUrl } from '../../lib/media'
+import { portraitSrc } from '../../lib/media'
 import type { RosterModel } from '../../lib/types'
+import { withFeatured } from '../models/featured'
 
 const PHRASES = ['Careers that do.', 'Campaigns that sell.', 'Faces you license.']
 const CYCLE_MS = 2600
 const FADE_MS = 300
 const DRIFT_COLUMNS = 3
 const PER_COLUMN = 4
+// Two faces are enough: columns are offset so neighbours never show the same face side by side.
+const DRIFT_MIN = 2
 
 type Metric = { value: number; label: string }
 
@@ -18,11 +21,11 @@ type HeroProps = {
 }
 
 export function Hero({ models, metrics }: HeroProps) {
-  const portraits = models.filter((m) => m.portrait_path)
+  const portraits = withFeatured(models).filter((m) => m.portrait_path)
 
   return (
     <section className="hero">
-      {portraits.length >= DRIFT_COLUMNS && <HeroDrift portraits={portraits} />}
+      {portraits.length >= DRIFT_MIN && <HeroDrift portraits={portraits} />}
       <div className="container hero-inner">
         <span className="eyebrow label">AI model agency · Licensed digital talent</span>
         <h1 className="display hero-title">
@@ -89,7 +92,7 @@ function CyclingLine() {
 // Drifting portrait columns behind the hero. Real published portraits only — never placeholders.
 function HeroDrift({ portraits }: { portraits: RosterModel[] }) {
   const columns = Array.from({ length: DRIFT_COLUMNS }, (_, c) =>
-    Array.from({ length: PER_COLUMN }, (_, i) => portraits[(c * PER_COLUMN + i) % portraits.length]),
+    Array.from({ length: PER_COLUMN }, (_, i) => portraits[(c * PER_COLUMN + c + i) % portraits.length]),
   )
 
   return (
@@ -98,7 +101,7 @@ function HeroDrift({ portraits }: { portraits: RosterModel[] }) {
         <div key={c} className={`hero-drift-col ${c % 2 ? 'is-down' : 'is-up'}`}>
           {[...col, ...col].map((m, i) => (
             <div key={i} className="hero-drift-tile">
-              <img src={mediaUrl(m.portrait_path!)} alt="" loading="lazy" />
+              <img src={portraitSrc({ href: m.href, portrait_path: m.portrait_path! })} alt="" loading="lazy" />
             </div>
           ))}
         </div>
