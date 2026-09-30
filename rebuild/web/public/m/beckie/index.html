@@ -105,12 +105,6 @@ footer{margin-top:clamp(72px,10vw,128px);border-top:1px solid var(--line)}
 footer .wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-block:40px}
 footer small{color:var(--muted);font-size:12px}
 .proto{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:20}
-
-/* image not yet produced: the container shows its number */
-.ph.missing{display:grid;place-items:center;border:1px dashed var(--line)}
-.ph.missing::after{content:none}
-.ph.missing span{font-family:var(--display);font-size:clamp(18px,2.4vw,28px);letter-spacing:.04em;color:var(--muted)}
-.pill.soon{opacity:.5;cursor:default}
 </style>
 
 <header>
@@ -125,11 +119,11 @@ footer small{color:var(--muted);font-size:12px}
 
 <main id="top">
   <section class="hero" aria-label="Beckie">
-    <div class="ph"><picture><source media="(max-width:700px)" srcset="img/beckie-hero-mobile-1122x1402.webp"><img src="img/beckie-hero-desktop-1536x1024.webp" alt="Beckie, AI-generated model, on a wooden pier at sunset over the sea" width="1536" height="1024" style="object-position:50% 42%"></picture></div>
+    <div class="ph"><picture><source media="(max-width:700px)" srcset="img/beckie-h2-hero-mobile-1024x1280.webp"><img src="img/beckie-h1-hero-desktop-1536x864.webp" alt="Beckie, AI-generated model, on a wooden pier at sunset over the sea" width="1536" height="864"></picture></div>
     <div class="wrap">
       <div class="eyebrow">BC01 · The Long Weekend</div>
       <h1>Beckie</h1>
-      <div class="facts"><span>Look <b>Mediterranean</b></span><span>Origin <b>AI-generated</b></span><span>Age <b>29</b></span><span>Height <b>168 cm</b></span></div>
+      <div class="facts"><span>Look <b>Mediterranean, warm golden</b></span><span>Origin <b>AI-generated</b></span><span>Age <b>29</b></span><span>Height <b>168 cm</b></span></div>
       <div class="ctas"><a class="pill lime" href="#book">Book Beckie</a><a class="pill" href="#digitals">See digitals</a></div>
     </div>
   </section>
@@ -141,10 +135,7 @@ footer small{color:var(--muted);font-size:12px}
 
   <section class="block">
     <div class="wrap story">
-      <div>
-        <div class="eyebrow">Her world</div>
-        <div class="ph r45" style="margin-top:24px"><img src="img/beckie-story-porch-1086x1448.webp" alt="Beckie on a white porch with a coffee cup, hydrangeas by the steps"></div>
-      </div>
+      <div class="eyebrow">Her world</div>
       <div>
         <p class="big">Saturday starts on the porch with coffee and the hydrangeas. The market, the kitchen, the bookshop, the coast road, then supper under string lights. Beckie is the weekend everyone wants to have.</p>
         <p class="small">Beckie is an AI-generated model, exclusive to CyberChic. One locked face across every scene and campaign, licensed to your brand.</p>
@@ -154,17 +145,17 @@ footer small{color:var(--muted);font-size:12px}
 
   <section class="block" id="weekend">
     <div class="wrap">
-      <div class="head"><h2>The Long <span class="l">Weekend</span></h2><p>An editorial in five frames, from the Saturday market to supper under string lights.</p></div>
+      <div class="head"><h2>The Long <span class="l">Weekend</span></h2><p>An editorial in six frames, from coffee on the porch on Saturday to supper under string lights.</p></div>
       <div class="stack">
         <div class="g3">
-          <figure><div class="ph r45"><img src="img/beckie-lw1-market-1122x1402.webp" alt="Beckie at a farmers market carrying a paper bag of lemons and greens"></div><figcaption><b>I</b> · The Market</figcaption></figure>
-          <figure><div class="ph r45"><img src="img/beckie-lw2-kitchen-1086x1448.webp" alt="Beckie in a sunlit kitchen tearing basil into a bowl"></div><figcaption><b>II</b> · The Kitchen</figcaption></figure>
-          <figure><div class="ph r45"><img src="img/beckie-lw3-bookshop-1122x1402.webp" alt="Beckie in a camel blazer reading in a bookshop"></div><figcaption><b>III</b> · The Bookshop</figcaption></figure>
+          <figure><div class="ph r45"><img src="img/beckie-t1-porch-1024x1280.webp" alt="Beckie on a white porch with a coffee cup, hydrangeas by the steps"></div><figcaption><b>I</b> · The Porch</figcaption></figure>
+          <figure><div class="ph r45"><img src="img/beckie-t2-market-1024x1280.webp" alt="Beckie at a farmers market carrying a paper bag of lemons and greens"></div><figcaption><b>II</b> · The Market</figcaption></figure>
+          <figure><div class="ph r45"><img src="img/beckie-t3-kitchen-1024x1280.webp" alt="Beckie in a sunlit kitchen tearing basil into a bowl"></div><figcaption><b>III</b> · The Kitchen</figcaption></figure>
         </div>
-        <figure><div class="ph r32"><img src="img/beckie-lw4-coastroad-1086x1448.webp" alt="Beckie in a red dress beside a mint convertible on a coast road" style="object-position:50% 8%"></div><figcaption><b>IV</b> · The Coast Road</figcaption></figure>
+        <figure><div class="ph r32"><img src="img/beckie-t4-bookshop-1024x1280.webp" alt="Beckie in a camel blazer reading in a bookshop" style="object-position:50% 22%"></div><figcaption><b>IV</b> · The Bookshop</figcaption></figure>
         <div class="g3">
-          <figure class="span2 tall"><div class="ph r32 fill"><img src="img/beckie-lw5-supper-1122x1402.webp" alt="Beckie at a candlelit table under string lights" style="object-position:50% 40%"></div><figcaption><b>V</b> · Supper</figcaption></figure>
-          <figure><div class="ph r45 missing"><span>BC01_C9</span></div><figcaption><b>VI</b> · Image pending</figcaption></figure>
+          <figure class="span2 tall"><div class="ph r32 fill"><img src="img/beckie-t5-coastroad-1024x1280.webp" alt="Beckie in a red dress beside a mint convertible on a coast road" style="position:absolute;inset:0;object-position:50% 12%"></div><figcaption><b>V</b> · The Coast Road</figcaption></figure>
+          <figure><div class="ph r45"><img src="img/beckie-t6-supper-1024x1280.webp" alt="Beckie at a candlelit table under string lights"></div><figcaption><b>VI</b> · Supper</figcaption></figure>
         </div>
       </div>
     </div>
@@ -174,10 +165,10 @@ footer small{color:var(--muted);font-size:12px}
     <div class="wrap">
       <div class="head"><h2>For your <span class="l">brand</span></h2><p>One frame per buyer line. Every image is licensed with the face locked.</p></div>
       <div class="g4">
-        <figure><div class="ph r45"><img src="img/beckie-beauty-closeup-1122x1402.webp" alt="Beckie beauty close-up, freckles and hazel-brown eyes"></div><figcaption>Body care &amp; beauty</figcaption></figure>
-        <figure><div class="ph r45 missing"><span>BC01_C10</span></div><figcaption>Haircare</figcaption></figure>
-        <figure><div class="ph r45 missing"><span>BC01_C11</span></div><figcaption>Plus-size fashion</figcaption></figure>
-        <figure><div class="ph r45 missing"><span>BC01_C12</span></div><figcaption>Resortwear &amp; hospitality</figcaption></figure>
+        <figure><div class="ph r45"><img src="img/beckie-r1-bodycare-1024x1280.webp" alt="Beckie in soft knitwear applying body lotion"></div><figcaption>Body care</figcaption></figure>
+        <figure><div class="ph r45"><img src="img/beckie-r2-haircare-1024x1280.webp" alt="Beckie running a hand through long honey-blonde waves"></div><figcaption>Haircare</figcaption></figure>
+        <figure><div class="ph r45"><img src="img/beckie-r3-plussize-1024x1280.webp" alt="Beckie in a cobalt wrap dress in a white studio"></div><figcaption>Plus-size fashion</figcaption></figure>
+        <figure><div class="ph r45"><img src="img/beckie-r4-beauty-1024x1280.webp" alt="Beckie beauty close-up, freckles and hazel-brown eyes"></div><figcaption>Beauty</figcaption></figure>
       </div>
     </div>
   </section>
@@ -186,12 +177,12 @@ footer small{color:var(--muted);font-size:12px}
     <div class="wrap">
       <div class="head"><h2>Digi<span class="l">tals</span></h2><p>Identity proof: the same face from every angle, straight from the studio.</p></div>
       <div class="g6">
-        <div class="ph r23"><img src="img/beckie-dig-d1-front-1122x1402.webp" alt="Digital, front"></div>
-        <div class="ph r23"><img src="img/beckie-dig-d5-smile-1122x1402.webp" alt="Digital, smile"></div>
-        <div class="ph r23"><img src="img/beckie-dig-d3-threequarter-1122x1402.webp" alt="Digital, three-quarter"></div>
-        <div class="ph r23"><img src="img/beckie-dig-d2-profile-1122x1402.webp" alt="Digital, profile"></div>
-        <div class="ph r23"><img src="img/beckie-dig-d4-fullbody-1024x1536.webp" alt="Digital, full length"></div>
-        <div class="ph r23"><img src="img/beckie-dig-d6-back-1024x1536.webp" alt="Digital, back"></div>
+        <div class="ph r23"><img src="img/beckie-dig-a1-1120x1400.webp" alt="Digital, front"></div>
+        <div class="ph r23"><img src="img/beckie-dig-a2-1120x1400.webp" alt="Digital, smile"></div>
+        <div class="ph r23"><img src="img/beckie-dig-a3-1120x1400.webp" alt="Digital, three-quarter"></div>
+        <div class="ph r23"><img src="img/beckie-dig-a4-1120x1400.webp" alt="Digital, profile"></div>
+        <div class="ph r23"><img src="img/beckie-dig-a5-1000x1500.webp" alt="Digital, full length"></div>
+        <div class="ph r23"><img src="img/beckie-dig-a6-1000x1500.webp" alt="Digital, back"></div>
       </div>
     </div>
   </section>
@@ -200,25 +191,25 @@ footer small{color:var(--muted);font-size:12px}
     <div class="wrap">
       <div class="head"><h2>Book <span class="l">Beckie</span></h2><p>Send your brief. We reply with availability, usage terms and a quote.</p></div>
       <div class="book">
-        <div class="ph r23 missing" style="border-radius:16px"><span>BC01 comp card</span></div>
+        <div class="ph" style="border-radius:16px"><img src="img/beckie-compcard-1080x1620.webp" alt="Beckie comp card" style="height:auto"></div>
         <div class="stack" style="gap:20px">
           <div class="card">
             <dl class="stats">
               <dt>Code</dt><dd class="lime">BC01</dd>
               <dt>Look</dt><dd>Mediterranean, warm golden</dd>
               <dt>Origin</dt><dd>AI-generated</dd>
-              <dt>Available</dt><dd>Worldwide, digital</dd>
+              <dt>Available</dt><dd>Worldwide, Digital</dd>
               <dt>Age</dt><dd>29</dd>
               <dt>Height</dt><dd>168 cm / 5'6"</dd>
-              <dt>Measurements</dt><dd>108 · 88 · 112 cm / 42.5 · 34.5 · 44 in</dd>
-              <dt>Size</dt><dd>Plus size / curvy</dd>
+              <dt>Measurements</dt><dd>108 - 88 - 112 cm / 42.5 - 34.5 - 44 in</dd>
+              <dt>Shoe</dt><dd>39 EU / 8.5 US</dd>
               <dt>Eyes</dt><dd>Hazel-brown</dd>
-              <dt>Hair</dt><dd>Honey-blonde balayage</dd>
-              <dt>Skin</dt><dd>Light-medium golden-tan, freckles</dd>
+              <dt>Hair</dt><dd>Honey-blonde balayage, long waves</dd>
+              <dt>Skin</dt><dd>Light-medium golden, freckles</dd>
               <dt>Lanes</dt><dd>Body care · Haircare · Plus-size fashion · Resortwear · Hospitality</dd>
             </dl>
           </div>
-          <div class="ctas"><a class="pill lime" href="mailto:agent@cyberchicmodels.ai?subject=Brief%3A%20Beckie%20(BC01)">Request booking</a><span class="pill soon" aria-disabled="true">Comp card (PDF) · pending</span></div>
+          <div class="ctas"><a class="pill lime" href="mailto:agent@cyberchicmodels.ai?subject=Brief%3A%20Beckie%20(BC01)">Request booking</a><a class="pill" href="img/beckie-compcard.pdf" target="_blank" rel="noopener" download>Comp card (PDF)</a></div>
           <div class="mail">Booking: <code id="mail">agent@cyberchicmodels.ai</code><button class="pill" id="copy" type="button" style="min-height:36px;padding:0 14px">Copy</button></div>
         </div>
       </div>
