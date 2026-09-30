@@ -1,0 +1,233 @@
+<title>Ariadne · CyberChic</title>
+<meta property="og:title" content="Ariadne · CyberChic Models">
+<meta property="og:image" content="https://www.cyberchicmodels.ai/m/ariadne/img/ariadne-og-1200x630.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600&display=swap">
+<style>
+/* Layout: full-bleed hero, then a 1200px column; image grids collapse to one column on phones. Tokens copied from cyberchicmodels.ai. */
+:root{
+  --bg:#0D0D0F; --surface:#141418; --line:#26262C; --fg:#F7F5F1; --muted:#9A97A2; --lime:#C6FF3A; --ink:#0D0D0F;
+  --display:Anton,Impact,"Arial Narrow",sans-serif; --body:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --wrap:1200px; --gut:clamp(16px,4vw,48px);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{overflow-x:clip}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.6}
+a{color:inherit}
+.wrap{max-width:var(--wrap);margin-inline:auto;padding-inline:var(--gut)}
+.eyebrow{display:flex;align-items:center;gap:12px;color:var(--lime);font-size:12px;font-weight:600;letter-spacing:.13em;text-transform:uppercase}
+.eyebrow::before{content:"";width:28px;height:1px;background:var(--lime)}
+.pill{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 24px;border-radius:999px;font-size:12px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;text-decoration:none;border:1px solid var(--line);background:transparent;color:var(--fg);cursor:pointer;font-family:var(--body)}
+.pill.lime{background:var(--lime);border-color:var(--lime);color:var(--ink)}
+.pill:focus-visible,a:focus-visible,button:focus-visible{outline:2px solid var(--lime);outline-offset:3px}
+h1,h2{font-family:var(--display);font-weight:400;text-transform:uppercase;margin:0;line-height:.92;letter-spacing:.005em;text-wrap:balance}
+h2{font-size:clamp(40px,6vw,72px)}
+h2 .l{color:var(--lime)}
+
+/* header */
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:rgba(13,13,15,.8);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:16px;height:68px}
+.logo{font-family:var(--display);font-size:24px;text-decoration:none;letter-spacing:.01em}
+.logo span{color:var(--lime)}
+.links{display:flex;gap:28px;font-size:12px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
+.links a{text-decoration:none}
+.links a[aria-current]{color:var(--fg);border-bottom:1px solid var(--fg);padding-bottom:3px}
+@media (max-width:760px){.links{display:none}.nav .pill{padding:0 16px}}
+
+/* protected images: overlay catches right-click and "save image" */
+.ph{position:relative;overflow:hidden;background:var(--surface);-webkit-user-select:none;user-select:none}
+.ph img{display:block;width:100%;height:100%;object-fit:cover;-webkit-user-drag:none;pointer-events:none}
+.ph::after{content:"";position:absolute;inset:0}
+.tag{position:absolute;left:10px;top:10px;z-index:2;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--lime);border:1px solid var(--lime);background:rgba(13,13,15,.7);padding:4px 8px;border-radius:999px}
+body.clean .tag{display:none}
+
+/* hero */
+.hero{position:relative;min-height:min(86vh,820px);display:flex;align-items:flex-end}
+.hero .ph{position:absolute;inset:0}
+.hero .ph img{object-position:50% 20%}
+.hero::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(13,13,15,.92) 0%,rgba(13,13,15,.55) 45%,rgba(13,13,15,.1) 75%),linear-gradient(0deg,rgba(13,13,15,1) 0%,rgba(13,13,15,0) 35%)}
+.hero .wrap{position:relative;z-index:2;width:100%;padding-block:0 64px}
+.hero h1{font-size:clamp(84px,17vw,220px);margin-block:18px 12px}
+.facts{display:flex;flex-wrap:wrap;gap:8px 28px;color:var(--muted);font-size:13px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:28px}
+.facts b{color:var(--fg);font-weight:500}
+.ctas{display:flex;flex-wrap:wrap;gap:12px}
+.hero picture{display:block;width:100%;height:100%}
+
+/* marquee */
+.strip{background:var(--lime);color:var(--ink);overflow:hidden;white-space:nowrap}
+.strip div{display:inline-flex;gap:48px;padding:14px 0;font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;animation:run 38s linear infinite}
+.strip span::after{content:"+";margin-left:48px}
+@keyframes run{to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.strip div{animation:none}}
+
+section.block{padding-block:clamp(72px,10vw,128px) 0}
+.head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;border-top:1px solid var(--line);padding-top:28px;margin-bottom:40px}
+.head p{margin:0;color:var(--muted);max-width:40ch}
+
+/* story */
+.story{display:grid;grid-template-columns:1fr 2fr;gap:40px}
+.story p.big{margin:0;font-size:clamp(24px,3vw,36px);font-weight:300;line-height:1.35;max-width:30ch}
+.story p.small{margin:24px 0 0;color:var(--muted);max-width:60ch}
+@media (max-width:760px){.story{grid-template-columns:1fr}}
+
+/* grids */
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.g4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.g6{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+.r45{aspect-ratio:4/5}.r32{aspect-ratio:3/2}.r23{aspect-ratio:2/3}
+.span2{grid-column:span 2}
+.stack{display:grid;gap:16px}
+figure{margin:0;display:grid;gap:10px;min-width:0}
+figcaption{font-size:12px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
+figcaption b{color:var(--fg);font-weight:600}
+figure.tall{grid-template-rows:1fr auto}
+@media (min-width:601px){.fill{aspect-ratio:auto;height:100%;min-height:0}}
+@media (max-width:900px){.g4{grid-template-columns:repeat(2,minmax(0,1fr))}.g6{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:600px){.g3{grid-template-columns:1fr}.span2{grid-column:auto}.span2.r32{aspect-ratio:4/5}}
+
+/* stats + book */
+.book{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(24px,5vw,64px);align-items:start}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:28px}
+.stats{display:grid;grid-template-columns:auto 1fr;gap:12px 28px;margin:0;font-variant-numeric:tabular-nums}
+.stats dt{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding-top:3px}
+.stats dd{margin:0}
+.stats dd.lime{color:var(--lime)}
+.mail{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:20px;color:var(--muted);font-size:14px}
+.mail code{font-family:var(--body);color:var(--fg);user-select:all;-webkit-user-select:all}
+@media (max-width:760px){.book{grid-template-columns:1fr}}
+
+footer{margin-top:clamp(72px,10vw,128px);border-top:1px solid var(--line)}
+footer .wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-block:40px}
+footer small{color:var(--muted);font-size:12px}
+.proto{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:20}
+</style>
+
+<header>
+  <div class="wrap nav">
+    <a class="logo" href="/">CYBER<span>CHIC</span></a>
+    <nav class="links" aria-label="Main">
+      <a href="/models" aria-current="page">Models</a><a href="/campaigns">Campaigns</a><a href="/proof">Proof</a><a href="/about">About</a>
+    </nav>
+    <a class="pill lime" href="/brief">Start a brief</a>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero" aria-label="Ariadne">
+    <div class="ph"><picture><source media="(max-width:700px)" srcset="img/ariadne-h2-hero-bluedoor-1024x1280.webp"><img src="img/ariadne-h1-hero-santorini-1536x864.webp" alt="Ariadne, AI-generated model, at sunset above the Santorini caldera" width="1536" height="864"></picture></div>
+    <div class="wrap">
+      <div class="eyebrow">AR01 · The Thread</div>
+      <h1>Ariadne</h1>
+      <div class="facts"><span>Look <b>Greek / Mediterranean</b></span><span>Origin <b>AI-generated</b></span><span>Age <b>28</b></span><span>Height <b>175 cm</b></span></div>
+      <div class="ctas"><a class="pill lime" href="#book">Book Ariadne</a><a class="pill" href="#digitals">See digitals</a></div>
+    </div>
+  </section>
+
+  <div class="strip" aria-hidden="true"><div>
+    <span>Identity-locked</span><span>AI-generated · no real person</span><span>Licensed for brand campaigns</span><span>Available worldwide</span><span>Wine · Hospitality · Resortwear · Jewellery</span>
+    <span>Identity-locked</span><span>AI-generated · no real person</span><span>Licensed for brand campaigns</span><span>Available worldwide</span><span>Wine · Hospitality · Resortwear · Jewellery</span>
+  </div></div>
+
+  <section class="block">
+    <div class="wrap story">
+      <div class="eyebrow">Her world</div>
+      <div>
+        <p class="big">Her world runs from the vineyards in the Cretan hills to the ferries between the islands. She follows the thread: the vine, the stone, the sea road between them.</p>
+        <p class="small">Ariadne is an AI-generated model, exclusive to CyberChic. One locked face across every scene and campaign, licensed to your brand.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="thread">
+    <div class="wrap">
+      <div class="head"><h2>The <span class="l">Thread</span></h2><p>An editorial in six frames, drawn from the myth of Ariadne: the labyrinth, the shore, the vine.</p></div>
+      <div class="stack">
+        <div class="g3">
+          <figure><div class="ph r45"><img src="img/ariadne-interim-t1-1024x1280.webp" alt="Ariadne among ancient stone ruins"></div><figcaption><b>I</b> · The Labyrinth</figcaption></figure>
+          <figure><div class="ph r45"><img src="img/ariadne-interim-t2-1024x1280.webp" alt="Ariadne in profile, ivory drape with gold"></div><figcaption><b>II</b> · The Fresco</figcaption></figure>
+          <figure><div class="ph r45"><img src="img/ariadne-t3-vine-1024x1280.webp" alt="Ariadne holding dark grapes in a Cretan vineyard at golden hour"></div><figcaption><b>III</b> · The Vine</figcaption></figure>
+        </div>
+        <figure><div class="ph r32"><img src="img/ariadne-t4-shore-1536x1024.webp" alt="Ariadne on a stone pier on Naxos at golden hour, the Portara behind her"></div><figcaption><b>IV</b> · The Shore</figcaption></figure>
+        <div class="g3">
+          <figure class="span2 tall"><div class="ph r32 fill"><img src="img/ariadne-interim-t5-1536x1024.webp" alt="Ariadne at a candlelit table"></div><figcaption><b>V</b> · Dionysus' Table</figcaption></figure>
+          <figure><div class="ph r45"><img src="img/ariadne-interim-t6-1024x1280.webp" alt="Ariadne beauty close-up"></div><figcaption><b>VI</b> · The Crown</figcaption></figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="head"><h2>For your <span class="l">brand</span></h2><p>One frame per buyer line. Every image is licensed with the face locked.</p></div>
+      <div class="g4">
+        <figure><div class="ph r45"><img src="img/ariadne-interim-range-hotel-1024x1280.webp" alt="Ariadne on a whitewashed hotel terrace"></div><figcaption>Hotels &amp; hospitality</figcaption></figure>
+        <figure><div class="ph r45"><img src="img/ariadne-interim-range-travel-1024x1280.webp" alt="Ariadne on a scooter below the Acropolis"></div><figcaption>Travel &amp; resortwear</figcaption></figure>
+        <figure><div class="ph r45"><img src="img/ariadne-r4-jewellery-1024x1280.webp" alt="Ariadne wearing plain gold rings and a gold hoop earring"></div><figcaption>Beauty &amp; jewellery</figcaption></figure>
+        <figure><div class="ph r45"><img src="img/ariadne-r1-wine-1024x1280.webp" alt="Ariadne pouring red wine in a stone cellar in Nemea"></div><figcaption>Wine &amp; lifestyle</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="digitals">
+    <div class="wrap">
+      <div class="head"><h2>Digi<span class="l">tals</span></h2><p>Identity proof: the same face from every angle, straight from the studio.</p></div>
+      <div class="g6">
+        <div class="ph r23"><img src="img/ariadne-dig-a1-1120x1400.webp" alt="Digital, front"></div>
+        <div class="ph r23"><img src="img/ariadne-dig-a2-1120x1400.webp" alt="Digital, smile"></div>
+        <div class="ph r23"><img src="img/ariadne-dig-a3-1120x1400.webp" alt="Digital, three-quarter"></div>
+        <div class="ph r23"><img src="img/ariadne-dig-a4-1120x1400.webp" alt="Digital, profile"></div>
+        <div class="ph r23"><img src="img/ariadne-dig-a5-1000x1500.webp" alt="Digital, full length"></div>
+        <div class="ph r23"><img src="img/ariadne-dig-a6-1000x1500.webp" alt="Digital, back"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="book">
+    <div class="wrap">
+      <div class="head"><h2>Book <span class="l">Ariadne</span></h2><p>Send your brief. We reply with availability, usage terms and a quote.</p></div>
+      <div class="book">
+        <div class="ph" style="border-radius:16px"><img src="img/ariadne-compcard-1080x1620.webp" alt="Ariadne comp card" style="height:auto"></div>
+        <div class="stack" style="gap:20px">
+          <div class="card">
+            <dl class="stats">
+              <dt>Code</dt><dd class="lime">AR01</dd>
+              <dt>Look</dt><dd>Greek / Mediterranean</dd>
+              <dt>Origin</dt><dd>AI-generated</dd>
+              <dt>Available</dt><dd>Worldwide, digital</dd>
+              <dt>Age</dt><dd>28</dd>
+              <dt>Height</dt><dd>175 cm / 5'9"</dd>
+              <dt>Measurements</dt><dd>90 · 67 · 94 cm / 35 · 26 · 37 in</dd>
+              <dt>Shoe</dt><dd>39 EU / 8.5 US</dd>
+              <dt>Eyes</dt><dd>Brown</dd>
+              <dt>Hair</dt><dd>Dark brown, long, natural curls</dd>
+              <dt>Lanes</dt><dd>Wine · Hospitality · Resortwear · Jewellery</dd>
+            </dl>
+          </div>
+          <div class="ctas"><a class="pill lime" href="mailto:agent@cyberchicmodels.ai?subject=Brief%3A%20Ariadne%20(AR01)">Request booking</a><a class="pill" href="img/ariadne-compcard.pdf" target="_blank" rel="noopener">Comp card (PDF)</a></div>
+          <div class="mail">Booking: <code id="mail">agent@cyberchicmodels.ai</code><button class="pill" id="copy" type="button" style="min-height:36px;padding:0 14px">Copy</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a class="logo" href="#top" style="font-size:32px">CYBER<span>CHIC</span></a>
+    <small>AI models · No real person is depicted. Images are licensed, not free to reuse.</small>
+  </div>
+</footer>
+
+
+<script>
+// Image protection layer: blocks the context menu and dragging on images only; links and keyboard stay usable.
+document.addEventListener('contextmenu', function (e) { if (e.target.closest('.ph')) e.preventDefault(); });
+document.addEventListener('dragstart', function (e) { if (e.target.closest('.ph')) e.preventDefault(); });
+document.getElementById('copy').addEventListener('click', function () {
+  var t = document.getElementById('mail').textContent, b = this;
+  var done = function () { b.textContent = 'Copied'; setTimeout(function () { b.textContent = 'Copy'; }, 1500); };
+  var sel = function () { var r = document.createRange(); r.selectNodeContents(document.getElementById('mail')); var s = getSelection(); s.removeAllRanges(); s.addRange(r); };
+  try { navigator.clipboard.writeText(t).then(done, sel); } catch (e) { sel(); }
+});
+</script>

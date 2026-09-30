@@ -10,6 +10,8 @@ export type RosterModel = {
   specialties: string[]
   portrait_path: string | null
   display_order: number
+  // Set only for statically served model pages (full navigation, absolute portrait path).
+  href?: string
 }
 
 export type ModelProfile = RosterModel & {

@@ -13,17 +13,21 @@ type ModelCardProps = {
 export function ModelCard({ model, duplicate = false, fluid = false }: ModelCardProps) {
   const register = model.specialties[0]
   const alt = model.ethnicity ? `${model.name}, ${model.ethnicity}` : model.name
+  const cardProps = {
+    className: `card ${fluid ? 'is-fluid' : ''}`,
+    'aria-hidden': duplicate || undefined,
+    tabIndex: duplicate ? -1 : undefined,
+  }
 
-  return (
-    <Link
-      to={`/models/${model.slug}`}
-      className={`card ${fluid ? 'is-fluid' : ''}`}
-      aria-hidden={duplicate || undefined}
-      tabIndex={duplicate ? -1 : undefined}
-    >
+  const body = (
+    <>
       <div className="card-tile">
         {model.portrait_path ? (
-          <img src={mediaUrl(model.portrait_path)} alt={duplicate ? '' : alt} loading="lazy" />
+          <img
+            src={model.href ? model.portrait_path : mediaUrl(model.portrait_path)}
+            alt={duplicate ? '' : alt}
+            loading="lazy"
+          />
         ) : (
           <span className="card-pending label">Portrait pending</span>
         )}
@@ -33,8 +37,22 @@ export function ModelCard({ model, duplicate = false, fluid = false }: ModelCard
         <span className="display card-name">{model.name}</span>
         {register && <span className="label card-register">{register}</span>}
       </div>
+      {model.href && model.specialties.length > 1 && (
+        <span className="label card-tags">{model.specialties.join(' · ')}</span>
+      )}
       {model.ethnicity && <span className="label card-ethnicity">{model.ethnicity}</span>}
       <div className="card-bar" />
+    </>
+  )
+
+  // Static model pages live outside the SPA, so they need a full page load, not a router transition.
+  return model.href ? (
+    <a href={model.href} {...cardProps}>
+      {body}
+    </a>
+  ) : (
+    <Link to={`/models/${model.slug}`} {...cardProps}>
+      {body}
     </Link>
   )
 }

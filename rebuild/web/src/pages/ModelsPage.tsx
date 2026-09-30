@@ -1,7 +1,8 @@
 import { useSearchParams } from 'react-router-dom'
 import { ModelCard, ModelCardSkeleton } from '../components/model/ModelCard'
 import { EmptyState } from '../components/ui/SectionHead'
-import { loadRoster, type Roster } from '../features/models/loaders'
+import { withFeatured } from '../features/models/featured'
+import { loadRoster } from '../features/models/loaders'
 import { useAsync } from '../hooks/useAsync'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import type { RosterModel } from '../lib/types'
@@ -23,6 +24,8 @@ const FILTERS: FilterDef[] = [{ key: 'register', label: 'Category', values: (m) 
 export function ModelsPage() {
   useDocumentTitle('Models')
   const roster = useAsync('roster', loadRoster)
+  // Statically served models show regardless of roster state, so a Supabase outage never empties the page.
+  const models = withFeatured(roster.status === 'ready' ? roster.data.models : [])
 
   return (
     <section className="section models-page">
@@ -34,33 +37,29 @@ export function ModelsPage() {
           </h1>
           <p className="page-lede">
             Identity-locked digital models, each licensed as one consistent face across every scene.
-            {roster.status === 'ready' && roster.data.total > 0 && (
-              <> {roster.data.total} published.</>
-            )}
+            {roster.status === 'ready' && <> {models.length} published.</>}
           </p>
         </header>
 
-        {roster.status === 'loading' && (
+        {roster.status === 'loading' ? (
           <div className="models-grid" aria-busy="true">
-            {Array.from({ length: 8 }, (_, i) => (
+            {models.map((m) => (
+              <ModelCard key={m.id} model={m} fluid />
+            ))}
+            {Array.from({ length: 6 }, (_, i) => (
               <ModelCardSkeleton key={i} fluid />
             ))}
           </div>
+        ) : (
+          <RosterBrowser models={models} />
         )}
-
-        {roster.status === 'error' && (
-          <EmptyState title="Roster unavailable">The roster couldn&rsquo;t be loaded right now. Please try again shortly.</EmptyState>
-        )}
-
-        {roster.status === 'ready' && <RosterBrowser roster={roster.data} />}
       </div>
     </section>
   )
 }
 
-function RosterBrowser({ roster }: { roster: Roster }) {
+function RosterBrowser({ models }: { models: RosterModel[] }) {
   const [params, setParams] = useSearchParams()
-  const { models } = roster
 
   if (models.length === 0) {
     return <EmptyState title="No published models yet">The roster appears here as each model is published.</EmptyState>

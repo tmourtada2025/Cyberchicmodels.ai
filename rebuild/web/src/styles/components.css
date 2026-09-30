@@ -130,6 +130,13 @@
   flex: none;
 }
 
+.card-tags {
+  display: block;
+  margin-top: 6px;
+  font-size: 10px;
+  color: var(--grey);
+}
+
 .card-ethnicity {
   display: block;
   margin-top: 6px;
