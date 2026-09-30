@@ -1,4 +1,7 @@
 {
-  "redirects": [{ "source": "/m/:slug([^/.]+)", "destination": "/m/:slug/", "permanent": true }],
+  "redirects": [
+    { "source": "/m/:slug([^/.]+)", "destination": "/m/:slug/", "permanent": true },
+    { "source": "/models/:slug(dalia|ariadne|beckie)", "destination": "/m/:slug/", "permanent": false }
+  ],
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }

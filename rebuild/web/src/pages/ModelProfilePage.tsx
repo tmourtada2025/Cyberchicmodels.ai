@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router-dom'
 import { CampaignBlock } from '../components/campaign/CampaignBlock'
 import { EmptyState, SectionHead } from '../components/ui/SectionHead'
+import { ORIGIN } from '../features/models/featured'
 import { loadProfile, type Profile } from '../features/models/loaders'
 import { useAsync } from '../hooks/useAsync'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
@@ -50,7 +51,8 @@ function ProfileView({ profile }: { profile: NonNullable<Profile> }) {
   const age = ageRange(model.age_range_min, model.age_range_max)
 
   const facts = [
-    { k: 'Ethnicity', v: model.ethnicity },
+    { k: 'Look', v: model.look },
+    { k: 'Origin', v: ORIGIN },
     { k: 'Age range', v: age },
   ].filter((f): f is { k: string; v: string } => Boolean(f.v))
 
@@ -60,7 +62,7 @@ function ProfileView({ profile }: { profile: NonNullable<Profile> }) {
         <div className="container profile">
           <div className="profile-portrait">
             {model.portrait_path ? (
-              <img src={mediaUrl(model.portrait_path)} alt={model.ethnicity ? `${model.name}, ${model.ethnicity}` : model.name} />
+              <img src={mediaUrl(model.portrait_path)} alt={model.look ? `${model.name}, ${model.look}` : model.name} />
             ) : (
               <span className="card-pending label">Portrait pending</span>
             )}
@@ -70,7 +72,7 @@ function ProfileView({ profile }: { profile: NonNullable<Profile> }) {
             <Link to="/models" className="label back-link">
               ← All models
             </Link>
-            {model.ethnicity && <span className="eyebrow label">{model.ethnicity}</span>}
+            {model.look && <span className="eyebrow label">{model.look}</span>}
             <h1 className="display profile-name">{model.name}</h1>
 
             {facts.length > 0 && (
