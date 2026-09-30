@@ -29,7 +29,7 @@ path,model_or_page,slot_role,referenced_by
 /m/ariadne/img/ariadne-compcard-1080x1620.webp,ariadne,compcard - image,/m/ariadne/
 /m/ariadne/img/ariadne-compcard.pdf,ariadne,compcard - pdf,/m/ariadne/
 /m/athena/img/athena-h1-hero-olive-terrace-1536x864.webp,athena,hero - desktop,/m/athena/
-/m/athena/img/athena-h2-hero-blue-hour-1024x1280.webp,athena,hero - mobile,/m/athena/
+/m/athena/img/athena-h2-hero-blue-hour-1024x1280.webp,athena,hero - mobile,"/m/athena/ | /models + / (roster wall, hero drift)"
 /m/athena/img/athena-og-1200x630.webp,athena,og,/m/athena/
 /m/athena/img/athena-t1-path-1024x1280.webp,athena,t1 - path,/m/athena/
 /m/athena/img/athena-t2-grove-1024x1280.webp,athena,t2 - grove,/m/athena/

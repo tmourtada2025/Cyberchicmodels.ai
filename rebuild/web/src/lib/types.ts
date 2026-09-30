@@ -13,6 +13,8 @@ export type RosterModel = {
   display_order: number
   // Set only for statically served model pages (full navigation, absolute portrait path).
   href?: string
+  // false = image-only in the homepage hero drift wall; kept off /models and the roster cards.
+  roster?: boolean
 }
 
 export type ModelProfile = RosterModel & {

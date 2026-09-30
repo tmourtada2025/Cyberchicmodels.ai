@@ -21,7 +21,7 @@ type HeroProps = {
 }
 
 export function Hero({ models, metrics }: HeroProps) {
-  const portraits = withFeatured(models).filter((m) => m.portrait_path)
+  const portraits = withFeatured(models, { wall: true }).filter((m) => m.portrait_path)
 
   return (
     <section className="hero">
