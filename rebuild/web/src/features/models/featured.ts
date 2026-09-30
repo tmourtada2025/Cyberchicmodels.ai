@@ -36,9 +36,25 @@ export const FEATURED_MODELS: RosterModel[] = [
     display_order: 3,
     href: '/m/beckie/',
   },
+  {
+    // No dedicated card image yet: her 4:5 blue-hour hero fills the /models card and drift tile.
+    // Not on the homepage roster cards (roster: false).
+    id: 'static-athena',
+    slug: 'athena',
+    name: 'Athena',
+    look: 'Italian-French',
+    specialties: ['Skincare', 'Fragrance', 'Watches', 'Leather goods'],
+    portrait_path: '/m/athena/img/athena-h2-hero-blue-hour-1024x1280.webp',
+    display_order: 4,
+    href: '/m/athena/',
+    roster: false,
+  },
 ]
 
-export function withFeatured(models: RosterModel[]): RosterModel[] {
+// Featured models ahead of the Supabase roster, same-slug rows dropped.
+// { roster: true } is the homepage roster cards, which skip entries marked roster: false.
+export function withFeatured(models: RosterModel[], { roster = false } = {}): RosterModel[] {
+  const featured = FEATURED_MODELS.filter((m) => !roster || m.roster !== false)
   const slugs = new Set(FEATURED_MODELS.map((m) => m.slug))
-  return [...FEATURED_MODELS, ...models.filter((m) => !slugs.has(m.slug))]
+  return [...featured, ...models.filter((m) => !slugs.has(m.slug))]
 }
