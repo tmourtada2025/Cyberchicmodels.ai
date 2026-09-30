@@ -1,14 +1,16 @@
+<!doctype html>
+<html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Dalia · CyberChic</title>
-<meta property="og:title" content="Dalia · CyberChic Models">
-<meta property="og:image" content="https://www.cyberchicmodels.ai/m/dalia/img/dalia-og-1200x630.webp">
+<title>Beckie · CyberChic</title>
+<meta property="og:title" content="Beckie · CyberChic Models">
+<meta property="og:image" content="https://www.cyberchicmodels.ai/m/beckie/img/beckie-og-1200x630.webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600&display=swap">
 <style>
-/* Layout: full-bleed hero, then a 1200px column; image grids collapse to one column on phones. Tokens copied from cyberchicmodels.ai (same as the Ariadne reference page). */
+/* Layout: full-bleed hero, then a 1200px column; image grids collapse to one column on phones. Tokens copied from cyberchicmodels.ai. */
 :root{
-  --bg:#0D0D0F; --surface:#141418; --surface2:#18181D; --line:#26262C; --fg:#F7F5F1; --muted:#9A97A2; --lime:#C6FF3A; --ink:#0D0D0F;
+  --bg:#0D0D0F; --surface:#141418; --line:#26262C; --fg:#F7F5F1; --muted:#9A97A2; --lime:#C6FF3A; --ink:#0D0D0F;
   --display:Anton,Impact,"Arial Narrow",sans-serif; --body:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
   --wrap:1200px; --gut:clamp(16px,4vw,48px);
   color-scheme:dark;
@@ -38,25 +40,17 @@ header{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:rg
 @media (max-width:760px){.links{display:none}.nav .pill{padding:0 16px}}
 
 /* protected images: overlay catches right-click and "save image" */
-.ph{position:relative;overflow:hidden;background:var(--surface);-webkit-user-select:none;user-select:none;max-width:100%}
+.ph{position:relative;overflow:hidden;background:var(--surface);-webkit-user-select:none;user-select:none}
 .ph img{display:block;width:100%;height:100%;object-fit:cover;-webkit-user-drag:none;pointer-events:none}
 .ph::after{content:"";position:absolute;inset:0}
 .tag{position:absolute;left:10px;top:10px;z-index:2;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--lime);border:1px solid var(--lime);background:rgba(13,13,15,.7);padding:4px 8px;border-radius:999px}
 body.clean .tag{display:none}
 
-/* frames still to generate: shot code + name, so the page shows its final shape */
-.todo{display:grid;place-items:center;text-align:center;border:1px dashed var(--line);background:repeating-linear-gradient(135deg,var(--surface) 0 14px,var(--surface2) 14px 28px)}
-.todo div{padding:16px;display:grid;gap:6px}
-.todo b{font-family:var(--display);font-weight:400;font-size:clamp(28px,3vw,40px);line-height:1;color:var(--fg);letter-spacing:.02em}
-.todo span{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-.todo i{font-style:normal;font-size:12px;color:var(--muted);max-width:28ch;margin-inline:auto;line-height:1.5}
-
 /* hero */
 .hero{position:relative;min-height:min(86vh,820px);display:flex;align-items:flex-end}
 .hero .ph{position:absolute;inset:0}
-.hero .ph img{object-position:65% 30%}
+.hero .ph img{object-position:50% 20%}
 .hero::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(13,13,15,.92) 0%,rgba(13,13,15,.55) 45%,rgba(13,13,15,.1) 75%),linear-gradient(0deg,rgba(13,13,15,1) 0%,rgba(13,13,15,0) 35%)}
-.hero .tag{top:auto;bottom:16px;left:auto;right:16px}
 .hero .wrap{position:relative;z-index:2;width:100%;padding-block:0 64px}
 .hero h1{font-size:clamp(84px,17vw,220px);margin-block:18px 12px}
 .facts{display:flex;flex-wrap:wrap;gap:8px 28px;color:var(--muted);font-size:13px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:28px}
@@ -101,7 +95,7 @@ figure.tall{grid-template-rows:1fr auto}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:28px}
 .stats{display:grid;grid-template-columns:auto 1fr;gap:12px 28px;margin:0;font-variant-numeric:tabular-nums}
 .stats dt{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding-top:3px}
-.stats dd{margin:0;min-width:0}
+.stats dd{margin:0}
 .stats dd.lime{color:var(--lime)}
 .mail{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:20px;color:var(--muted);font-size:14px}
 .mail code{font-family:var(--body);color:var(--fg);user-select:all;-webkit-user-select:all}
@@ -110,6 +104,7 @@ figure.tall{grid-template-rows:1fr auto}
 footer{margin-top:clamp(72px,10vw,128px);border-top:1px solid var(--line)}
 footer .wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-block:40px}
 footer small{color:var(--muted);font-size:12px}
+.proto{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:20}
 </style>
 
 <header>
@@ -123,44 +118,44 @@ footer small{color:var(--muted);font-size:12px}
 </header>
 
 <main id="top">
-  <section class="hero" aria-label="Dalia">
-    <div class="ph"><picture><source media="(max-width:700px)" srcset="img/dalia-interim-hero-mobile-1024x1280.webp"><img src="img/dalia-interim-hero-desktop-1122x631.webp" alt="Dalia, AI-generated model, studio portrait against a terracotta wall" width="1122" height="631"></picture><span class="tag">Interim hero · H1 to generate</span></div>
+  <section class="hero" aria-label="Beckie">
+    <div class="ph"><picture><source media="(max-width:700px)" srcset="img/beckie-h2-hero-mobile-1024x1280.webp"><img src="img/beckie-h1-hero-desktop-1536x864.webp" alt="Beckie, AI-generated model, on a wooden pier at sunset over the sea" width="1536" height="864"></picture></div>
     <div class="wrap">
-      <div class="eyebrow">DL01 · Silver Hour</div>
-      <h1>Dalia</h1>
-      <div class="facts"><span>Look <b>Lebanese</b></span><span>Origin <b>AI-generated</b></span><span>Age <b>52</b></span><span>Height <b>170 cm</b></span></div>
-      <div class="ctas"><a class="pill lime" href="#book">Book Dalia</a><a class="pill" href="#digitals">See digitals</a></div>
+      <div class="eyebrow">BC01 · The Long Weekend</div>
+      <h1>Beckie</h1>
+      <div class="facts"><span>Look <b>Mediterranean, warm golden</b></span><span>Origin <b>AI-generated</b></span><span>Age <b>29</b></span><span>Height <b>168 cm</b></span></div>
+      <div class="ctas"><a class="pill lime" href="#book">Book Beckie</a><a class="pill" href="#digitals">See digitals</a></div>
     </div>
   </section>
 
   <div class="strip" aria-hidden="true"><div>
-    <span>Identity-locked</span><span>AI-generated · no real person</span><span>Licensed for brand campaigns</span><span>Available worldwide</span><span>Fine jewellery · Pro-age beauty · Haircare · Luxury fashion</span>
-    <span>Identity-locked</span><span>AI-generated · no real person</span><span>Licensed for brand campaigns</span><span>Available worldwide</span><span>Fine jewellery · Pro-age beauty · Haircare · Luxury fashion</span>
+    <span>Identity-locked</span><span>AI-generated · no real person</span><span>Licensed for brand campaigns</span><span>Available worldwide</span><span>Body care · Haircare · Plus-size fashion · Resortwear · Hospitality</span>
+    <span>Identity-locked</span><span>AI-generated · no real person</span><span>Licensed for brand campaigns</span><span>Available worldwide</span><span>Body care · Haircare · Plus-size fashion · Resortwear · Hospitality</span>
   </div></div>
 
   <section class="block">
     <div class="wrap story">
       <div class="eyebrow">Her world</div>
       <div>
-        <p class="big">Her world is limestone and sea light: tall arched windows, a stair worn smooth, a terrace where the city turns gold and then silver. She keeps what lasts: the pearls, the table, the people.</p>
-        <p class="small">Dalia is an AI-generated model, exclusive to CyberChic. One locked face across every scene and campaign, licensed to your brand. Silver hair kept, lines kept, nothing retouched away.</p>
+        <p class="big">Saturday starts on the porch with coffee and the hydrangeas. The market, the kitchen, the bookshop, the coast road, then supper under string lights. Beckie is the weekend everyone wants to have.</p>
+        <p class="small">Beckie is an AI-generated model, exclusive to CyberChic. One locked face across every scene and campaign, licensed to your brand.</p>
       </div>
     </div>
   </section>
 
-  <section class="block" id="silver-hour">
+  <section class="block" id="weekend">
     <div class="wrap">
-      <div class="head"><h2>Silver <span class="l">Hour</span></h2><p>An editorial in six frames: one day in an old limestone house above the sea, from morning light to lamplight.</p></div>
+      <div class="head"><h2>The Long <span class="l">Weekend</span></h2><p>An editorial in six frames, from coffee on the porch on Saturday to supper under string lights.</p></div>
       <div class="stack">
         <div class="g3">
-          <figure><div class="ph r45"><img src="img/dalia-t1-morning-1024x1280.webp" alt="Dalia at a marble table in a limestone loggia above the sea, espresso cup, closed linen book, silver-grey silk scarf"></div><figcaption><b>I</b> · The Morning</figcaption></figure>
-          <figure><div class="ph r45"><img src="img/dalia-t2-stair-1024x1280.webp" alt="Dalia glancing back at the top of a limestone stair above the sea, camel coat lined in silver-grey silk"></div><figcaption><b>II</b> · The Stair</figcaption></figure>
-          <figure><div class="ph r45"><img src="img/dalia-t3-heirloom-1024x1280.webp" alt="Dalia lifting a strand of cream pearls from a leather box, ivory silk blouse, silver-grey silk sash"></div><figcaption><b>III</b> · The Heirloom</figcaption></figure>
+          <figure><div class="ph r45"><img src="img/beckie-t1-porch-1024x1280.webp" alt="Beckie on a white porch with a coffee cup, hydrangeas by the steps"></div><figcaption><b>I</b> · The Porch</figcaption></figure>
+          <figure><div class="ph r45"><img src="img/beckie-t2-market-1024x1280.webp" alt="Beckie at a farmers market carrying a paper bag of lemons and greens"></div><figcaption><b>II</b> · The Market</figcaption></figure>
+          <figure><div class="ph r45"><img src="img/beckie-t3-kitchen-1024x1280.webp" alt="Beckie in a sunlit kitchen tearing basil into a bowl"></div><figcaption><b>III</b> · The Kitchen</figcaption></figure>
         </div>
-        <figure><div class="ph r32"><img src="img/dalia-t4-terrace-1536x1024.webp" alt="Dalia on a stone terrace at dusk above the sea and coastal lights, silver-grey silk scarf in the wind"></div><figcaption><b>IV</b> · The Terrace</figcaption></figure>
+        <figure><div class="ph r32"><img src="img/beckie-t4-bookshop-1024x1280.webp" alt="Beckie in a camel blazer reading in a bookshop" style="object-position:50% 22%"></div><figcaption><b>IV</b> · The Bookshop</figcaption></figure>
         <div class="g3">
-          <figure class="span2 tall"><div class="ph r32 fill"><img src="img/dalia-t5-evening-1536x1024.webp" alt="Dalia at the head of a candlelit table in a limestone salon at dusk, black silk-crepe dress, pearls, silver-grey silk cuffs"></div><figcaption><b>V</b> · The Evening</figcaption></figure>
-          <figure><div class="ph r45"><img src="img/dalia-t6-silver-1024x1280.webp" alt="Dalia in profile at night, silver streak from temple to crown, silver-grey silk scarf, pearl drop earring"></div><figcaption><b>VI</b> · The Silver</figcaption></figure>
+          <figure class="span2 tall"><div class="ph r32 fill"><img src="img/beckie-t5-coastroad-1024x1280.webp" alt="Beckie in a red dress beside a mint convertible on a coast road" style="position:absolute;inset:0;object-position:50% 12%"></div><figcaption><b>V</b> · The Coast Road</figcaption></figure>
+          <figure><div class="ph r45"><img src="img/beckie-t6-supper-1024x1280.webp" alt="Beckie at a candlelit table under string lights"></div><figcaption><b>VI</b> · Supper</figcaption></figure>
         </div>
       </div>
     </div>
@@ -170,10 +165,10 @@ footer small{color:var(--muted);font-size:12px}
     <div class="wrap">
       <div class="head"><h2>For your <span class="l">brand</span></h2><p>One frame per buyer line. Every image is licensed with the face locked.</p></div>
       <div class="g4">
-        <figure><div class="ph r45"><img src="img/dalia-r1-jewellery-1024x1280.webp" alt="Dalia seated with a hand at her jaw, cream pearls and a gold cuff on black silk"></div><figcaption>Fine jewellery</figcaption></figure>
-        <figure><div class="ph r45"><img src="img/dalia-r2-skincare-1024x1280.webp" alt="Dalia holding a blank frosted skincare bottle, ivory silk top"></div><figcaption>Pro-age skincare</figcaption></figure>
-        <figure><div class="ph r45"><img src="img/dalia-r3-haircare-1024x1280.webp" alt="Dalia in three-quarter view, silver streaks from temple to crown lit from behind"></div><figcaption>Haircare</figcaption></figure>
-        <figure><div class="ph r45"><img src="img/dalia-r4-fashion-1024x1280.webp" alt="Dalia in an ivory cashmere turtleneck, charcoal coat over the shoulders, arms folded"></div><figcaption>Luxury fashion</figcaption></figure>
+        <figure><div class="ph r45"><img src="img/beckie-r1-bodycare-1024x1280.webp" alt="Beckie in soft knitwear applying body lotion"></div><figcaption>Body care</figcaption></figure>
+        <figure><div class="ph r45"><img src="img/beckie-r2-haircare-1024x1280.webp" alt="Beckie running a hand through long honey-blonde waves"></div><figcaption>Haircare</figcaption></figure>
+        <figure><div class="ph r45"><img src="img/beckie-r3-plussize-1024x1280.webp" alt="Beckie in a cobalt wrap dress in a white studio"></div><figcaption>Plus-size fashion</figcaption></figure>
+        <figure><div class="ph r45"><img src="img/beckie-r4-beauty-1024x1280.webp" alt="Beckie beauty close-up, freckles and hazel-brown eyes"></div><figcaption>Beauty</figcaption></figure>
       </div>
     </div>
   </section>
@@ -182,38 +177,39 @@ footer small{color:var(--muted);font-size:12px}
     <div class="wrap">
       <div class="head"><h2>Digi<span class="l">tals</span></h2><p>Identity proof: the same face from every angle, straight from the studio.</p></div>
       <div class="g6">
-        <div class="ph r23"><img src="img/dalia-dig-a1-1120x1400.webp" alt="Digital, front"></div>
-        <div class="ph r23"><img src="img/dalia-dig-a2-1120x1400.webp" alt="Digital, smile"></div>
-        <div class="ph r23"><img src="img/dalia-dig-a3-1024x1280.webp" alt="Digital, three-quarter"></div>
-        <div class="ph r23"><img src="img/dalia-dig-a4-1024x1280.webp" alt="Digital, profile"></div>
-        <div class="ph r23"><img src="img/dalia-dig-a5-935x1402.webp" alt="Digital, full length"></div>
-        <div class="ph r23"><img src="img/dalia-dig-a6-1000x1500.webp" alt="Digital, back"></div>
+        <div class="ph r23"><img src="img/beckie-dig-a1-1120x1400.webp" alt="Digital, front"></div>
+        <div class="ph r23"><img src="img/beckie-dig-a2-1120x1400.webp" alt="Digital, smile"></div>
+        <div class="ph r23"><img src="img/beckie-dig-a3-1120x1400.webp" alt="Digital, three-quarter"></div>
+        <div class="ph r23"><img src="img/beckie-dig-a4-1120x1400.webp" alt="Digital, profile"></div>
+        <div class="ph r23"><img src="img/beckie-dig-a5-1000x1500.webp" alt="Digital, full length"></div>
+        <div class="ph r23"><img src="img/beckie-dig-a6-1000x1500.webp" alt="Digital, back"></div>
       </div>
     </div>
   </section>
 
   <section class="block" id="book">
     <div class="wrap">
-      <div class="head"><h2>Book <span class="l">Dalia</span></h2><p>Send your brief. We reply with availability, usage terms and a quote.</p></div>
+      <div class="head"><h2>Book <span class="l">Beckie</span></h2><p>Send your brief. We reply with availability, usage terms and a quote.</p></div>
       <div class="book">
-        <div class="ph" style="border-radius:16px"><img src="img/dalia-compcard-1080x1620.webp" alt="Dalia comp card" style="height:auto"></div>
+        <div class="ph" style="border-radius:16px"><img src="img/beckie-compcard-1080x1620.webp" alt="Beckie comp card" style="height:auto"></div>
         <div class="stack" style="gap:20px">
           <div class="card">
             <dl class="stats">
-              <dt>Code</dt><dd class="lime">DL01</dd>
-              <dt>Look</dt><dd>Lebanese</dd>
+              <dt>Code</dt><dd class="lime">BC01</dd>
+              <dt>Look</dt><dd>Mediterranean, warm golden</dd>
               <dt>Origin</dt><dd>AI-generated</dd>
-              <dt>Available</dt><dd>Worldwide, digital</dd>
-              <dt>Age</dt><dd>52</dd>
-              <dt>Height</dt><dd>170 cm / 5'7"</dd>
-              <dt>Measurements</dt><dd>90 · 72 · 96 cm / 35.5 · 28.5 · 38 in</dd>
-              <dt>Shoe</dt><dd>38 EU / 7.5 US</dd>
-              <dt>Eyes</dt><dd>Hazel-green</dd>
-              <dt>Hair</dt><dd>Dark brown, natural silver streaks</dd>
-              <dt>Lanes</dt><dd>Fine jewellery · Pro-age beauty · Haircare · Luxury fashion</dd>
+              <dt>Available</dt><dd>Worldwide, Digital</dd>
+              <dt>Age</dt><dd>29</dd>
+              <dt>Height</dt><dd>168 cm / 5'6"</dd>
+              <dt>Measurements</dt><dd>108 - 88 - 112 cm / 42.5 - 34.5 - 44 in</dd>
+              <dt>Shoe</dt><dd>39 EU / 8.5 US</dd>
+              <dt>Eyes</dt><dd>Hazel-brown</dd>
+              <dt>Hair</dt><dd>Honey-blonde balayage, long waves</dd>
+              <dt>Skin</dt><dd>Light-medium golden, freckles</dd>
+              <dt>Lanes</dt><dd>Body care · Haircare · Plus-size fashion · Resortwear · Hospitality</dd>
             </dl>
           </div>
-          <div class="ctas"><a class="pill lime" href="mailto:agent@cyberchicmodels.ai?subject=Brief%3A%20Dalia%20(DL01)">Request booking</a><a class="pill" href="img/dalia-compcard.pdf" target="_blank" rel="noopener">Comp card (PDF)</a></div>
+          <div class="ctas"><a class="pill lime" href="mailto:agent@cyberchicmodels.ai?subject=Brief%3A%20Beckie%20(BC01)">Request booking</a><a class="pill" href="img/beckie-compcard.pdf" target="_blank" rel="noopener" download>Comp card (PDF)</a></div>
           <div class="mail">Booking: <code id="mail">agent@cyberchicmodels.ai</code><button class="pill" id="copy" type="button" style="min-height:36px;padding:0 14px">Copy</button></div>
         </div>
       </div>
@@ -223,10 +219,11 @@ footer small{color:var(--muted);font-size:12px}
 
 <footer>
   <div class="wrap">
-    <a class="logo" href="#top" style="font-size:32px">CYBER<span>CHIC</span></a>
-    <small>AI models · No real person is depicted. Images are licensed, not free to reuse.</small>
+    <a class="logo" href="/" style="font-size:32px">CYBER<span>CHIC</span></a>
+    <small>AI models · No real person is depicted.</small>
   </div>
 </footer>
+
 
 <script>
 // Image protection layer: blocks the context menu and dragging on images only; links and keyboard stay usable.

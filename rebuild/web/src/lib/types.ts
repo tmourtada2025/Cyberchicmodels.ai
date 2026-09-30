@@ -6,7 +6,8 @@ export type RosterModel = {
   id: string
   slug: string
   name: string
-  ethnicity: string | null
+  // Stored in models.ethnicity, read as `look`: the site shows Look + Origin, never an ethnicity label.
+  look: string | null
   specialties: string[]
   portrait_path: string | null
   display_order: number

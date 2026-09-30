@@ -124,20 +124,21 @@
   white-space: nowrap;
 }
 
-.card-register {
-  font-size: 10px;
-  color: var(--grey);
-  flex: none;
-}
-
-.card-tags {
-  display: block;
+/* Always two lines tall (clamped), so every card's Look line sits at the same height. */
+.card .card-tags {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
   margin-top: 6px;
   font-size: 10px;
+  line-height: 1.5;
+  min-height: 3em;
   color: var(--grey);
 }
 
-.card-ethnicity {
+.card-look {
   display: block;
   margin-top: 6px;
   font-size: 11px;

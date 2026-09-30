@@ -1,11 +1,13 @@
 import { useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
+import { useImageProtection } from '../../hooks/useImageProtection'
 import { Footer } from './Footer'
 import { Nav } from './Nav'
 import './layout.css'
 
 export function Layout() {
   const { pathname } = useLocation()
+  useImageProtection()
 
   useEffect(() => {
     window.scrollTo(0, 0)

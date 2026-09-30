@@ -5,6 +5,7 @@ import { ProofBand } from '../features/home/ProofBand'
 import { RosterWall } from '../features/home/RosterWall'
 import { Ticker } from '../features/home/Ticker'
 import { useHomeData } from '../features/home/useHomeData'
+import { FEATURED_MODELS } from '../features/models/featured'
 import '../features/home/home.css'
 
 export function HomePage() {
@@ -12,9 +13,11 @@ export function HomePage() {
   const ready = data.status === 'ready'
 
   // Metrics are real published counts; a zero count is dropped rather than shown (visual-lock §4/§5).
+  // Static featured models count too, once each, whether or not they also have a roster row.
+  const featuredOnly = ready ? FEATURED_MODELS.filter((f) => !data.models.some((m) => m.slug === f.slug)).length : 0
   const metrics = ready
     ? [
-        { value: data.modelCount, label: 'Published models' },
+        { value: data.modelCount + featuredOnly, label: 'Published models' },
         { value: data.campaignCount, label: 'Published campaigns' },
       ].filter((m) => m.value > 0)
     : []

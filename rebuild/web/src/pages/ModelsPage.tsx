@@ -17,8 +17,8 @@ type FilterDef = {
 }
 
 // Category chips come from models.specialties, so new categories appear as soon as rows carry them.
-// Ethnicity and gender filters were dropped by owner decision (roster is currently all female);
-// ethnicity still shows as a tag on every card.
+// Look and gender filters were dropped by owner decision (roster is currently all female);
+// Look and Origin still show as a tag on every card.
 const FILTERS: FilterDef[] = [{ key: 'register', label: 'Category', values: (m) => m.specialties }]
 
 export function ModelsPage() {

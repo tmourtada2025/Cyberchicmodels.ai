@@ -147,3 +147,25 @@ a {
     transition: none !important;
   }
 }
+
+/* Image protection: no drag, no selection, no iOS long-press save sheet. */
+img {
+  -webkit-user-drag: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+.card-tile,
+.profile-portrait,
+.hero-drift-tile {
+  position: relative;
+}
+/* Transparent shield above each image so "Save image" hits the overlay, not the file. */
+.card-tile::after,
+.profile-portrait::after,
+.hero-drift-tile::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
