@@ -1,0 +1,114 @@
+path,model_or_page,slot_role,referenced_by
+/m/ariadne/img/ariadne-h1-hero-santorini-1536x864.webp,ariadne,hero - desktop,/m/ariadne/
+/m/ariadne/img/ariadne-h2-hero-bluedoor-1024x1280.webp,ariadne,hero - mobile,/m/ariadne/
+/m/ariadne/img/ariadne-interim-hero-desktop-1536x864.webp,ariadne,hero - desktop (interim),(unreferenced)
+/m/ariadne/img/ariadne-interim-hero-mobile-1024x1280.webp,ariadne,hero - mobile (interim),(unreferenced)
+/m/ariadne/img/ariadne-og-1200x630.webp,ariadne,og,/m/ariadne/
+/m/ariadne/img/ariadne-interim-t1-1024x1280.webp,ariadne,t1 - interim,/m/ariadne/
+/m/ariadne/img/ariadne-interim-t2-1024x1280.webp,ariadne,t2 - interim,/m/ariadne/
+/m/ariadne/img/ariadne-interim-t3-1536x1024.webp,ariadne,t3 - interim,(unreferenced)
+/m/ariadne/img/ariadne-t3-shore-1536x1024.webp,ariadne,t3 - shore,(unreferenced)
+/m/ariadne/img/ariadne-t3-vine-1024x1280.webp,ariadne,t3 - vine,/m/ariadne/
+/m/ariadne/img/ariadne-interim-t4-1024x1280.webp,ariadne,t4 - interim,(unreferenced)
+/m/ariadne/img/ariadne-t4-shore-1536x1024.webp,ariadne,t4 - shore,/m/ariadne/
+/m/ariadne/img/ariadne-interim-t5-1536x1024.webp,ariadne,t5 - interim,/m/ariadne/
+/m/ariadne/img/ariadne-interim-t6-1024x1280.webp,ariadne,t6 - interim,/m/ariadne/
+/m/ariadne/img/ariadne-interim-range-beauty-1024x1280.webp,ariadne,r - interim range: beauty,(unreferenced)
+/m/ariadne/img/ariadne-interim-range-evening-1024x1280.webp,ariadne,r - interim range: evening,(unreferenced)
+/m/ariadne/img/ariadne-interim-range-hotel-1024x1280.webp,ariadne,r - interim range: hotel,/m/ariadne/
+/m/ariadne/img/ariadne-interim-range-lifestyle-1024x1280.webp,ariadne,r - interim range: lifestyle,(unreferenced)
+/m/ariadne/img/ariadne-interim-range-travel-1024x1280.webp,ariadne,r - interim range: travel,/m/ariadne/
+/m/ariadne/img/ariadne-r1-wine-1024x1280.webp,ariadne,r1 - wine,/m/ariadne/
+/m/ariadne/img/ariadne-r4-jewellery-1024x1280.webp,ariadne,r4 - jewellery,/m/ariadne/
+/m/ariadne/img/ariadne-dig-a1-1120x1400.webp,ariadne,dig a1,"/m/ariadne/ | /models + / (roster wall, hero drift)"
+/m/ariadne/img/ariadne-dig-a2-1120x1400.webp,ariadne,dig a2,/m/ariadne/
+/m/ariadne/img/ariadne-dig-a3-1120x1400.webp,ariadne,dig a3,/m/ariadne/
+/m/ariadne/img/ariadne-dig-a4-1120x1400.webp,ariadne,dig a4,/m/ariadne/
+/m/ariadne/img/ariadne-dig-a5-1000x1500.webp,ariadne,dig a5,/m/ariadne/
+/m/ariadne/img/ariadne-dig-a6-1000x1500.webp,ariadne,dig a6,/m/ariadne/
+/m/ariadne/img/ariadne-compcard-1080x1620.webp,ariadne,compcard - image,/m/ariadne/
+/m/ariadne/img/ariadne-compcard.pdf,ariadne,compcard - pdf,/m/ariadne/
+/m/athena/img/athena-h1-hero-olive-terrace-1536x864.webp,athena,hero - desktop,/m/athena/
+/m/athena/img/athena-h2-hero-blue-hour-1024x1280.webp,athena,hero - mobile,/m/athena/
+/m/athena/img/athena-og-1200x630.webp,athena,og,/m/athena/
+/m/athena/img/athena-t1-path-1024x1280.webp,athena,t1 - path,/m/athena/
+/m/athena/img/athena-t2-grove-1024x1280.webp,athena,t2 - grove,/m/athena/
+/m/athena/img/athena-t3-library-1024x1280.webp,athena,t3 - library,/m/athena/
+/m/athena/img/athena-t4-strategist-1024x1280.webp,athena,t4 - strategist,/m/athena/
+/m/athena/img/athena-t5-sea-wind-1024x1280.webp,athena,t5 - sea-wind,/m/athena/
+/m/athena/img/athena-t6-balustrade-1024x1280.webp,athena,t6 - balustrade,/m/athena/
+/m/athena/img/athena-t7-silk-1024x1280.webp,athena,t7 - silk,/m/athena/
+/m/athena/img/athena-dig-a1-1120x1400.webp,athena,dig a1,/m/athena/
+/m/athena/img/athena-dig-a2-1120x1400.webp,athena,dig a2,/m/athena/
+/m/athena/img/athena-dig-a3-1120x1400.webp,athena,dig a3,/m/athena/
+/m/athena/img/athena-dig-a4-1120x1400.webp,athena,dig a4,/m/athena/
+/m/athena/img/athena-dig-a5-1000x1500.webp,athena,dig a5,/m/athena/
+/m/athena/img/athena-dig-a6-1000x1500.webp,athena,dig a6,/m/athena/
+/m/athena/img/athena-compcard-1080x1620.webp,athena,compcard - image,/m/athena/
+/m/athena/img/athena-compcard.pdf,athena,compcard - pdf,/m/athena/
+/m/beckie/img/beckie-h1-hero-desktop-1536x864.webp,beckie,hero - desktop,/m/beckie/
+/m/beckie/img/beckie-h2-hero-mobile-1024x1280.webp,beckie,hero - mobile,/m/beckie/
+/m/beckie/img/beckie-portrait-960x1280.webp,beckie,card - portrait,"/models + / (roster wall, hero drift)"
+/m/beckie/img/beckie-og-1200x630.webp,beckie,og,/m/beckie/
+/m/beckie/img/beckie-t1-porch-1024x1280.webp,beckie,t1 - porch,/m/beckie/
+/m/beckie/img/beckie-t2-market-1024x1280.webp,beckie,t2 - market,/m/beckie/
+/m/beckie/img/beckie-t3-kitchen-1024x1280.webp,beckie,t3 - kitchen,/m/beckie/
+/m/beckie/img/beckie-t4-bookshop-1024x1280.webp,beckie,t4 - bookshop,/m/beckie/
+/m/beckie/img/beckie-t5-coastroad-1024x1280.webp,beckie,t5 - coastroad,/m/beckie/
+/m/beckie/img/beckie-t6-supper-1024x1280.webp,beckie,t6 - supper,/m/beckie/
+/m/beckie/img/beckie-r1-bodycare-1024x1280.webp,beckie,r1 - bodycare,/m/beckie/
+/m/beckie/img/beckie-r2-haircare-1024x1280.webp,beckie,r2 - haircare,/m/beckie/
+/m/beckie/img/beckie-r3-plussize-1024x1280.webp,beckie,r3 - plussize,/m/beckie/
+/m/beckie/img/beckie-r4-beauty-1024x1280.webp,beckie,r4 - beauty,/m/beckie/
+/m/beckie/img/beckie-dig-a1-1120x1400.webp,beckie,dig a1,/m/beckie/
+/m/beckie/img/beckie-dig-a2-1120x1400.webp,beckie,dig a2,/m/beckie/
+/m/beckie/img/beckie-dig-a3-1120x1400.webp,beckie,dig a3,/m/beckie/
+/m/beckie/img/beckie-dig-a4-1120x1400.webp,beckie,dig a4,/m/beckie/
+/m/beckie/img/beckie-dig-a5-1000x1500.webp,beckie,dig a5,/m/beckie/
+/m/beckie/img/beckie-dig-a6-1000x1500.webp,beckie,dig a6,/m/beckie/
+/m/beckie/img/beckie-compcard-1080x1620.webp,beckie,compcard - image,/m/beckie/
+/m/beckie/img/beckie-compcard.pdf,beckie,compcard - pdf,/m/beckie/
+/m/dalia/img/dalia-interim-hero-desktop-1122x631.webp,dalia,hero - desktop (interim),/m/dalia/
+/m/dalia/img/dalia-interim-hero-mobile-1024x1280.webp,dalia,hero - mobile (interim),/m/dalia/
+/m/dalia/img/dalia-card-800x1000.webp,dalia,card - card,"/models + / (roster wall, hero drift)"
+/m/dalia/img/dalia-og-1200x630.webp,dalia,og,/m/dalia/
+/m/dalia/img/dalia-t1-morning-1024x1280.webp,dalia,t1 - morning,/m/dalia/
+/m/dalia/img/dalia-t2-stair-1024x1280.webp,dalia,t2 - stair,/m/dalia/
+/m/dalia/img/dalia-t3-heirloom-1024x1280.webp,dalia,t3 - heirloom,/m/dalia/
+/m/dalia/img/dalia-t4-terrace-1536x1024.webp,dalia,t4 - terrace,/m/dalia/
+/m/dalia/img/dalia-t5-evening-1536x1024.webp,dalia,t5 - evening,/m/dalia/
+/m/dalia/img/dalia-t6-silver-1024x1280.webp,dalia,t6 - silver,/m/dalia/
+/m/dalia/img/dalia-r1-jewellery-1024x1280.webp,dalia,r1 - jewellery,/m/dalia/
+/m/dalia/img/dalia-r2-skincare-1024x1280.webp,dalia,r2 - skincare,/m/dalia/
+/m/dalia/img/dalia-r3-haircare-1024x1280.webp,dalia,r3 - haircare,/m/dalia/
+/m/dalia/img/dalia-r4-fashion-1024x1280.webp,dalia,r4 - fashion,/m/dalia/
+/m/dalia/img/dalia-dig-a1-1120x1400.webp,dalia,dig a1,/m/dalia/
+/m/dalia/img/dalia-dig-a2-1120x1400.webp,dalia,dig a2,/m/dalia/
+/m/dalia/img/dalia-dig-a3-1024x1280.webp,dalia,dig a3,/m/dalia/
+/m/dalia/img/dalia-dig-a4-1024x1280.webp,dalia,dig a4,/m/dalia/
+/m/dalia/img/dalia-dig-a5-935x1402.webp,dalia,dig a5,/m/dalia/
+/m/dalia/img/dalia-dig-a6-1000x1500.webp,dalia,dig a6,/m/dalia/
+/m/dalia/img/dalia-compcard-1080x1620.webp,dalia,compcard - image,/m/dalia/
+/m/dalia/img/dalia-compcard.pdf,dalia,compcard - pdf,/m/dalia/
+/site/img/ariadne-t3-shore-1536x1024.webp,site-pages,site-page image - ariadne t3 shore,/campaigns
+/site/img/ariadne-t3-vine-1024x1280.webp,site-pages,site-page image - ariadne t3 vine,/campaigns
+/site/img/ariadne-r1-wine-1024x1280.webp,site-pages,site-page image - ariadne r1 wine,/campaigns
+/site/img/ariadne-dig-a1-1120x1400.webp,site-pages,site-page image - ariadne dig a1,(unreferenced)
+/site/img/athena-h2-hero-blue-hour-1024x1280.webp,site-pages,site-page image - athena hero mobile,/proof
+/site/img/athena-t1-path-1024x1280.webp,site-pages,site-page image - athena t1 path,/campaigns
+/site/img/athena-t2-grove-1024x1280.webp,site-pages,site-page image - athena t2 grove,/proof
+/site/img/athena-t3-library-1024x1280.webp,site-pages,site-page image - athena t3 library,/campaigns | /proof
+/site/img/athena-t4-strategist-1024x1280.webp,site-pages,site-page image - athena t4 strategist,/campaigns | /proof
+/site/img/athena-t5-sea-wind-1024x1280.webp,site-pages,site-page image - athena t5 sea-wind,/proof
+/site/img/athena-t6-balustrade-1024x1280.webp,site-pages,site-page image - athena t6 balustrade,(unreferenced)
+/site/img/athena-t7-silk-1024x1280.webp,site-pages,site-page image - athena t7 silk,/proof
+/site/img/athena-dig-a1-1120x1400.webp,site-pages,site-page image - athena dig a1,/proof
+/site/img/athena-dig-a4-1120x1400.webp,site-pages,site-page image - athena dig a4,(unreferenced)
+/site/img/beckie-t1-porch-1024x1280.webp,site-pages,site-page image - beckie t1 porch,/campaigns
+/site/img/beckie-t3-kitchen-1024x1280.webp,site-pages,site-page image - beckie t3 kitchen,/campaigns
+/site/img/beckie-t4-bookshop-1024x1280.webp,site-pages,site-page image - beckie t4 bookshop,/campaigns
+/site/img/beckie-dig-a1-1120x1400.webp,site-pages,site-page image - beckie dig a1,(unreferenced)
+/site/img/dalia-t1-morning-1024x1280.webp,site-pages,site-page image - dalia t1 morning,/campaigns
+/site/img/dalia-t3-heirloom-1024x1280.webp,site-pages,site-page image - dalia t3 heirloom,/campaigns
+/site/img/dalia-t6-silver-1024x1280.webp,site-pages,site-page image - dalia t6 silver,/campaigns
+/site/img/dalia-dig-a1-1120x1400.webp,site-pages,site-page image - dalia dig a1,(unreferenced)

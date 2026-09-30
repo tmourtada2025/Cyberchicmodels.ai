@@ -6,7 +6,7 @@ import { useEffect } from 'react'
 export function useImageProtection() {
   useEffect(() => {
     const isImage = (t: EventTarget | null) =>
-      t instanceof Element && Boolean(t.closest('img, picture, .card-tile, .cam, .profile-portrait, .hero-drift'))
+      t instanceof Element && Boolean(t.closest('img, picture, .ph, .card-tile, .cam, .profile-portrait, .hero-drift'))
 
     const block = (e: Event) => {
       if (isImage(e.target)) e.preventDefault()
