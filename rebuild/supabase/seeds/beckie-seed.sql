@@ -5,7 +5,7 @@ insert into public.models
   (slug, name, gender, ethnicity, age_range_min, age_range_max, specialties,
    is_consistency_locked, consistency_locked_at, roster_status, portrait_path, display_order)
 values
-  ('beckie', 'Beckie', 'female', 'Mediterranean, warm golden', 29, 29,
+  ('beckie', 'Beckie', 'female', 'American', 29, 29,
    array['Body care','Haircare','Plus-size fashion','Resortwear','Hospitality'],
    true, now(), 'published', 'models/beckie/portrait.webp', 3)
 on conflict (slug) do update set
