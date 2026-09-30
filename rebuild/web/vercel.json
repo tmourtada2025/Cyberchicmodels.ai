@@ -1,3 +1,4 @@
 {
+  "redirects": [{ "source": "/m/:slug([^/.]+)", "destination": "/m/:slug/", "permanent": true }],
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
