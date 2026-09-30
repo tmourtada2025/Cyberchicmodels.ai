@@ -57,6 +57,12 @@ body.clean .tag{display:none}
 .facts b{color:var(--fg);font-weight:500}
 .ctas{display:flex;flex-wrap:wrap;gap:12px}
 .hero picture{display:block;width:100%;height:100%}
+/* Beckie: her face is on the left of the desktop hero, so the text block sits right and the gradient darkens the right side. */
+.hero .wrap{text-align:right}
+.hero .eyebrow,.hero .facts,.hero .ctas{justify-content:flex-end}
+.hero::before{background:linear-gradient(270deg,rgba(13,13,15,.92) 0%,rgba(13,13,15,.55) 30%,rgba(13,13,15,0) 55%),linear-gradient(0deg,rgba(13,13,15,1) 0%,rgba(13,13,15,0) 35%)}
+/* Phone hero is face-centred: keep only the bottom gradient behind the text. */
+@media (max-width:700px){.hero::before{background:linear-gradient(0deg,rgba(13,13,15,1) 0%,rgba(13,13,15,.75) 28%,rgba(13,13,15,0) 50%)}}
 
 /* marquee */
 .strip{background:var(--lime);color:var(--ink);overflow:hidden;white-space:nowrap}
