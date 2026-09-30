@@ -17,7 +17,7 @@ export const FEATURED_MODELS: RosterModel[] = [
     id: 'static-ariadne',
     slug: 'ariadne',
     name: 'Ariadne',
-    ethnicity: 'Levantine / Mediterranean',
+    ethnicity: 'Greek / Mediterranean',
     specialties: ['Wine', 'Hospitality', 'Resortwear'],
     portrait_path: '/m/ariadne/img/ariadne-dig-a1-1120x1400.webp',
     display_order: 2,
