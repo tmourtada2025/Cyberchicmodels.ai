@@ -1,6 +1,7 @@
 import type { RosterModel } from '../../lib/types'
 import { ModelCard, ModelCardSkeleton } from '../../components/model/ModelCard'
 import { EmptyState, SectionHead } from '../../components/ui/SectionHead'
+import { withFeatured } from '../models/featured'
 
 // Below this many published models a marquee looks sparse and repetitive; show a static row instead.
 const MARQUEE_MIN = 8
@@ -11,7 +12,9 @@ type RosterWallProps =
   | { status: 'ready'; models: RosterModel[] }
 
 export function RosterWall(props: RosterWallProps) {
-  const isMarquee = props.status === 'ready' && props.models.length >= MARQUEE_MIN
+  // Statically served models show regardless of roster state, so a Supabase outage never empties the wall.
+  const models = withFeatured(props.status === 'ready' ? props.models : [])
+  const isMarquee = props.status === 'ready' && models.length >= MARQUEE_MIN
 
   return (
     <section className="section" id="roster">
@@ -25,31 +28,24 @@ export function RosterWall(props: RosterWallProps) {
           side={`Identity-locked digital faces, each one licensed as a consistent identity.${isMarquee ? ' Hover to hold the wall.' : ''}`}
         />
       </div>
-      <WallBody {...props} />
+      <WallBody models={models} loading={props.status === 'loading'} />
     </section>
   )
 }
 
-function WallBody(props: RosterWallProps) {
-  if (props.status === 'loading') {
+function WallBody({ models, loading }: { models: RosterModel[]; loading: boolean }) {
+  if (loading) {
     return (
       <div className="container wall-static">
-        {Array.from({ length: 5 }, (_, i) => (
+        {models.map((m) => (
+          <ModelCard key={m.id} model={m} />
+        ))}
+        {Array.from({ length: 3 }, (_, i) => (
           <ModelCardSkeleton key={i} />
         ))}
       </div>
     )
   }
-
-  if (props.status === 'error') {
-    return (
-      <div className="container">
-        <EmptyState title="Roster unavailable">The roster couldn&rsquo;t be loaded right now. Please try again shortly.</EmptyState>
-      </div>
-    )
-  }
-
-  const { models } = props
 
   if (models.length === 0) {
     return (
