@@ -14,9 +14,7 @@ export function HomePage() {
 
   // Metrics are real published counts; a zero count is dropped rather than shown (visual-lock §4/§5).
   // Static featured models count too, once each, whether or not they also have a roster row.
-  const featuredOnly = ready
-    ? FEATURED_MODELS.filter((f) => f.roster !== false && !data.models.some((m) => m.slug === f.slug)).length
-    : 0
+  const featuredOnly = ready ? FEATURED_MODELS.filter((f) => !data.models.some((m) => m.slug === f.slug)).length : 0
   const metrics = ready
     ? [
         { value: data.modelCount + featuredOnly, label: 'Published models' },

@@ -37,7 +37,8 @@ export const FEATURED_MODELS: RosterModel[] = [
     href: '/m/beckie/',
   },
   {
-    // Wall only: no dedicated card image yet, so her 4:5 blue-hour hero fills the drift tile.
+    // No dedicated card image yet: her 4:5 blue-hour hero fills the /models card and drift tile.
+    // Not on the homepage roster cards (roster: false).
     id: 'static-athena',
     slug: 'athena',
     name: 'Athena',
@@ -50,10 +51,10 @@ export const FEATURED_MODELS: RosterModel[] = [
   },
 ]
 
-// Featured models ahead of the Supabase roster, same-slug rows dropped. Wall-only entries
-// (roster: false) are included only for the hero drift wall ({ wall: true }).
-export function withFeatured(models: RosterModel[], { wall = false } = {}): RosterModel[] {
-  const featured = FEATURED_MODELS.filter((m) => wall || m.roster !== false)
+// Featured models ahead of the Supabase roster, same-slug rows dropped.
+// { roster: true } is the homepage roster cards, which skip entries marked roster: false.
+export function withFeatured(models: RosterModel[], { roster = false } = {}): RosterModel[] {
+  const featured = FEATURED_MODELS.filter((m) => !roster || m.roster !== false)
   const slugs = new Set(FEATURED_MODELS.map((m) => m.slug))
   return [...featured, ...models.filter((m) => !slugs.has(m.slug))]
 }

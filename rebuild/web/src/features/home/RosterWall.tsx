@@ -13,7 +13,7 @@ type RosterWallProps =
 
 export function RosterWall(props: RosterWallProps) {
   // Statically served models show regardless of roster state, so a Supabase outage never empties the wall.
-  const models = withFeatured(props.status === 'ready' ? props.models : [])
+  const models = withFeatured(props.status === 'ready' ? props.models : [], { roster: true })
   const isMarquee = props.status === 'ready' && models.length >= MARQUEE_MIN
 
   return (
