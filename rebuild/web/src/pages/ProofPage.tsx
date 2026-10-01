@@ -71,16 +71,16 @@ export function ProofPage() {
       </div>
 
       <section className="wrap" aria-label="One reference, many scenes">
-        <div className="head"><h2>One <span className="l">reference</span></h2><p>Athena's front digital is the reference. Each frame below is scored against it: 1.00 is the same photo, and photos of one person usually score above 0.50.</p></div>
+        <div className="head"><h2>One <span className="l">reference</span></h2><p>Yasmin's front digital is the reference. Each frame below is scored against it: 1.00 is the same photo, and photos of one person usually score above 0.50.</p></div>
         <div className="pair">
-          <figure className="ref"><div className="ph r45"><img src="/site/img/athena-dig-a1-1120x1400.webp" alt="Athena, front studio digital used as the reference" /></div><figcaption><b>Reference</b> · Front digital</figcaption></figure>
+          <figure className="ref"><div className="ph r45"><img src="/site/img/yasmin-dig-a1-1120x1400.webp" alt="Yasmin, front studio digital used as the reference" /></div><figcaption><b>Reference</b> · Front digital</figcaption></figure>
           <div className="g3">
-            <figure><div className="ph r45"><img src="/site/img/athena-h2-hero-blue-hour-1024x1280.webp" alt="Athena on a Monaco rooftop at blue hour" /></div><figcaption>Blue hour · <span className="score">0.90</span></figcaption></figure>
-            <figure><div className="ph r45"><img src="/site/img/athena-t7-silk-1024x1280.webp" alt="Athena beauty close-up in an olive silk headscarf" /></div><figcaption>Beauty, studio · <span className="score">0.90</span></figcaption></figure>
-            <figure><div className="ph r45"><img src="/site/img/athena-t4-strategist-1024x1280.webp" alt="Athena at a chessboard by candlelight" /></div><figcaption>Candlelight · <span className="score">0.80</span></figcaption></figure>
-            <figure><div className="ph r45"><img src="/site/img/athena-t3-library-1024x1280.webp" alt="Athena in a library at night with a barn owl" /></div><figcaption>Lamplight · <span className="score">0.78</span></figcaption></figure>
-            <figure><div className="ph r45"><img src="/site/img/athena-t2-grove-1024x1280.webp" alt="Athena seated in an olive grove, gaze down" /></div><figcaption>Dappled sun · <span className="score">0.69</span></figcaption></figure>
-            <figure><div className="ph r45"><img src="/site/img/athena-t5-sea-wind-1024x1280.webp" alt="Athena on a coastal path, eyes half-closed in the wind" /></div><figcaption>Wind, eyes half-closed · <span className="score">0.62</span></figcaption></figure>
+            <figure><div className="ph r45"><img src="/site/img/yasmin-studio-cobalt-1024x1280.webp" alt="Yasmin beauty portrait on a cobalt studio backdrop" /></div><figcaption>Beauty, studio · <span className="score">0.90</span></figcaption></figure>
+            <figure><div className="ph r45"><img src="/site/img/yasmin-midday-wall-1024x1280.webp" alt="Yasmin leaning on a teal wall in midday sun" /></div><figcaption>Midday sun · <span className="score">0.84</span></figcaption></figure>
+            <figure><div className="ph r45"><img src="/site/img/yasmin-evening-street-1024x1280.webp" alt="Yasmin in a camel coat on a city street at evening" /></div><figcaption>Evening street · <span className="score">0.82</span></figcaption></figure>
+            <figure><div className="ph r45"><img src="/site/img/yasmin-open-smile-1024x1280.webp" alt="Yasmin with a wide open smile on a peach backdrop" /></div><figcaption>Open smile · <span className="score">0.80</span></figcaption></figure>
+            <figure><div className="ph r45"><img src="/site/img/yasmin-morning-cafe-1024x1280.webp" alt="Yasmin at a street cafe holding a white cup" /></div><figcaption>Morning café · <span className="score">0.80</span></figcaption></figure>
+            <figure><div className="ph r45"><img src="/site/img/yasmin-golden-hour-steps-1024x1280.webp" alt="Yasmin in a cobalt dress on tiled steps at golden hour" /></div><figcaption>Golden hour · <span className="score">0.78</span></figcaption></figure>
           </div>
         </div>
       </section>
