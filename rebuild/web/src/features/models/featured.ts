@@ -48,6 +48,18 @@ export const FEATURED_MODELS: RosterModel[] = [
     href: '/m/athena/',
     roster: false,
   },
+  {
+    // Not in the homepage hero drift wall (drift: false).
+    id: 'static-michelle',
+    slug: 'michelle',
+    name: 'Michelle',
+    look: 'Belgian',
+    specialties: ['Haircare', 'Skincare', 'Denim', 'Eyewear'],
+    portrait_path: '/m/michelle/img/michelle-card-800x1000.webp',
+    display_order: 5,
+    href: '/m/michelle/',
+    drift: false,
+  },
 ]
 
 // Featured models ahead of the Supabase roster, same-slug rows dropped.

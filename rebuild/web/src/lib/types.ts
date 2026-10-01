@@ -15,6 +15,8 @@ export type RosterModel = {
   href?: string
   // false = kept off the homepage roster cards; still on /models and in the hero drift wall.
   roster?: boolean
+  // false = kept out of the hero drift wall; still on /models and the roster strip unless roster is false.
+  drift?: boolean
 }
 
 export type ModelProfile = RosterModel & {
