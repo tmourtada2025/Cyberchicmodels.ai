@@ -1,4 +1,5 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Athena · CyberChic</title>
 <meta property="og:title" content="Athena · CyberChic Models">
 <meta property="og:image" content="img/athena-og-1200x630.webp">
@@ -29,7 +30,7 @@ h2 .l{color:var(--lime)}
 /* header */
 header{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:rgba(13,13,15,.8);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 .nav{display:flex;align-items:center;justify-content:space-between;gap:16px;height:68px}
-.logo{font-family:var(--display);font-size:32px;text-decoration:none;letter-spacing:.01em}
+.logo{font-family:var(--display);font-size:24px;text-decoration:none;letter-spacing:.01em}
 .logo span{color:var(--lime)}
 .links{display:flex;gap:28px;font-size:12px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
 .links a{text-decoration:none}
@@ -110,11 +111,11 @@ footer small{color:var(--muted);font-size:12px}
 
 <header>
   <div class="wrap nav">
-    <a class="logo" href="/">CYBER<span>CHIC</span></a>
+    <a class="logo" href="#top">CYBER<span>CHIC</span></a>
     <nav class="links" aria-label="Main">
-      <a href="/models" aria-current="page">Models</a><a href="/campaigns">Campaigns</a><a href="/proof">Proof</a><a href="/about">About</a>
+      <a href="#" aria-current="page">Models</a><a href="#">Campaigns</a><a href="#">Proof</a><a href="#">About</a>
     </nav>
-    <a class="pill lime" href="/brief">Start a brief</a>
+    <a class="pill lime" href="#book">Start a brief</a>
   </div>
 </header>
 
@@ -167,11 +168,10 @@ footer small{color:var(--muted);font-size:12px}
     <div class="wrap">
       <div class="head"><h2>For your <span class="l">brand</span></h2><p>One frame per buyer line. Every image is licensed with the face locked.</p></div>
       <div class="g4">
-        <!-- R1-R4: replace each .todo box with <div class="ph r45"><img src="img/athena-rN-...-1024x1280.webp" alt="..."></div> when the frame lands -->
-        <figure><div class="ph r45 todo" data-slot="R1"><div><b>R1</b><span>Skincare</span><i>Blank amber dropper bottle at the jaw, cream studio</i></div></div><figcaption>Skincare</figcaption></figure>
-        <figure><div class="ph r45 todo" data-slot="R2"><div><b>R2</b><span>Fragrance</span><i>Blank square bottle, hotel balcony above the harbour at dusk</i></div></div><figcaption>Fragrance</figcaption></figure>
-        <figure><div class="ph r45 todo" data-slot="R3"><div><b>R3</b><span>Watches</span><i>Plain gold watch, no logo, window seat light</i></div></div><figcaption>Watches</figcaption></figure>
-        <figure><div class="ph r45 todo" data-slot="R4"><div><b>R4</b><span>Leather goods</span><i>Plain taupe bag, camel coat, Menton old town</i></div></div><figcaption>Leather goods</figcaption></figure>
+        <figure><div class="ph r45"><img src="img/athena-r1-skincare-1024x1280.webp" alt="Athena holding a blank amber serum dropper bottle at her jaw, cream knit top"></div><figcaption>Skincare</figcaption></figure>
+        <figure><div class="ph r45"><img src="img/athena-r2-fragrance-1024x1280.webp" alt="Athena with eyes closed holding a clear perfume bottle on a balcony above the Monaco harbour at dusk"></div><figcaption>Fragrance</figcaption></figure>
+        <figure><div class="ph r45"><img src="img/athena-r3-watches-1024x1280.webp" alt="Athena looking down at a plain gold watch with a white dial, cream linen shirt"></div><figcaption>Watches</figcaption></figure>
+        <figure><div class="ph r45"><img src="img/athena-r4-leathergoods-1024x1280.webp" alt="Athena walking in a Menton old-town street carrying a plain taupe leather bag, camel coat"></div><figcaption>Leather goods</figcaption></figure>
       </div>
     </div>
   </section>
@@ -222,7 +222,7 @@ footer small{color:var(--muted);font-size:12px}
 
 <footer>
   <div class="wrap">
-    <a class="logo" href="#top">CYBER<span>CHIC</span></a>
+    <a class="logo" href="#top" style="font-size:32px">CYBER<span>CHIC</span></a>
     <small>AI models · No real person is depicted. Images are licensed, not free to reuse.</small>
   </div>
 </footer>
@@ -238,5 +238,3 @@ document.getElementById('copy').addEventListener('click', function () {
   try { navigator.clipboard.writeText(t).then(done, sel); } catch (e) { sel(); }
 });
 </script>
-
-</body></html>
