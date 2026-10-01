@@ -60,6 +60,19 @@ export const FEATURED_MODELS: RosterModel[] = [
     href: '/m/michelle/',
     drift: false,
   },
+  {
+    // /models and her page only: off the homepage roster cards and the hero drift wall.
+    id: 'static-yasmin',
+    slug: 'yasmin',
+    name: 'Yasmin',
+    look: 'Afro-Brazilian',
+    specialties: ['Skincare', 'Haircare', 'Body care', 'Cosmetics'],
+    portrait_path: '/m/yasmin/img/yasmin-card-800x1000.webp',
+    display_order: 6,
+    href: '/m/yasmin/',
+    roster: false,
+    drift: false,
+  },
 ]
 
 // Featured models ahead of the Supabase roster, same-slug rows dropped.
