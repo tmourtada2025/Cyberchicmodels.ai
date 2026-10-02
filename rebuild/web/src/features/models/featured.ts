@@ -100,6 +100,19 @@ export const FEATURED_MODELS: RosterModel[] = [
     roster: true,
     drift: true,
   },
+  {
+    // No drift_path: the hero drift wall uses the same W1 tile as her card.
+    id: 'static-priya',
+    slug: 'priya',
+    name: 'Priya',
+    look: 'Indian',
+    specialties: ['Fine jewellery', 'Fragrance', 'Eyewear', 'Evening tailoring'],
+    portrait_path: '/m/priya/img/priya-card-800x1000.webp',
+    display_order: 9,
+    href: '/m/priya/',
+    roster: true,
+    drift: true,
+  },
 ]
 
 // Featured models ahead of the Supabase roster, same-slug rows dropped.
