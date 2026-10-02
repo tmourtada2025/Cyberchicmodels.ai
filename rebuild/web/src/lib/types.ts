@@ -17,6 +17,8 @@ export type RosterModel = {
   roster?: boolean
   // false = kept out of the hero drift wall; still on /models and the roster strip unless roster is false.
   drift?: boolean
+  // Image used in the hero drift wall instead of portrait_path; the roster strip and /models keep portrait_path.
+  drift_path?: string
 }
 
 export type ModelProfile = RosterModel & {

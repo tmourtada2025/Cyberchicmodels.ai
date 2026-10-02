@@ -86,6 +86,20 @@ export const FEATURED_MODELS: RosterModel[] = [
     roster: true,
     drift: false,
   },
+  {
+    // The hero drift wall uses her saffron wall tile (drift_path); roster strip and /models use the card.
+    id: 'static-amara',
+    slug: 'amara',
+    name: 'Amara',
+    look: 'Nigerian',
+    specialties: ['Fine jewellery', 'Tailoring', 'Skincare', 'Eyewear'],
+    portrait_path: '/m/amara/img/amara-card-800x1000.webp',
+    drift_path: '/m/amara/img/amara-wall-800x1000.webp',
+    display_order: 8,
+    href: '/m/amara/',
+    roster: true,
+    drift: true,
+  },
 ]
 
 // Featured models ahead of the Supabase roster, same-slug rows dropped.

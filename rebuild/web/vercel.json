@@ -1,7 +1,7 @@
 {
   "redirects": [
     { "source": "/m/:slug([^/.]+)", "destination": "/m/:slug/", "permanent": true },
-    { "source": "/models/:slug(dalia|ariadne|beckie|athena|michelle|yasmin|trang)", "destination": "/m/:slug/", "permanent": false }
+    { "source": "/models/:slug(dalia|ariadne|beckie|athena|michelle|yasmin|trang|amara)", "destination": "/m/:slug/", "permanent": false }
   ],
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }

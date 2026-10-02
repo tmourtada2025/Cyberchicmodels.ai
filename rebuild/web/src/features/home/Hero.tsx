@@ -101,7 +101,7 @@ function HeroDrift({ portraits }: { portraits: RosterModel[] }) {
         <div key={c} className={`hero-drift-col ${c % 2 ? 'is-down' : 'is-up'}`}>
           {[...col, ...col].map((m, i) => (
             <div key={i} className="hero-drift-tile">
-              <img src={portraitSrc({ href: m.href, portrait_path: m.portrait_path! })} alt="" loading="lazy" />
+              <img src={portraitSrc({ href: m.href, portrait_path: m.drift_path ?? m.portrait_path! })} alt="" loading="lazy" />
             </div>
           ))}
         </div>
