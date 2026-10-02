@@ -73,6 +73,19 @@ export const FEATURED_MODELS: RosterModel[] = [
     roster: false,
     drift: false,
   },
+  {
+    // Roster strip and /models; not in the hero drift wall (drift: false).
+    id: 'static-trang',
+    slug: 'trang',
+    name: 'Trang',
+    look: 'Vietnamese',
+    specialties: ['Skincare', 'Haircare', 'Rainwear', 'Fragrance'],
+    portrait_path: '/m/trang/img/trang-card-800x1000.webp',
+    display_order: 7,
+    href: '/m/trang/',
+    roster: true,
+    drift: false,
+  },
 ]
 
 // Featured models ahead of the Supabase roster, same-slug rows dropped.
