@@ -101,6 +101,19 @@ export const FEATURED_MODELS: RosterModel[] = [
     drift: true,
   },
   {
+    // Hero drift wall and /models; off the homepage roster cards. No drift_path: the wall uses her ice-blue card.
+    id: 'static-yuki',
+    slug: 'yuki',
+    name: 'Yuki',
+    look: 'Japanese',
+    specialties: ['Skincare', 'Knitwear', 'Fragrance', 'Fine silver jewellery'],
+    portrait_path: '/m/yuki/img/yuki-card-800x1000.webp',
+    display_order: 8,
+    href: '/m/yuki/',
+    roster: false,
+    drift: true,
+  },
+  {
     // No drift_path: the hero drift wall uses the same W1 tile as her card.
     id: 'static-priya',
     slug: 'priya',
