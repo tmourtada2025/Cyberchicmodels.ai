@@ -7,24 +7,24 @@ export const ORIGIN = 'AI-generated'
 // Listed ahead of the Supabase roster; roster rows with the same slug are dropped to avoid duplicates.
 export const FEATURED_MODELS: RosterModel[] = [
   {
-    id: 'static-dalia',
-    slug: 'dalia',
-    name: 'Dalia',
-    look: 'Lebanese',
-    specialties: ['Pro-age beauty', 'Fine jewellery', 'Luxury'],
-    portrait_path: '/m/dalia/img/dalia-card-800x1000.webp',
-    display_order: 1,
-    href: '/m/dalia/',
-  },
-  {
     id: 'static-ariadne',
     slug: 'ariadne',
     name: 'Ariadne',
     look: 'Greek',
     specialties: ['Wine', 'Hospitality', 'Resortwear'],
     portrait_path: '/m/ariadne/img/ariadne-dig-a1-1120x1400.webp',
-    display_order: 2,
+    display_order: 1,
     href: '/m/ariadne/',
+  },
+  {
+    id: 'static-dalia',
+    slug: 'dalia',
+    name: 'Dalia',
+    look: 'Lebanese',
+    specialties: ['Pro-age beauty', 'Fine jewellery', 'Luxury'],
+    portrait_path: '/m/dalia/img/dalia-card-800x1000.webp',
+    display_order: 2,
+    href: '/m/dalia/',
   },
   {
     id: 'static-beckie',
@@ -37,16 +37,17 @@ export const FEATURED_MODELS: RosterModel[] = [
     href: '/m/beckie/',
   },
   {
-    // Not on the homepage roster cards (roster: false).
-    id: 'static-athena',
-    slug: 'athena',
-    name: 'Athena',
-    look: 'Italian-French',
-    specialties: ['Skincare', 'Fragrance', 'Watches', 'Leather goods'],
-    portrait_path: '/m/athena/img/athena-card-800x1000.webp',
+    // Roster strip and /models; not in the hero drift wall (drift: false).
+    id: 'static-trang',
+    slug: 'trang',
+    name: 'Trang',
+    look: 'Vietnamese',
+    specialties: ['Skincare', 'Haircare', 'Rainwear', 'Fragrance'],
+    portrait_path: '/m/trang/img/trang-card-800x1000.webp',
     display_order: 4,
-    href: '/m/athena/',
-    roster: false,
+    href: '/m/trang/',
+    roster: true,
+    drift: false,
   },
   {
     // Not in the homepage hero drift wall (drift: false).
@@ -61,30 +62,16 @@ export const FEATURED_MODELS: RosterModel[] = [
     drift: false,
   },
   {
-    // /models and her page only: off the homepage roster cards and the hero drift wall.
-    id: 'static-yasmin',
-    slug: 'yasmin',
-    name: 'Yasmin',
-    look: 'Afro-Brazilian',
-    specialties: ['Skincare', 'Haircare', 'Body care', 'Cosmetics'],
-    portrait_path: '/m/yasmin/img/yasmin-card-800x1000.webp',
+    // Not on the homepage roster cards (roster: false).
+    id: 'static-athena',
+    slug: 'athena',
+    name: 'Athena',
+    look: 'Italian-French',
+    specialties: ['Skincare', 'Fragrance', 'Watches', 'Leather goods'],
+    portrait_path: '/m/athena/img/athena-card-800x1000.webp',
     display_order: 6,
-    href: '/m/yasmin/',
+    href: '/m/athena/',
     roster: false,
-    drift: false,
-  },
-  {
-    // Roster strip and /models; not in the hero drift wall (drift: false).
-    id: 'static-trang',
-    slug: 'trang',
-    name: 'Trang',
-    look: 'Vietnamese',
-    specialties: ['Skincare', 'Haircare', 'Rainwear', 'Fragrance'],
-    portrait_path: '/m/trang/img/trang-card-800x1000.webp',
-    display_order: 7,
-    href: '/m/trang/',
-    roster: true,
-    drift: false,
   },
   {
     // The hero drift wall uses her saffron wall tile (drift_path); roster strip and /models use the card.
@@ -95,7 +82,7 @@ export const FEATURED_MODELS: RosterModel[] = [
     specialties: ['Fine jewellery', 'Tailoring', 'Skincare', 'Eyewear'],
     portrait_path: '/m/amara/img/amara-card-800x1000.webp',
     drift_path: '/m/amara/img/amara-wall-800x1000.webp',
-    display_order: 8,
+    display_order: 7,
     href: '/m/amara/',
     roster: true,
     drift: true,
@@ -125,6 +112,19 @@ export const FEATURED_MODELS: RosterModel[] = [
     href: '/m/priya/',
     roster: true,
     drift: true,
+  },
+  {
+    // /models and her page only: off the homepage roster cards and the hero drift wall.
+    id: 'static-yasmin',
+    slug: 'yasmin',
+    name: 'Yasmin',
+    look: 'Afro-Brazilian',
+    specialties: ['Skincare', 'Haircare', 'Body care', 'Cosmetics'],
+    portrait_path: '/m/yasmin/img/yasmin-card-800x1000.webp',
+    display_order: 10,
+    href: '/m/yasmin/',
+    roster: false,
+    drift: false,
   },
 ]
 
