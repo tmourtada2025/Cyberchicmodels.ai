@@ -126,6 +126,19 @@ export const FEATURED_MODELS: RosterModel[] = [
     roster: false,
     drift: false,
   },
+  {
+    // Hero drift wall and homepage roster cards. Card and wall tile = R2 outerwear frame.
+    id: 'static-aruzhan',
+    slug: 'aruzhan',
+    name: 'Aruzhan',
+    look: 'Kazakh',
+    specialties: ['Watches', 'Outerwear', 'Eyewear', 'Skincare'],
+    portrait_path: '/m/aruzhan/img/aruzhan-card-800x1000.webp',
+    display_order: 11,
+    href: '/m/aruzhan/',
+    roster: true,
+    drift: true,
+  },
 ]
 
 // Featured models ahead of the Supabase roster, same-slug rows dropped.

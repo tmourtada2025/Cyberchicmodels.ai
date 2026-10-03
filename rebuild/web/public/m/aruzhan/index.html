@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Aruzhan · CyberChic</title>
+<meta name="description" content="Aruzhan (AR02), AI-generated model by CyberChic Models. Cold Light: one night shift at a mountain observatory, from the last cable car to dawn on the ridge. Licensed for brand campaigns.">
+<meta property="og:title" content="Aruzhan · CyberChic Models">
+<meta property="og:description" content="AR02 · Cold Light. AI-generated model, licensed for brand campaigns.">
+<meta property="og:image" content="img/aruzhan-og-1200x630.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600&display=swap">
+<style>
+/* Same layout and tokens as the Priya page (public/m/priya). Single dark look by design. */
+:root{
+  --bg:#0D0D0F; --surface:#141418; --surface2:#18181D; --line:#26262C; --fg:#F7F5F1; --muted:#9A97A2; --lime:#C6FF3A; --ink:#0D0D0F;
+  --display:Anton,Impact,"Arial Narrow",sans-serif; --body:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --wrap:1200px; --gut:clamp(16px,4vw,48px);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{overflow-x:clip}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.6}
+a{color:inherit}
+.wrap{max-width:var(--wrap);margin-inline:auto;padding-inline:var(--gut)}
+.eyebrow{display:flex;align-items:center;gap:12px;color:var(--lime);font-size:12px;font-weight:600;letter-spacing:.13em;text-transform:uppercase}
+.eyebrow::before{content:"";width:28px;height:1px;background:var(--lime)}
+.pill{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 24px;border-radius:999px;font-size:12px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;text-decoration:none;border:1px solid var(--line);background:transparent;color:var(--fg);cursor:pointer;font-family:var(--body)}
+.pill.lime{background:var(--lime);border-color:var(--lime);color:var(--ink)}
+.pill[aria-disabled="true"]{opacity:.45;pointer-events:none}
+.pill:focus-visible,a:focus-visible,button:focus-visible{outline:2px solid var(--lime);outline-offset:3px}
+h1,h2{font-family:var(--display);font-weight:400;text-transform:uppercase;margin:0;line-height:.92;letter-spacing:.005em;text-wrap:balance}
+h2{font-size:clamp(40px,6vw,72px)}
+h2 .l{color:var(--lime)}
+
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:rgba(13,13,15,.8);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:16px;height:68px}
+.logo{font-family:var(--display);font-size:24px;text-decoration:none;letter-spacing:.01em}
+.logo span{color:var(--lime)}
+.links{display:flex;gap:28px;font-size:12px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
+.links a{text-decoration:none}
+.links a[aria-current]{color:var(--fg);border-bottom:1px solid var(--fg);padding-bottom:3px}
+@media (max-width:760px){.links{display:none}.nav .pill{padding:0 16px}}
+
+/* protected images: overlay catches right-click and "save image" */
+.ph{position:relative;overflow:hidden;background:var(--surface);-webkit-user-select:none;user-select:none;max-width:100%}
+.ph img{display:block;width:100%;height:100%;object-fit:cover;-webkit-user-drag:none;pointer-events:none}
+.ph::after{content:"";position:absolute;inset:0}
+
+/* items still to produce: code + name, so the page shows its final shape */
+.todo{display:grid;place-items:center;text-align:center;border:1px dashed var(--line);background:repeating-linear-gradient(135deg,var(--surface) 0 14px,var(--surface2) 14px 28px)}
+.todo div{padding:16px;display:grid;gap:6px}
+.todo b{font-family:var(--display);font-weight:400;font-size:clamp(28px,3vw,40px);line-height:1;color:var(--fg);letter-spacing:.02em}
+.todo span{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.todo i{font-style:normal;font-size:12px;color:var(--muted);max-width:28ch;margin-inline:auto;line-height:1.5}
+/* values waiting on the model sheet */
+.pend{display:inline-block;border:1px dashed var(--lime);color:var(--lime);border-radius:999px;padding:0 8px;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;line-height:20px}
+
+.hero{position:relative;min-height:min(86vh,820px);display:flex;align-items:flex-end}
+.hero .ph{position:absolute;inset:0}
+.hero .ph img{object-position:70% 30%}
+.hero::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(13,13,15,.92) 0%,rgba(13,13,15,.55) 45%,rgba(13,13,15,.1) 75%),linear-gradient(0deg,rgba(13,13,15,1) 0%,rgba(13,13,15,0) 35%)}
+.hero .wrap{position:relative;z-index:2;width:100%;padding-block:0 64px}
+.hero h1{font-size:clamp(84px,11vw,168px);margin-block:18px 12px}
+.facts{display:flex;flex-wrap:wrap;gap:8px 28px;color:var(--muted);font-size:13px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:28px}
+.facts b{color:var(--fg);font-weight:500}
+.ctas{display:flex;flex-wrap:wrap;gap:12px}
+.hero picture{display:block;width:100%;height:100%}
+@media (max-width:700px){.hero .ph img{object-position:50% 25%}.hero h1{font-size:clamp(64px,19vw,120px)}}
+
+.strip{background:var(--lime);color:var(--ink);overflow:hidden;white-space:nowrap}
+.strip div{display:inline-flex;gap:48px;padding:14px 0;font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;animation:run 38s linear infinite}
+.strip span::after{content:"+";margin-left:48px}
+@keyframes run{to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.strip div{animation:none}}
+
+section.block{padding-block:clamp(72px,10vw,128px) 0}
+.head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;border-top:1px solid var(--line);padding-top:28px;margin-bottom:40px}
+.head p{margin:0;color:var(--muted);max-width:40ch}
+
+.story{display:grid;grid-template-columns:1fr 2fr;gap:40px}
+.story p.big{margin:0;font-size:clamp(24px,3vw,36px);font-weight:300;line-height:1.35;max-width:30ch}
+.story p.small{margin:24px 0 0;color:var(--muted);max-width:60ch}
+@media (max-width:760px){.story{grid-template-columns:1fr}}
+
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.g4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.g6{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+.r45{aspect-ratio:4/5}.r32{aspect-ratio:3/2}.r23{aspect-ratio:2/3}
+.stack{display:grid;gap:16px}
+figure{margin:0;display:grid;gap:10px;min-width:0}
+figcaption{font-size:12px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
+figcaption b{color:var(--fg);font-weight:600}
+@media (max-width:900px){.g4{grid-template-columns:repeat(2,minmax(0,1fr))}.g6{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:600px){.g2,.g3{grid-template-columns:1fr}}
+
+.book{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(24px,5vw,64px);align-items:start}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:28px}
+.stats{display:grid;grid-template-columns:auto 1fr;gap:12px 28px;margin:0;font-variant-numeric:tabular-nums}
+.stats dt{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding-top:3px}
+.stats dd{margin:0;min-width:0}
+.stats dd.lime{color:var(--lime)}
+.mail{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:20px;color:var(--muted);font-size:14px}
+.mail code{font-family:var(--body);color:var(--fg);user-select:all;-webkit-user-select:all}
+@media (max-width:760px){.book{grid-template-columns:1fr}}
+
+footer{margin-top:clamp(72px,10vw,128px);border-top:1px solid var(--line)}
+footer .wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-block:40px}
+footer small{color:var(--muted);font-size:12px}
+
+.wide{aspect-ratio:3/2}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <a class="logo" href="/">CYBER<span>CHIC</span></a>
+    <nav class="links" aria-label="Main">
+      <a href="/models" aria-current="page">Models</a><a href="/campaigns">Campaigns</a><a href="/proof">Proof</a><a href="/about">About</a>
+    </nav>
+    <a class="pill lime" href="/brief">Start a brief</a>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero" aria-label="Aruzhan">
+    <div class="ph"><picture><source media="(max-width:700px)" srcset="img/aruzhan-h2-hero-1024x1280.webp"><img src="img/aruzhan-h1-hero-1536x864.webp" alt="Aruzhan, AI-generated model, inside an observatory dome at dusk, camel coat with a shearling collar" width="1536" height="864"></picture></div>
+    <div class="wrap">
+      <div class="eyebrow">AR02 · Cold Light</div>
+      <h1>Aruzhan</h1>
+      <div class="facts"><span>Look <b>Kazakh</b></span><span>Origin <b>AI-generated</b></span><span>Age <b>Late 20s</b></span><span>Height <b>180 cm / 5'11"</b></span></div>
+      <div class="ctas"><a class="pill lime" href="#book">Book Aruzhan</a><a class="pill" href="#digitals">See digitals</a></div>
+    </div>
+  </section>
+
+  <div class="strip" aria-hidden="true"><div>
+    <span>Identity-locked</span><span>AI-generated · no real person</span><span>Licensed for brand campaigns</span><span>Available worldwide</span><span>Watches · Outerwear · Eyewear · Skincare</span>
+    <span>Identity-locked</span><span>AI-generated · no real person</span><span>Licensed for brand campaigns</span><span>Available worldwide</span><span>Watches · Outerwear · Eyewear · Skincare</span>
+  </div></div>
+
+  <section class="block">
+    <div class="wrap story">
+      <div class="eyebrow">Her world</div>
+      <div>
+        <p class="big">Above the clouds, the observatory keeps one night shift. Aruzhan takes it. She rides the last car up, opens the dome at dusk and watches the sky until the cold light comes back over the ridge.</p>
+        <p class="small">Aruzhan is an AI-generated model, exclusive to CyberChic. One locked face across every scene and campaign, licensed to your brand. Amber eyes, freckles and real skin texture kept, nothing retouched away.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="cold-light">
+    <div class="wrap">
+      <div class="head"><h2>Cold <span class="l">Light</span></h2><p>An editorial in seven frames: one night shift at a mountain observatory, from the last cable car up to dawn on the ridge.</p></div>
+      <div class="stack">
+        <figure><div class="ph r32"><img src="img/aruzhan-t1-last-car-1536x1024.webp" alt="Aruzhan in a cable car rising above the clouds at dusk, oatmeal wool coat, low ponytail"></div><figcaption><b>I</b> · Last Car</figcaption></figure>
+        <div class="g3">
+          <figure><div class="ph r45"><img src="img/aruzhan-t2-the-road-in-1024x1280.webp" alt="Aruzhan walking up a snow road between two observatory domes at blue hour, camel shearling coat, black knee boots"></div><figcaption><b>II</b> · The Road In</figcaption></figure>
+          <figure><div class="ph r45"><img src="img/aruzhan-t3-dome-open-1024x1280.webp" alt="Aruzhan sitting on steel steps beneath the telescope under an open dome full of stars, oatmeal cable-knit sweater"></div><figcaption><b>III</b> · Dome Open</figcaption></figure>
+          <figure><div class="ph r45"><img src="img/aruzhan-t4-control-room-1024x1280.webp" alt="Aruzhan leaning over a desk of starfield monitors in a dark observatory control room, camel cardigan"></div><figcaption><b>IV</b> · Control Room</figcaption></figure>
+        </div>
+        <div class="g2">
+          <figure><div class="ph r45"><img src="img/aruzhan-t5-frozen-lake-1024x1280.webp" alt="Aruzhan holding an amber lantern on a frozen lake under the Milky Way, cream shearling coat, single braid"></div><figcaption><b>V</b> · Frozen Lake</figcaption></figure>
+          <figure><div class="ph r45"><img src="img/aruzhan-t6-three-am-1024x1280.webp" alt="Aruzhan smiling over a steaming enamel mug in a warm observatory kitchen at 3 a.m."></div><figcaption><b>VI</b> · Three A.M.</figcaption></figure>
+        </div>
+        <figure><div class="ph r32"><img src="img/aruzhan-t7-cold-light-1536x1024.webp" alt="Aruzhan on a snowy ridge at sunrise above a sea of cloud, the observatory dome behind her"></div><figcaption><b>VII</b> · Cold Light</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="head"><h2>For your <span class="l">brand</span></h2><p>One frame per buyer line. Every image is licensed with the face locked.</p></div>
+      <div class="g4">
+        <figure><div class="ph r45"><img src="img/aruzhan-r1-watches-1024x1280.webp" alt="Aruzhan with a steel watch with a blue dial raised to her collarbone, black roll-neck, observatory dome behind"></div><figcaption>Watches</figcaption></figure>
+        <figure><div class="ph r45"><img src="img/aruzhan-r2-outerwear-1024x1280.webp" alt="Aruzhan in a belted double-breasted camel wool coat with a shearling collar on a bright snowy plateau"></div><figcaption>Outerwear</figcaption></figure>
+        <figure><div class="ph r45"><img src="img/aruzhan-r3-eyewear-1024x1280.webp" alt="Aruzhan in thin steel aviator sunglasses with light amber lenses, snowy peaks behind"></div><figcaption>Eyewear</figcaption></figure>
+        <figure><div class="ph r45"><img src="img/aruzhan-r4-skincare-1024x1280.webp" alt="Aruzhan in a cream towel turban, bare freckled skin, fingertips at her cheekbone"></div><figcaption>Skincare</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="digitals">
+    <div class="wrap">
+      <div class="head"><h2>Digi<span class="l">tals</span></h2><p>Identity proof: the same face from every angle, straight from the studio.</p></div>
+      <div class="g6">
+        <div class="ph r23"><img src="img/aruzhan-dig-a1-1024x1536.webp" alt="Digital, front"></div>
+        <div class="ph r23"><img src="img/aruzhan-dig-a2-1024x1536.webp" alt="Digital, smile"></div>
+        <div class="ph r23"><img src="img/aruzhan-dig-a3-1024x1536.webp" alt="Digital, three-quarter"></div>
+        <div class="ph r23"><img src="img/aruzhan-dig-a4-1024x1536.webp" alt="Digital, profile"></div>
+        <div class="ph r23"><img src="img/aruzhan-dig-a5-1024x1536.webp" alt="Digital, full length"></div>
+        <div class="ph r23"><img src="img/aruzhan-dig-a6-1024x1536.webp" alt="Digital, back"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="book">
+    <div class="wrap">
+      <div class="head"><h2>Book <span class="l">Aruzhan</span></h2><p>Send your brief. We reply with availability, usage terms and a quote.</p></div>
+      <div class="book">
+        <div class="ph" style="border-radius:16px"><img src="img/aruzhan-compcard-1080x1620.webp" alt="Aruzhan comp card" width="1080" height="1620" style="height:auto"></div>
+        <div class="stack" style="gap:20px">
+          <div class="card">
+            <dl class="stats">
+              <dt>Code</dt><dd class="lime">AR02</dd>
+              <dt>Look</dt><dd>Kazakh</dd>
+              <dt>Origin</dt><dd>AI-generated</dd>
+              <dt>Available</dt><dd>Worldwide, digital</dd>
+              <dt>Age</dt><dd>Late 20s</dd>
+              <dt>Height</dt><dd>180 cm / 5'11"</dd>
+              <dt>Measurements</dt><dd>82 - 61 - 89 cm / 32.5 - 24 - 35 in</dd>
+              <dt>Shoe</dt><dd>40 EU / 9 US</dd>
+              <dt>Eyes</dt><dd>Amber-hazel</dd>
+              <dt>Hair</dt><dd>Black, long, straight</dd>
+              <dt>Skin</dt><dd>Sun-warmed medium tan, light freckles</dd>
+              <dt>Lanes</dt><dd>Watches · Outerwear · Eyewear · Skincare</dd>
+            </dl>
+          </div>
+          <div class="ctas"><a class="pill lime" href="mailto:agent@cyberchicmodels.ai?subject=Brief%3A%20Aruzhan%20(AR02)">Request booking</a><a class="pill" href="img/aruzhan-compcard.pdf" target="_blank" rel="noopener">Comp card (PDF)</a></div>
+          <div class="mail">Booking: <code id="mail">agent@cyberchicmodels.ai</code><button class="pill" id="copy" type="button" style="min-height:36px;padding:0 14px">Copy</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a class="logo" href="#top" style="font-size:32px">CYBER<span>CHIC</span></a>
+    <small>AI models · No real person is depicted. Images are licensed, not free to reuse.</small>
+  </div>
+</footer>
+<script>
+// Image protection layer: blocks the context menu and dragging on images only; links and keyboard stay usable.
+document.addEventListener('contextmenu', function (e) { if (e.target.closest('.ph')) e.preventDefault(); });
+document.addEventListener('dragstart', function (e) { if (e.target.closest('.ph')) e.preventDefault(); });
+document.getElementById('copy').addEventListener('click', function () {
+  var t = document.getElementById('mail').textContent, b = this;
+  var done = function () { b.textContent = 'Copied'; setTimeout(function () { b.textContent = 'Copy'; }, 1500); };
+  var sel = function () { var r = document.createRange(); r.selectNodeContents(document.getElementById('mail')); var s = getSelection(); s.removeAllRanges(); s.addRange(r); };
+  try { navigator.clipboard.writeText(t).then(done, sel); } catch (e) { sel(); }
+});
+</script>
+</body>
+</html>
