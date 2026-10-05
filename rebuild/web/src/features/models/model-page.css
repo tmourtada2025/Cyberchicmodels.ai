@@ -77,13 +77,15 @@
 .mp figcaption b{color:var(--fg);font-weight:600}
 .mp figure.tall{grid-template-rows:1fr auto}
 @media (min-width:601px){.mp .fill{aspect-ratio:auto;height:100%;min-height:0}}
-/* asymmetric rows (9fr 4fr / 9fr 4fr 4fr) */
+/* asymmetric rows (9fr 4fr / 9fr 4fr 4fr / 4fr 9fr / 9fr 9fr 4fr) */
 .mp .row{display:grid;gap:16px}
 .mp .row.a{grid-template-columns:9fr 4fr}
 .mp .row.b{grid-template-columns:9fr 4fr 4fr}
+.mp .row.c{grid-template-columns:4fr 9fr}
+.mp .row.d{grid-template-columns:9fr 9fr 4fr}
 .mp .row .ph{height:100%}
 @media (max-width:900px){.mp .g4{grid-template-columns:repeat(2,minmax(0,1fr))}.mp .g6{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media (max-width:760px){.mp .row.a,.mp .row.b{grid-template-columns:1fr}.mp .row .ph.r32{aspect-ratio:3/2}.mp .row .ph.r23{aspect-ratio:2/3}}
+@media (max-width:760px){.mp .row.a,.mp .row.b,.mp .row.c,.mp .row.d{grid-template-columns:1fr}.mp .row .ph.r32{aspect-ratio:3/2}.mp .row .ph.r23{aspect-ratio:2/3}}
 @media (max-width:600px){.mp .g2,.mp .g3{grid-template-columns:1fr}.mp .span2{grid-column:auto}.mp .span2.r32{aspect-ratio:4/5}}
 
 /* stats + book */
