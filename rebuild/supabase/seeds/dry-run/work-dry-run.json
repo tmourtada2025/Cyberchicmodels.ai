@@ -1,0 +1,253 @@
+{
+  "generated_at": "2026-10-05T04:20:32.451Z",
+  "problems": [],
+  "notes": [
+    "athena: athena-t3-library-1024x1280.webp matched by name; bytes differ from the model-page image (earlier encode, same picture)",
+    "athena: athena-t4-strategist-1024x1280.webp matched by name; bytes differ from the model-page image (earlier encode, same picture)",
+    "athena: athena-t1-path-1024x1280.webp matched by name; bytes differ from the model-page image (earlier encode, same picture)",
+    "athena: page shows Frames 7 and Lanes \"Skincare · Fragrance · Watches · Leather goods\" (template derives both; verified in parity)",
+    "dalia: page shows Frames 6 and Lanes \"Fine jewellery · Pro-age beauty · Haircare · Luxury fashion\" (template derives both; verified in parity)",
+    "ariadne: page shows Frames 6 and Lanes \"Wine · Hospitality · Resortwear · Jewellery\" (template derives both; verified in parity)",
+    "beckie: page shows Frames 6 and Lanes \"Body care · Haircare · Plus-size fashion · Resortwear · Hospitality\" (template derives both; verified in parity)"
+  ],
+  "campaigns": [
+    {
+      "model_slug": "athena",
+      "campaign_id": "0904fc38-f348-4d60-912b-1d4c9d5b83ca",
+      "campaign": "olive-owl",
+      "description": "The Riviera from the olive terraces by day to the library by night. One olive-green fabric element in every look.",
+      "location": "Gorbio, Menton, Cap Martin, Cap Ferrat, Monaco",
+      "derived_checks": {
+        "frames_on_page": 7,
+        "lanes_on_page": "Skincare · Fragrance · Watches · Leather goods"
+      }
+    },
+    {
+      "model_slug": "dalia",
+      "campaign_id": "b61298c1-f03f-47de-a22a-834465d62c7a",
+      "campaign": "silver-hour",
+      "description": "One day in an old limestone house above the sea, from morning light to lamplight. Silver hair kept, lines kept.",
+      "location": "A limestone house above the sea",
+      "derived_checks": {
+        "frames_on_page": 6,
+        "lanes_on_page": "Fine jewellery · Pro-age beauty · Haircare · Luxury fashion"
+      }
+    },
+    {
+      "model_slug": "ariadne",
+      "campaign_id": "bb999aae-81eb-4494-ad4c-540b71aca551",
+      "campaign": "the-thread",
+      "description": "From the vineyards in the Cretan hills to the ferries between the islands: the vine, the stone and the sea road between them.",
+      "location": "Crete and the islands",
+      "derived_checks": {
+        "frames_on_page": 6,
+        "lanes_on_page": "Wine · Hospitality · Resortwear · Jewellery"
+      }
+    },
+    {
+      "model_slug": "beckie",
+      "campaign_id": "9a874d10-a314-48ea-8555-2bc11632bde4",
+      "campaign": "the-long-weekend",
+      "description": "Saturday starts on the porch with coffee and the hydrangeas. The market, the kitchen, the bookshop, the coast road, then supper under string lights.",
+      "location": "A seaside weekend",
+      "derived_checks": {
+        "frames_on_page": 6,
+        "lanes_on_page": "Body care · Haircare · Plus-size fashion · Resortwear · Hospitality"
+      }
+    }
+  ],
+  "frames": [
+    {
+      "model_slug": "athena",
+      "image_id": "0c4d7211-0b61-480f-bfc2-cd96ba972616",
+      "storage_path": "campaigns/athena/olive-owl/athena-t3-library-1024x1280.webp",
+      "match": "same file name, different encode",
+      "work_page_file": "athena-t3-library-1024x1280.webp",
+      "work_order": 1,
+      "work_alt": "Athena in a villa library at night beside a barn owl",
+      "work_caption_mark": "III",
+      "work_caption": "The Library",
+      "model_page": {
+        "alt": "Athena in a villa library at night beside a barn owl on a leather armchair, black high-neck dress, olive velvet belt",
+        "caption_mark": "III",
+        "caption": "The Library"
+      }
+    },
+    {
+      "model_slug": "athena",
+      "image_id": "70b81e61-c6ac-4226-b106-d3366c668398",
+      "storage_path": "campaigns/athena/olive-owl/athena-t4-strategist-1024x1280.webp",
+      "match": "same file name, different encode",
+      "work_page_file": "athena-t4-strategist-1024x1280.webp",
+      "work_order": 2,
+      "work_alt": "Athena moving a knight on a harbour terrace chessboard at blue hour",
+      "work_caption_mark": "IV",
+      "work_caption": "The Strategist",
+      "model_page": {
+        "alt": "Athena moving a knight on a chessboard on a Monaco harbour terrace at blue hour, ivory blazer, olive pocket square",
+        "caption_mark": "IV",
+        "caption": "The Strategist"
+      }
+    },
+    {
+      "model_slug": "athena",
+      "image_id": "5ed29e3e-89bc-4d43-b0f0-2375d356b1ed",
+      "storage_path": "campaigns/athena/olive-owl/athena-t1-path-1024x1280.webp",
+      "match": "same file name, different encode",
+      "work_page_file": "athena-t1-path-1024x1280.webp",
+      "work_order": 3,
+      "work_alt": "Athena walking an olive terrace path in an olive linen dress",
+      "work_caption_mark": "I",
+      "work_caption": "The Path",
+      "model_page": {
+        "alt": "Athena walking a dry-stone path between olive terraces above Gorbio, olive-green linen shirt-dress",
+        "caption_mark": "I",
+        "caption": "The Path"
+      }
+    },
+    {
+      "model_slug": "dalia",
+      "image_id": "2bec9d37-6af3-4354-baeb-2a1915bf5ee9",
+      "storage_path": "campaigns/dalia/silver-hour/dalia-t1-morning-1024x1280.webp",
+      "match": "identical bytes",
+      "work_page_file": "dalia-t1-morning-1024x1280.webp",
+      "work_order": 1,
+      "work_alt": "Dalia at a marble table in a limestone loggia above the sea",
+      "work_caption_mark": "I",
+      "work_caption": "The Morning",
+      "model_page": {
+        "alt": "Dalia at a marble table in a limestone loggia above the sea, espresso cup, closed linen book, silver-grey silk scarf",
+        "caption_mark": "I",
+        "caption": "The Morning"
+      }
+    },
+    {
+      "model_slug": "dalia",
+      "image_id": "0a9efb44-af4e-4432-bb0a-07077bf0a648",
+      "storage_path": "campaigns/dalia/silver-hour/dalia-t3-heirloom-1024x1280.webp",
+      "match": "identical bytes",
+      "work_page_file": "dalia-t3-heirloom-1024x1280.webp",
+      "work_order": 2,
+      "work_alt": "Dalia lifting a strand of cream pearls from a leather box",
+      "work_caption_mark": "III",
+      "work_caption": "The Heirloom",
+      "model_page": {
+        "alt": "Dalia lifting a strand of cream pearls from a leather box, ivory silk blouse, silver-grey silk sash",
+        "caption_mark": "III",
+        "caption": "The Heirloom"
+      }
+    },
+    {
+      "model_slug": "dalia",
+      "image_id": "7e078d3d-c01f-4490-99fb-b91c57b9177f",
+      "storage_path": "campaigns/dalia/silver-hour/dalia-t6-silver-1024x1280.webp",
+      "match": "identical bytes",
+      "work_page_file": "dalia-t6-silver-1024x1280.webp",
+      "work_order": 3,
+      "work_alt": "Dalia in profile at night, silver streak from temple to crown",
+      "work_caption_mark": "VI",
+      "work_caption": "The Silver",
+      "model_page": {
+        "alt": "Dalia in profile at night, silver streak from temple to crown, silver-grey silk scarf, pearl drop earring",
+        "caption_mark": "VI",
+        "caption": "The Silver"
+      }
+    },
+    {
+      "model_slug": "ariadne",
+      "image_id": "4a9e1dcd-4f36-452c-92f9-3d1461d54412",
+      "storage_path": "campaigns/ariadne/the-thread/ariadne-t3-vine-1024x1280.webp",
+      "match": "identical bytes",
+      "work_page_file": "ariadne-t3-vine-1024x1280.webp",
+      "work_order": 1,
+      "work_alt": "Ariadne among vines in island light",
+      "work_caption_mark": "III",
+      "work_caption": "The Vine",
+      "model_page": {
+        "alt": "Ariadne holding dark grapes in a Cretan vineyard at golden hour",
+        "caption_mark": "III",
+        "caption": "The Vine"
+      }
+    },
+    {
+      "model_slug": "ariadne",
+      "image_id": "dba56ba6-d6af-4062-b5ac-ab255a994aaf",
+      "storage_path": "campaigns/ariadne/the-thread/ariadne-t4-shore-1536x1024.webp",
+      "match": "identical bytes",
+      "work_page_file": "ariadne-t3-shore-1536x1024.webp",
+      "work_order": 2,
+      "work_alt": "Ariadne on the shore in island light",
+      "work_caption_mark": "IV",
+      "work_caption": "The Shore",
+      "model_page": {
+        "alt": "Ariadne on a stone pier on Naxos at golden hour, the Portara behind her",
+        "caption_mark": "IV",
+        "caption": "The Shore"
+      }
+    },
+    {
+      "model_slug": "ariadne",
+      "image_id": "b9f3afe7-aaba-47ed-8d88-5205ef7dfb92",
+      "storage_path": "campaigns/ariadne/range/ariadne-r1-wine-1024x1280.webp",
+      "match": "identical bytes",
+      "work_page_file": "ariadne-r1-wine-1024x1280.webp",
+      "work_order": 3,
+      "work_alt": "Ariadne holding a glass of wine at a terrace table",
+      "work_caption_mark": "Range",
+      "work_caption": "Wine",
+      "model_page": {
+        "alt": "Ariadne pouring red wine in a stone cellar in Nemea",
+        "caption_mark": null,
+        "caption": "Wine & lifestyle"
+      }
+    },
+    {
+      "model_slug": "beckie",
+      "image_id": "36f645ed-d309-41e9-b9ef-5c446288a8e7",
+      "storage_path": "campaigns/beckie/the-long-weekend/beckie-t1-porch-1024x1280.webp",
+      "match": "identical bytes",
+      "work_page_file": "beckie-t1-porch-1024x1280.webp",
+      "work_order": 1,
+      "work_alt": "Beckie on a porch in morning light",
+      "work_caption_mark": "I",
+      "work_caption": "The Porch",
+      "model_page": {
+        "alt": "Beckie on a white porch with a coffee cup, hydrangeas by the steps",
+        "caption_mark": "I",
+        "caption": "The Porch"
+      }
+    },
+    {
+      "model_slug": "beckie",
+      "image_id": "d60e38a4-a318-4773-a0b6-85b7f4e17f8f",
+      "storage_path": "campaigns/beckie/the-long-weekend/beckie-t3-kitchen-1024x1280.webp",
+      "match": "identical bytes",
+      "work_page_file": "beckie-t3-kitchen-1024x1280.webp",
+      "work_order": 2,
+      "work_alt": "Beckie in a sunlit kitchen",
+      "work_caption_mark": "III",
+      "work_caption": "The Kitchen",
+      "model_page": {
+        "alt": "Beckie in a sunlit kitchen tearing basil into a bowl",
+        "caption_mark": "III",
+        "caption": "The Kitchen"
+      }
+    },
+    {
+      "model_slug": "beckie",
+      "image_id": "a20b3567-2afc-44f8-a871-3378e8bb1992",
+      "storage_path": "campaigns/beckie/the-long-weekend/beckie-t4-bookshop-1024x1280.webp",
+      "match": "identical bytes",
+      "work_page_file": "beckie-t4-bookshop-1024x1280.webp",
+      "work_order": 3,
+      "work_alt": "Beckie in a small bookshop",
+      "work_caption_mark": "IV",
+      "work_caption": "The Bookshop",
+      "model_page": {
+        "alt": "Beckie in a camel blazer reading in a bookshop",
+        "caption_mark": "IV",
+        "caption": "The Bookshop"
+      }
+    }
+  ]
+}

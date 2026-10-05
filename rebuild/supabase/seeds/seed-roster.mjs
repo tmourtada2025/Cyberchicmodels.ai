@@ -330,7 +330,7 @@ for (const slug of slugs) {
   ]
   for (const sec of sections) {
     campaigns.push({ model_slug: slug, slug: sec.slug, name: sec.s.name, heading_accent: sec.s.heading_accent, intro: sec.s.intro,
-      kind: sec.kind, anchor: sec.anchor, layout: sec.s.layout, status: 'published', display_order: sec.order })
+      kind: sec.kind, anchor: sec.anchor, layout: sec.s.layout, status: 'draft', display_order: sec.order })
     sec.s.items.forEach((it, i) => {
       const buf = readFileSync(img(it.file))
       const { w, h } = webpSize(buf)
