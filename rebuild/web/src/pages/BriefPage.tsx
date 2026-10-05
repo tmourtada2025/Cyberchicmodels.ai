@@ -89,9 +89,11 @@ export function BriefPage() {
             <legend>The use</legend>
             <div className="choices" role="radiogroup" aria-label="License level">
               {licensing.status === 'ready' &&
-                licensing.data.tiers.map((t) => (
-                  <label key={t.code} className="choice"><input type="radio" name="license_tier" value={t.code} id={`tier_${t.code}`} /><span>{t.name}{(t.summary ?? t.price_display) && <small>{t.summary ?? t.price_display}</small>}</span></label>
-                ))}
+                licensing.data.tiers.map((t) => {
+                  // The "from" floor always shows; a summary sits beside it, never in its place.
+                  const note = [t.summary, t.price_display].filter(Boolean).join(' · ')
+                  return <label key={t.code} className="choice"><input type="radio" name="license_tier" value={t.code} id={`tier_${t.code}`} /><span>{t.name}{note && <small>{note}</small>}</span></label>
+                })}
               <label className="choice"><input type="radio" name="license_tier" value="" id="tier_unsure" defaultChecked /><span>Not sure<small>We'll advise</small></span></label>
             </div>
             <label htmlFor="intended_use">Product and use<input id="intended_use" name="intended_use" placeholder="e.g. Face serum launch, paid social and product pages" /></label>
