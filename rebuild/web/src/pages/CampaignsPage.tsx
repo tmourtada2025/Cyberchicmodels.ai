@@ -91,7 +91,7 @@ export function CampaignsPage() {
                     {s.location && <><dt>Places</dt><dd>{s.location}</dd></>}
                     {lanes && <><dt>Lanes</dt><dd>{lanes}</dd></>}
                   </dl>
-                  <div className="ctas"><Link className="pill" to={`/models/${s.model.slug}`}>See {s.model.name}</Link></div>
+                  <div className="ctas"><Link className="pill lime" to={`/models/${s.model.slug}`}>See {s.model.name}</Link></div>
                 </div>
                 <div className="g3">
                   {work.data.picks.filter((p) => p.model_id === s.model.id).map((p) => (

@@ -142,7 +142,7 @@ function ProofView({ rows }: { rows: ProofRow[] }) {
               ))}
             </div>
           </div>
-          <div className="ctas" style={{ marginTop: 24 }}><Link className="pill" to={`/models/${refModel.slug}`}>See {refModel.name}</Link></div>
+          <div className="ctas" style={{ marginTop: 24 }}><Link className="pill lime" to={`/models/${refModel.slug}`}>See {refModel.name}</Link></div>
         </section>
       )}
 
