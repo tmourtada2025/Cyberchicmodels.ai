@@ -1,7 +1,7 @@
 // Row shapes for the public, published-only reads the site makes.
 
 export type ImageRegister = 'editorial' | 'beauty' | 'campaign' | 'lifestyle' | 'digital'
-export type CampaignKind = 'editorial' | 'range' | 'digitals'
+export type CampaignKind = 'editorial' | 'range' | 'digitals' | 'client'
 
 export type RosterModel = {
   id: string
