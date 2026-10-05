@@ -51,7 +51,7 @@ function CampaignsBody(props: CampaignsProps) {
       {campaigns.map((c, i) => (
         <CampaignBlock
           key={c.id}
-          slug={c.slug}
+          href={c.model ? `/models/${c.model.slug}${c.anchor ? `#${c.anchor}` : ''}` : '/campaigns'}
           name={c.name}
           images={c.images}
           modelName={c.model?.name}

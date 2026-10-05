@@ -1,7 +1,8 @@
 import { supabase } from './supabase'
 
 // Public columns for a roster card. Internal fields (descriptors, LoRA, vip_score, market_gap) are never read.
-export const ROSTER_COLUMNS = 'id, slug, name, look:ethnicity, specialties, portrait_path, display_order'
+export const ROSTER_COLUMNS =
+  'id, slug, name, look:ethnicity, specialties, portrait_path, display_order, on_roster_cards, on_hero_wall, wall_path'
 
 // Published models in curated order (visual-lock §4). RLS enforces published-only; the filter restates it.
 export function publishedModels() {

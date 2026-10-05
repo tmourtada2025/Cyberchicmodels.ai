@@ -1,4 +1,7 @@
 import { useState, type FormEvent } from 'react'
+import { BOOKING_EMAIL } from '../config/site'
+import { loadBriefModels, loadLicensing } from '../features/licensing/loaders'
+import { useAsync } from '../hooks/useAsync'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import { supabase } from '../lib/supabase'
 import '../features/site-pages/site-pages.css'
@@ -9,9 +12,11 @@ type Status = { tone: 'info' | 'error'; text: string } | null
 
 // Verbatim port of rebuild/docs/site-pages/cyberchic-site-pages/brief.html.
 // The source form was preview-only; here it posts to the `submit-brief` Edge Function, which emails
-// agent@cyberchicmodels.ai. Only the public anon key is used client-side.
+// the booking address. Only the public anon key is used client-side. Model and license options are DB rows.
 export function BriefPage() {
   useDocumentTitle('Start a brief')
+  const models = useAsync('brief-models', loadBriefModels)
+  const licensing = useAsync('licensing', loadLicensing)
   const [status, setStatus] = useState<Status>(null)
   const [sending, setSending] = useState(false)
   const [sent, setSent] = useState(false)
@@ -35,7 +40,7 @@ export function BriefPage() {
     const { data, error } = await supabase.functions.invoke('submit-brief', { body: fields })
     setSending(false)
     if (error || !data?.ok) {
-      setStatus({ tone: 'error', text: "The brief didn't send. Please try again, or email agent@cyberchicmodels.ai." })
+      setStatus({ tone: 'error', text: `The brief didn't send. Please try again, or email ${BOOKING_EMAIL}.` })
       return
     }
     setSent(true)
@@ -70,10 +75,12 @@ export function BriefPage() {
             <label htmlFor="model">Model
               <select id="model" name="model" defaultValue="">
                 <option value="">Help me choose</option>
-                <option value="athena">Athena · AT01</option>
-                <option value="dalia">Dalia · DL01</option>
-                <option value="ariadne">Ariadne · AR01</option>
-                <option value="beckie">Beckie · BC01</option>
+                {models.status === 'ready' &&
+                  models.data.map((m) => (
+                    <option key={m.slug} value={m.slug}>
+                      {m.name}{m.model_code ? ` · ${m.model_code}` : ''}
+                    </option>
+                  ))}
               </select>
             </label>
           </fieldset>
@@ -81,9 +88,10 @@ export function BriefPage() {
           <fieldset>
             <legend>The use</legend>
             <div className="choices" role="radiogroup" aria-label="License level">
-              <label className="choice"><input type="radio" name="license_tier" value="social" id="tier_social" /><span>Social<small>Organic channels, 6 months</small></span></label>
-              <label className="choice"><input type="radio" name="license_tier" value="commercial" id="tier_commercial" /><span>Commercial<small>Paid, e-commerce, retail</small></span></label>
-              <label className="choice"><input type="radio" name="license_tier" value="exclusive" id="tier_exclusive" /><span>Exclusive<small>Category lock, all media</small></span></label>
+              {licensing.status === 'ready' &&
+                licensing.data.tiers.map((t) => (
+                  <label key={t.code} className="choice"><input type="radio" name="license_tier" value={t.code} id={`tier_${t.code}`} /><span>{t.name}{(t.summary ?? t.price_display) && <small>{t.summary ?? t.price_display}</small>}</span></label>
+                ))}
               <label className="choice"><input type="radio" name="license_tier" value="" id="tier_unsure" defaultChecked /><span>Not sure<small>We'll advise</small></span></label>
             </div>
             <label htmlFor="intended_use">Product and use<input id="intended_use" name="intended_use" placeholder="e.g. Face serum launch, paid social and product pages" /></label>
@@ -118,7 +126,7 @@ export function BriefPage() {
               <li>On approval we produce, you review, and the license starts on delivery.</li>
             </ol>
           </div>
-          <p className="muted small mail">Prefer email? <code>agent@cyberchicmodels.ai</code></p>
+          <p className="muted small mail">Prefer email? <code>{BOOKING_EMAIL}</code></p>
         </aside>
       </div>
     </div>

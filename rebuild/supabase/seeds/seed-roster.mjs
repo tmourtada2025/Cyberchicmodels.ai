@@ -23,8 +23,12 @@ const OUT = `${REPO}/rebuild/supabase/seeds/dry-run`
 const PROJECT = 'szzctvtsomdyabetzjnh'
 const GIT = 'D:/Program Files/Git/cmd/git.exe'
 
-const mode = process.argv.includes('--apply') ? 'apply' : process.argv.includes('--dry-run') ? 'dry-run' : null
-if (!mode) throw new Error('Pass --dry-run or --apply')
+// --fix-dry-run / --fix-apply: after the first seed, compare the parsed pages with the DB and update only the
+// page-content fields that differ (no uploads, no inserts, no status changes).
+const arg = (f) => process.argv.includes(f)
+const mode = arg('--fix-apply') ? 'fix-apply' : arg('--fix-dry-run') ? 'fix-dry-run' : arg('--apply') ? 'apply' : arg('--dry-run') ? 'dry-run' : null
+if (!mode) throw new Error('Pass --dry-run, --apply, --fix-dry-run or --fix-apply')
+const fixing = mode.startsWith('fix')
 
 // ---------------------------------------------------------------------------------------------
 // Owner decisions
@@ -62,10 +66,20 @@ const db = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, { auth:
 // ---------------------------------------------------------------------------------------------
 
 const VOID = new Set(['img', 'source', 'meta', 'link', 'br', 'hr', 'input'])
+// Named entities used in the pages plus the common Latin-1 accents. An entity not listed here stays as
+// written and fails the "no undecoded entity" check below rather than reaching the DB.
+const ENTITIES = {
+  quot: '"', apos: "'", lt: '<', gt: '>', nbsp: '\u00a0', rsquo: '\u2019', lsquo: '\u2018', rdquo: '\u201d', ldquo: '\u201c',
+  mdash: '\u2014', ndash: '\u2013', hellip: '\u2026', middot: '\u00b7', times: '\u00d7',
+  eacute: '\u00e9', egrave: '\u00e8', ecirc: '\u00ea', euml: '\u00eb', aacute: '\u00e1', agrave: '\u00e0', acirc: '\u00e2', auml: '\u00e4', atilde: '\u00e3', aring: '\u00e5',
+  iacute: '\u00ed', igrave: '\u00ec', icirc: '\u00ee', iuml: '\u00ef', oacute: '\u00f3', ograve: '\u00f2', ocirc: '\u00f4', ouml: '\u00f6', otilde: '\u00f5', oslash: '\u00f8',
+  uacute: '\u00fa', ugrave: '\u00f9', ucirc: '\u00fb', uuml: '\u00fc', ccedil: '\u00e7', ntilde: '\u00f1', szlig: '\u00df',
+  Eacute: '\u00c9', Aacute: '\u00c1', Oacute: '\u00d3', Ccedil: '\u00c7', Ntilde: '\u00d1',
+}
 const decode = (s) =>
   s.replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(+n)).replace(/&#x([0-9a-f]+);/gi, (_, n) => String.fromCodePoint(parseInt(n, 16)))
-    .replace(/&quot;/g, '"').replace(/&#39;|&apos;/g, "'").replace(/&rsquo;/g, '\u2019').replace(/&lsquo;/g, '\u2018')
-    .replace(/&mdash;/g, '\u2014').replace(/&ndash;/g, '\u2013').replace(/&nbsp;/g, '\u00a0').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+    .replace(/&([a-zA-Z]+);/g, (m, name) => (name === 'amp' ? m : ENTITIES[name] ?? m))
+    .replace(/&#39;/g, "'")
     .replace(/&amp;/g, '&')
 
 function parse(html) {
@@ -114,8 +128,16 @@ function webpSize(buf) {
   throw new Error('not a webp')
 }
 
+// featured.ts and the old ProofPage.tsx were removed when the frontend moved to the DB; read them as they
+// stood at the seed commit.
+const SEED_COMMIT = '9233e57'
+const sourceAt = (rel) =>
+  existsSync(`${WEB}/${rel}`) && !rel.endsWith('ProofPage.tsx')
+    ? readFileSync(`${WEB}/${rel}`, 'utf8')
+    : execFileSync(GIT, ['-C', REPO, 'show', `${SEED_COMMIT}:rebuild/web/${rel}`], { encoding: 'utf8' })
+
 function loadFeatured() {
-  const src = readFileSync(`${WEB}/src/features/models/featured.ts`, 'utf8')
+  const src = sourceAt('src/features/models/featured.ts')
   const arr = src.slice(src.indexOf('FEATURED_MODELS: RosterModel[] = [') + 'FEATURED_MODELS: RosterModel[] = '.length)
   const end = arr.search(/\r?\n\]\r?\n/)
   const body = arr.slice(0, arr.indexOf(']', end) + 1)
@@ -157,7 +179,8 @@ function figureItem(fig, order) {
   const ratioCls = phCls.find((c) => RATIO[c])
   return {
     file: img.attrs.src.replace(/^img\//, ''), alt: img.attrs.alt ?? null, caption_mark, caption,
-    aspect_ratio: RATIO[ratioCls], layout: { order, ph: phCls.join(' ') || undefined, figure: cls(fig).join(' ') || undefined },
+    // img: the <img>'s own inline style, verbatim (e.g. Beckie IV object-position, V absolute fill).
+    aspect_ratio: RATIO[ratioCls], layout: { order, ph: phCls.join(' ') || undefined, figure: cls(fig).join(' ') || undefined, img: img.attrs.style || undefined },
   }
 }
 
@@ -349,7 +372,7 @@ for (const slug of slugs) {
 // Proof
 // ---------------------------------------------------------------------------------------------
 
-const proofSrc = readFileSync(`${WEB}/src/pages/ProofPage.tsx`, 'utf8')
+const proofSrc = sourceAt('src/pages/ProofPage.tsx')
 const measured_on = proofSrc.match(/measured (\d{4}-\d{2}-\d{2})/)[1]
 const chartRows = [...proofSrc.matchAll(/\['(\w+)', \[([\d., ]+)\]\]/g)].map((m) => ({ slug: m[1].toLowerCase(), scores: m[2].split(',').map(Number) }))
 const proof = []
@@ -421,7 +444,11 @@ for (const m of models) {
   if (ex?.consistency_locked_at) m.consistency_locked_at = ex.consistency_locked_at // keep an existing lock time
 }
 const { count: proofCount } = await db.from('proof_scores').select('*', { count: 'exact', head: true })
-check(proofCount === 0, `proof_scores already has ${proofCount} rows; this seed only fills an empty table`)
+if (!fixing) check(proofCount === 0, `proof_scores already has ${proofCount} rows; this seed only fills an empty table`)
+
+// No HTML entity may survive into DB text.
+const leftover = JSON.stringify({ models, campaigns, images, proof }).match(/&[a-zA-Z#0-9]+;/g)
+check(!leftover, `undecoded HTML entities: ${[...new Set(leftover ?? [])].join(' ')}`)
 
 // ---------------------------------------------------------------------------------------------
 // Dry-run report
@@ -429,7 +456,7 @@ check(proofCount === 0, `proof_scores already has ${proofCount} rows; this seed 
 
 mkdirSync(OUT, { recursive: true })
 const plan = { generated_at: new Date().toISOString(), project: PROJECT, problems, license_tiers: LICENSE_TIERS, models, campaigns, campaign_images: images, proof_scores: proof, uploads, css_beyond_ariadne: cssReport }
-writeFileSync(`${OUT}/roster-dry-run.json`, JSON.stringify(plan, null, 2))
+if (!fixing) writeFileSync(`${OUT}/roster-dry-run.json`, JSON.stringify(plan, null, 2))
 
 const md = []
 md.push(`# Roster seed: dry run`, '', `Generated ${plan.generated_at} against ${PROJECT}. Nothing was written.`, '')
@@ -467,13 +494,70 @@ md.push(`## Proof`, '', `measured_on ${measured_on}; chart: ${chartRows.map((r) 
 for (const p of proof.filter((p) => p.panel !== 'chart')) md.push(`- ${p.panel}: ${p.model_slug ?? '(no model)'} · ${p.frame_label} · ${p.score ?? 'reference'}${p.image_path ? ` · ${p.image_path}` : ''}`)
 md.push('', `## License tiers`, '', ...LICENSE_TIERS.map((t) => `- ${t.code}: ${t.name} · ${t.price_display} (${t.price_amount} ${t.price_currency}) · summary: none yet · features: none yet`), '')
 md.push(`## Uploads`, '', `| path | bytes | mirror | action |`, `|---|---|---|---|`, ...uploads.map((u) => `| ${u.path} | ${u.bytes} | ${u.mirror ?? '—'} | ${u.action} |`))
-writeFileSync(`${OUT}/roster-dry-run.md`, md.join('\n'))
+if (!fixing) writeFileSync(`${OUT}/roster-dry-run.md`, md.join('\n'))
 
 console.log(`dry-run written: ${OUT}/roster-dry-run.{json,md}`)
 console.log(`problems: ${problems.length}`)
 for (const p of problems) console.log(`  - ${p}`)
 
 if (mode === 'dry-run') process.exit(0)
+
+// ---------------------------------------------------------------------------------------------
+// Fix: field-level diff of page content vs the DB, then (fix-apply) update only those fields
+// ---------------------------------------------------------------------------------------------
+
+if (fixing) {
+  // jsonb comes back with its keys reordered and undefined keys absent: compare canonical forms.
+  const canon = (v) => (Array.isArray(v) ? v.map(canon) : v && typeof v === 'object'
+    ? Object.fromEntries(Object.keys(v).filter((k) => v[k] !== undefined).sort().map((k) => [k, canon(v[k])])) : v)
+  const same = (a, b) => JSON.stringify(canon(a ?? null)) === JSON.stringify(canon(b ?? null))
+  const diffs = []
+  const compare = (table, id, key, want, have, fields) => {
+    for (const f of fields) if (!same(want[f], have[f])) diffs.push({ table, id, key, field: f, from: have[f] ?? null, to: want[f] ?? null })
+  }
+
+  const MODEL_FIELDS = ['name', 'ethnicity', 'age_label', 'specialties', 'model_code', 'hero_alt', 'hero_focus', 'hero_focus_mobile',
+    'hero_align', 'hero_title_scale', 'hero_facts', 'story_lead', 'story_body', 'strip_items', 'meta_description', 'comp_stats']
+  const { data: dbModels, error: e1 } = await db.from('models').select(`id, slug, ${MODEL_FIELDS.join(', ')}`)
+  if (e1) throw e1
+  for (const m of models) { const have = dbModels.find((d) => d.slug === m.slug); compare('models', have.id, m.slug, m, have, MODEL_FIELDS) }
+
+  const CAMPAIGN_FIELDS = ['name', 'heading_accent', 'intro', 'anchor', 'layout']
+  const { data: dbCampaigns, error: e2 } = await db.from('campaigns').select(`id, slug, model:models(slug), ${CAMPAIGN_FIELDS.join(', ')}`)
+  if (e2) throw e2
+  for (const c of campaigns) {
+    const have = dbCampaigns.find((d) => d.model.slug === c.model_slug && d.slug === c.slug)
+    compare('campaigns', have.id, `${c.model_slug}/${c.slug}`, c, have, CAMPAIGN_FIELDS)
+  }
+
+  const IMAGE_FIELDS = ['alt_text', 'caption_mark', 'caption']
+  const { data: dbImages, error: e3 } = await db.from('campaign_images').select(`id, storage_path, ${IMAGE_FIELDS.join(', ')}`).range(0, 999)
+  if (e3) throw e3
+  for (const i of images) { const have = dbImages.find((d) => d.storage_path === i.storage_path); compare('campaign_images', have.id, i.storage_path, i, have, IMAGE_FIELDS) }
+
+  const PROOF_FIELDS = ['frame_label', 'alt_text']
+  const { data: dbProof, error: e4 } = await db.from('proof_scores').select(`id, image_path, ${PROOF_FIELDS.join(', ')}`).not('image_path', 'is', null)
+  if (e4) throw e4
+  for (const p of proof.filter((p) => p.image_path)) { const have = dbProof.find((d) => d.image_path === p.image_path); compare('proof_scores', have.id, p.image_path, p, have, PROOF_FIELDS) }
+
+  writeFileSync(`${OUT}/roster-fix.json`, JSON.stringify({ generated_at: new Date().toISOString(), problems, diffs }, null, 2))
+  const show = (v) => `\`${typeof v === 'string' ? v : JSON.stringify(v)}\``
+  writeFileSync(`${OUT}/roster-fix.md`, [`# Roster fix: ${mode}`, '', `${diffs.length} field(s) differ from the pages. ${problems.length ? `❌ ${problems.join('; ')}` : '✅ checks passed'}`, '',
+    ...diffs.map((d) => `- **${d.table}** ${d.key} · \`${d.field}\`\n  - from: ${show(d.from)}\n  - to:   ${show(d.to)}`)].join('\n'))
+  console.log(`fix diff: ${diffs.length} field(s) → ${OUT}/roster-fix.{json,md}`)
+
+  if (mode === 'fix-apply') {
+    if (problems.length) throw new Error('STOP: checks failed; nothing applied')
+    const byRow = new Map()
+    for (const d of diffs) { const k = `${d.table}:${d.id}`; byRow.set(k, { ...(byRow.get(k) ?? { table: d.table, id: d.id, set: {} }) }); byRow.get(k).set[d.field] = d.to }
+    for (const { table, id, set } of byRow.values()) {
+      const { error } = await db.from(table).update(set).eq('id', id)
+      if (error) throw new Error(`${table} ${id}: ${error.message}`)
+    }
+    console.log(`fixed ${byRow.size} row(s)`)
+  }
+  process.exit(0)
+}
 
 // ---------------------------------------------------------------------------------------------
 // Apply

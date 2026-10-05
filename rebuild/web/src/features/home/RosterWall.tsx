@@ -1,7 +1,6 @@
 import type { RosterModel } from '../../lib/types'
 import { ModelCard, ModelCardSkeleton } from '../../components/model/ModelCard'
 import { EmptyState, SectionHead } from '../../components/ui/SectionHead'
-import { withFeatured } from '../models/featured'
 
 // Below this many published models a marquee looks sparse and repetitive; show a static row instead.
 const MARQUEE_MIN = 8
@@ -12,8 +11,7 @@ type RosterWallProps =
   | { status: 'ready'; models: RosterModel[] }
 
 export function RosterWall(props: RosterWallProps) {
-  // Statically served models show regardless of roster state, so a Supabase outage never empties the wall.
-  const models = withFeatured(props.status === 'ready' ? props.models : [], { roster: true })
+  const models = props.status === 'ready' ? props.models.filter((m) => m.on_roster_cards) : []
   const isMarquee = props.status === 'ready' && models.length >= MARQUEE_MIN
 
   return (

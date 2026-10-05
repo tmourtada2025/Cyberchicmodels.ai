@@ -1,7 +1,6 @@
 import { useSearchParams } from 'react-router-dom'
 import { ModelCard, ModelCardSkeleton } from '../components/model/ModelCard'
 import { EmptyState } from '../components/ui/SectionHead'
-import { withFeatured } from '../features/models/featured'
 import { loadRoster } from '../features/models/loaders'
 import { useAsync } from '../hooks/useAsync'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
@@ -24,8 +23,7 @@ const FILTERS: FilterDef[] = [{ key: 'register', label: 'Category', values: (m) 
 export function ModelsPage() {
   useDocumentTitle('Models')
   const roster = useAsync('roster', loadRoster)
-  // Statically served models show regardless of roster state, so a Supabase outage never empties the page.
-  const models = withFeatured(roster.status === 'ready' ? roster.data.models : [])
+  const models = roster.status === 'ready' ? roster.data.models : []
 
   return (
     <section className="section models-page">

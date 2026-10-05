@@ -18,29 +18,33 @@ const WALL_LIMIT = 40
 const CAMPAIGN_LIMIT = 3
 
 // Read-only, published-only. RLS enforces visibility; the explicit status filters restate it.
+// Campaigns are each model's editorial series (range and digitals are model-page sections, not campaigns),
+// in roster order.
 async function loadHome(): Promise<HomeData> {
   const [models, campaigns] = await Promise.all([
     publishedModels().limit(WALL_LIMIT),
     supabase
       .from('campaigns')
       .select(
-        'id, slug, name, description, model:models(name), images:campaign_images(storage_path, register, is_hero, display_order, alt_text)',
-        { count: 'exact' },
+        'id, slug, name, anchor, model:models(name, slug, display_order), images:campaign_images(storage_path, register, is_hero, display_order, alt_text)',
       )
       .eq('status', 'published')
-      .eq('images.storage_bucket', 'media')
-      .order('display_order', { ascending: true })
-      .limit(CAMPAIGN_LIMIT),
+      .eq('kind', 'editorial')
+      .eq('images.storage_bucket', 'media'),
   ])
 
   if (models.error || campaigns.error) return { status: 'error' }
 
+  const editorial = (campaigns.data as unknown as HomeCampaign[]).sort(
+    (a, b) => (a.model?.display_order ?? 0) - (b.model?.display_order ?? 0),
+  )
+
   return {
     status: 'ready',
-    models: models.data as RosterModel[],
+    models: models.data as unknown as RosterModel[],
     modelCount: models.count ?? models.data.length,
-    campaigns: campaigns.data as unknown as HomeCampaign[],
-    campaignCount: campaigns.count ?? campaigns.data.length,
+    campaigns: editorial.slice(0, CAMPAIGN_LIMIT),
+    campaignCount: editorial.length,
   }
 }
 

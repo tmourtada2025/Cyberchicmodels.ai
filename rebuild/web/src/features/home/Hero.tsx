@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
-import { portraitSrc } from '../../lib/media'
+import { mediaUrl } from '../../lib/media'
 import type { RosterModel } from '../../lib/types'
-import { withFeatured } from '../models/featured'
 
 const PHRASES = ['Careers that do.', 'Campaigns that sell.', 'Faces you license.']
 const CYCLE_MS = 2600
@@ -21,7 +20,7 @@ type HeroProps = {
 }
 
 export function Hero({ models, metrics }: HeroProps) {
-  const portraits = withFeatured(models).filter((m) => m.portrait_path && m.drift !== false)
+  const portraits = models.filter((m) => m.on_hero_wall && (m.wall_path ?? m.portrait_path))
 
   return (
     <section className="hero">
@@ -101,7 +100,7 @@ function HeroDrift({ portraits }: { portraits: RosterModel[] }) {
         <div key={c} className={`hero-drift-col ${c % 2 ? 'is-down' : 'is-up'}`}>
           {[...col, ...col].map((m, i) => (
             <div key={i} className="hero-drift-tile">
-              <img src={portraitSrc({ href: m.href, portrait_path: m.drift_path ?? m.portrait_path! })} alt="" loading="lazy" />
+              <img src={mediaUrl(m.wall_path ?? m.portrait_path!)} alt="" loading="lazy" />
             </div>
           ))}
         </div>

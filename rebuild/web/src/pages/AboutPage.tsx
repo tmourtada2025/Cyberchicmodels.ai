@@ -1,7 +1,45 @@
 import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { BOOKING_EMAIL } from '../config/site'
+import { loadLicensing } from '../features/licensing/loaders'
+import { useAsync } from '../hooks/useAsync'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
+import { numberWord } from '../lib/words'
 import '../features/site-pages/site-pages.css'
+
+// Licensing comparison from license_tiers + license_features: one column per active tier, one row per feature,
+// then the tier's "from" price. Renders whatever rows exist; nothing is filled in when a value is missing.
+function LicensingSection() {
+  const licensing = useAsync('licensing', loadLicensing)
+  if (licensing.status !== 'ready' || licensing.data.tiers.length === 0) return null
+  const { tiers, features } = licensing.data
+
+  return (
+    <section className="block" id="licensing">
+      <div className="wrap">
+        <div className="head"><h2>Licen<span className="l">sing</span></h2><p>{numberWord(tiers.length)} levels. Every license names the model, the images, the media, the term and the territory. Fees are quoted per brief.</p></div>
+        <div className="tiers-wrap">
+          <table>
+            <thead><tr><th scope="col">Level</th>{tiers.map((t) => <th key={t.id} scope="col">{t.name}</th>)}</tr></thead>
+            <tbody>
+              {features.map((f) => (
+                <tr key={f.id}>
+                  <th scope="row">{f.label}</th>
+                  {tiers.map((t) => {
+                    const v = f.values.find((x) => x.license_tier_id === t.id)
+                    return <td key={t.id}>{v ? (v.value_note ?? (v.is_included ? 'Included' : 'Not included')) : ''}</td>
+                  })}
+                </tr>
+              ))}
+              <tr><th scope="row">Fee</th>{tiers.map((t) => <td key={t.id}>{t.price_display}</td>)}</tr>
+            </tbody>
+          </table>
+        </div>
+        <p className="muted small" style={{ marginTop: 16 }}>Motion: animated stills are available on request with any level.</p>
+      </div>
+    </section>
+  )
+}
 
 // Verbatim port of rebuild/docs/site-pages/cyberchic-site-pages/about.html.
 export function AboutPage() {
@@ -58,27 +96,7 @@ export function AboutPage() {
         </div>
       </section>
 
-      <section className="block" id="licensing">
-        <div className="wrap">
-          <div className="head"><h2>Licen<span className="l">sing</span></h2><p>Three levels. Every license names the model, the images, the media, the term and the territory. Fees are quoted per brief.</p></div>
-          <div className="tiers-wrap">
-            <table>
-              <thead><tr><th scope="col">Level</th><th scope="col">Social</th><th scope="col" className="pick">Commercial</th><th scope="col">Exclusive</th></tr></thead>
-              <tbody>
-                <tr><th scope="row">Best for</th><td>Launch posts, organic content</td><td>Paid campaigns, e-commerce, retail</td><td>A signature face for your category</td></tr>
-                <tr><th scope="row">Media</th><td>Your own organic social channels and newsletter</td><td>All digital, paid social and search ads, website and e-commerce, in-store print</td><td>All media, including outdoor, print advertising and packaging</td></tr>
-                <tr><th scope="row">Images</th><td>Up to 10</td><td>Up to 30</td><td>As scoped in the brief</td></tr>
-                <tr><th scope="row">Term</th><td>6 months</td><td>12 months</td><td>12 or 24 months</td></tr>
-                <tr><th scope="row">Territory</th><td>One region</td><td>Up to three regions, or worldwide</td><td>Worldwide</td></tr>
-                <tr><th scope="row">Exclusivity</th><td>None</td><td>None</td><td>No competitor in your product category may license her for the term</td></tr>
-                <tr><th scope="row">Renewal</th><td>Extend or upgrade before the term ends</td><td>Extend or upgrade before the term ends</td><td>First option to renew</td></tr>
-                <tr><th scope="row">Fee</th><td>Quoted per brief</td><td>Quoted per brief</td><td>Quoted per brief</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <p className="muted small" style={{ marginTop: 16 }}>Motion: animated stills are available on request with any level.</p>
-        </div>
-      </section>
+      <LicensingSection />
 
       <section className="block">
         <div className="wrap">
@@ -98,7 +116,7 @@ export function AboutPage() {
         <div className="wrap">
           <div className="head"><h2>Talk to the <span className="l">agent</span></h2><p>Send a brief or ask a question. We reply with availability, terms and a quote.</p></div>
           <div className="ctas" style={{ marginBottom: 20 }}><Link className="pill lime" to="/brief">Start a brief</Link></div>
-          <div className="mail">Email: <code ref={mail} id="mail">agent@cyberchicmodels.ai</code><button className="pill" id="copy" type="button" style={{ minHeight: 36, padding: '0 14px' }} onClick={copy}>{copied ? 'Copied' : 'Copy'}</button></div>
+          <div className="mail">Email: <code ref={mail} id="mail">{BOOKING_EMAIL}</code><button className="pill" id="copy" type="button" style={{ minHeight: 36, padding: '0 14px' }} onClick={copy}>{copied ? 'Copied' : 'Copy'}</button></div>
         </div>
       </section>
     </div>

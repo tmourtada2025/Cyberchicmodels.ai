@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
-import { ORIGIN } from '../../features/models/featured'
-import { portraitSrc } from '../../lib/media'
+import { ORIGIN } from '../../config/site'
+import { mediaUrl } from '../../lib/media'
 import type { RosterModel } from '../../lib/types'
 
 type ModelCardProps = {
@@ -24,7 +24,7 @@ export function ModelCard({ model, duplicate = false, fluid = false }: ModelCard
       <div className="card-tile">
         {model.portrait_path ? (
           <img
-            src={portraitSrc({ href: model.href, portrait_path: model.portrait_path })}
+            src={mediaUrl(model.portrait_path)}
             alt={duplicate ? '' : alt}
             loading="lazy"
           />
@@ -45,12 +45,7 @@ export function ModelCard({ model, duplicate = false, fluid = false }: ModelCard
     </>
   )
 
-  // Static model pages live outside the SPA, so they need a full page load, not a router transition.
-  return model.href ? (
-    <a href={model.href} {...cardProps}>
-      {body}
-    </a>
-  ) : (
+  return (
     <Link to={`/models/${model.slug}`} {...cardProps}>
       {body}
     </Link>
