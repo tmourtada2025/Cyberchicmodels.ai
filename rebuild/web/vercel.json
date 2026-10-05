@@ -1,6 +1,8 @@
 {
   "redirects": [
-    { "source": "/m/:slug([^/.]+)", "destination": "/m/:slug/", "permanent": true }
+    { "source": "/m/:slug", "destination": "/models/:slug", "statusCode": 301 },
+    { "source": "/m/:slug/", "destination": "/models/:slug", "statusCode": 301 },
+    { "source": "/m/:slug/:path*", "destination": "/models/:slug", "statusCode": 301 }
   ],
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
