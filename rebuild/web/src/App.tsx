@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { Layout } from './components/layout/Layout'
 import { AboutPage } from './pages/AboutPage'
 import { BriefPage } from './pages/BriefPage'
+import { CampaignDetailPage } from './pages/CampaignDetailPage'
 import { CampaignsPage } from './pages/CampaignsPage'
 import { HomePage } from './pages/HomePage'
 import { ModelProfilePage } from './pages/ModelProfilePage'
@@ -18,7 +19,7 @@ export default function App() {
           <Route path="models" element={<ModelsPage />} />
           <Route path="models/:slug" element={<ModelProfilePage />} />
           <Route path="campaigns" element={<CampaignsPage />} />
-          <Route path="campaigns/:slug" element={<PlaceholderPage eyebrow="Work" title="Campaign" />} />
+          <Route path="campaigns/:slug" element={<CampaignDetailPage />} />
           <Route path="proof" element={<ProofPage />} />
           <Route path="about" element={<AboutPage />} />
           <Route path="brief" element={<BriefPage />} />

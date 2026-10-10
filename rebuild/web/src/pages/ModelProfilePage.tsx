@@ -123,7 +123,7 @@ function ProfileView({ profile }: { profile: NonNullable<Profile> }) {
           ) : (
             <div className={`cams cams-${Math.min(campaigns.length, 2)}`}>
               {campaigns.map((c) => (
-                <CampaignBlock key={c.id} slug={c.slug} name={c.name} images={c.images} />
+                <CampaignBlock key={c.id} slug={c.slug} name={c.name} images={c.images} modelSlug={model.slug} />
               ))}
             </div>
           )}

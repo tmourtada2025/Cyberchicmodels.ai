@@ -7,16 +7,17 @@ type CampaignBlockProps = {
   slug: string
   name: string
   images: CampaignImage[]
+  modelSlug?: string
   modelName?: string
   tall?: boolean
 }
 
-export function CampaignBlock({ slug, name, images, modelName, tall = false }: CampaignBlockProps) {
+export function CampaignBlock({ slug, name, images, modelSlug, modelName, tall = false }: CampaignBlockProps) {
   const cover = coverImage(images)
   const kicker = [cover?.register, modelName].filter(Boolean).join(' · ')
 
   return (
-    <Link to={`/campaigns/${slug}`} className={`cam ${tall ? 'cam-tall' : ''}`}>
+    <Link to={`/campaigns/${slug}${modelSlug ? `?model=${encodeURIComponent(modelSlug)}` : ''}`} className={`cam ${tall ? 'cam-tall' : ''}`}>
       {cover && <img className="cam-img" src={mediaUrl(cover.storage_path)} alt={cover.alt_text ?? ''} loading="lazy" />}
       <div className="cam-shade" />
       <div className="cam-txt">

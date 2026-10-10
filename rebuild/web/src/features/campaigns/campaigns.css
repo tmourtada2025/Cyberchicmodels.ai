@@ -1,0 +1,19 @@
+.campaign-head { max-width: 880px; margin-bottom: clamp(32px, 6vw, 80px); }
+.campaign-head h1 { font-size: var(--fs-section); overflow-wrap: anywhere; margin: 20px 0; }
+.campaign-head .eyebrow { margin-top: 32px; }
+.campaign-description { font-size: clamp(18px, 2vw, 24px); line-height: 1.6; white-space: pre-line; }
+.campaign-facts { display: flex; flex-wrap: wrap; gap: 32px; border-block: 1px solid var(--line); padding: 24px 0; margin: 32px 0; }
+.campaign-facts dt, .campaign-gallery figcaption, .campaign-narrative, .campaign-inquiry p { color: var(--grey); }
+.campaign-facts dd { margin: 10px 0 0; }
+.campaign-narrative { white-space: pre-line; line-height: 1.8; }
+.campaign-gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(18px, 3vw, 40px); align-items: start; }
+.campaign-gallery figure { margin: 0; min-width: 0; }
+.campaign-gallery img { display: block; width: 100%; height: auto; border-radius: var(--radius-sm); }
+.campaign-gallery figcaption { margin-top: 12px; font-size: 13px; line-height: 1.6; }
+.campaign-empty { padding: 48px 24px; background: var(--bg-2); border: 1px solid var(--line); color: var(--grey); }
+.campaign-inquiry { margin-top: clamp(48px, 8vw, 100px); padding-top: 32px; border-top: 1px solid var(--line); }
+.campaign-inquiry h2 { font-size: var(--fs-section); }
+.campaign-inquiry p { max-width: 60ch; margin-bottom: 28px; }
+.campaign-state { display: grid; justify-items: start; gap: 24px; }
+.campaign-state h1 { font-size: var(--fs-section); }
+@media (max-width: 640px) { .campaign-gallery { grid-template-columns: 1fr; } }

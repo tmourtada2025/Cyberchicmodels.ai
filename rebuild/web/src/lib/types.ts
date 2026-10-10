@@ -49,3 +49,10 @@ export type ModelCampaign = {
   name: string
   images: CampaignImage[]
 }
+
+export type CampaignDetail = ModelCampaign & {
+  description: string | null
+  narrative: string | null
+  location: string | null
+  model: { slug: string; name: string }
+}
