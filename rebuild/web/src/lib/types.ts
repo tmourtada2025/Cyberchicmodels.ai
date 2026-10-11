@@ -16,6 +16,8 @@ export type RosterModel = {
   on_hero_wall: boolean
   // Hero-wall tile when it differs from the card portrait.
   wall_path: string | null
+  // Hero-wall position when it differs from display_order; null means the roster order.
+  wall_order: number | null
 }
 
 export type LabelValue = { label: string; value: string }

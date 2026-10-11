@@ -19,8 +19,16 @@ type HeroProps = {
   metrics: Metric[]
 }
 
+// Wall order is models.wall_order when set, else display_order (the roster order). Lets a tile be
+// placed away from a same-coloured neighbour without moving the model on the strip or /models.
+function wallKey(m: RosterModel) {
+  return m.wall_order ?? m.display_order
+}
+
 export function Hero({ models, metrics }: HeroProps) {
-  const portraits = models.filter((m) => m.on_hero_wall && (m.wall_path ?? m.portrait_path))
+  const portraits = models
+    .filter((m) => m.on_hero_wall && (m.wall_path ?? m.portrait_path))
+    .sort((a, b) => wallKey(a) - wallKey(b) || a.display_order - b.display_order)
 
   return (
     <section className="hero">
@@ -88,10 +96,21 @@ function CyclingLine() {
   )
 }
 
+// Shortest column (at least PER_COLUMN) whose offset walk shows every portrait. The walk skips
+// one index per column step, so some roster sizes (e.g. 10) would otherwise drop two faces.
+function columnLength(count: number) {
+  for (let per = PER_COLUMN; ; per++) {
+    const seen = new Set<number>()
+    for (let c = 0; c < DRIFT_COLUMNS; c++) for (let i = 0; i < per; i++) seen.add((c * per + c + i) % count)
+    if (seen.size === count) return per
+  }
+}
+
 // Drifting portrait columns behind the hero. Real published portraits only — never placeholders.
 function HeroDrift({ portraits }: { portraits: RosterModel[] }) {
+  const per = columnLength(portraits.length)
   const columns = Array.from({ length: DRIFT_COLUMNS }, (_, c) =>
-    Array.from({ length: PER_COLUMN }, (_, i) => portraits[(c * PER_COLUMN + c + i) % portraits.length]),
+    Array.from({ length: per }, (_, i) => portraits[(c * per + c + i) % portraits.length]),
   )
 
   return (
