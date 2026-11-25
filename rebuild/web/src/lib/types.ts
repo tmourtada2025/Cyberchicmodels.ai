@@ -64,6 +64,7 @@ export type ModelPage = {
   hero_focus_mobile: string | null
   hero_align: 'left' | 'right'
   hero_title_scale: 'xl' | 'l'
+  hero_mobile_top: boolean
   hero_facts: LabelValue[]
   strip_items: string[]
   story_lead: string | null

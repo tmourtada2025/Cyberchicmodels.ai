@@ -134,7 +134,12 @@ function ModelPageView({ model }: { model: ModelPage }) {
     '--focus': model.hero_focus ?? undefined,
     '--focus-m': model.hero_focus_mobile ?? model.hero_focus ?? undefined,
   } as CSSProperties
-  const heroClass = ['mp-hero', model.hero_title_scale === 'l' && 'is-l', model.hero_align === 'right' && 'is-right'].filter(Boolean).join(' ')
+  const heroClass = [
+    'mp-hero',
+    model.hero_title_scale === 'l' && 'is-l',
+    model.hero_align === 'right' && 'is-right',
+    model.hero_mobile_top && 'is-mtop',
+  ].filter(Boolean).join(' ')
   const subject = encodeURIComponent(`Brief: ${model.name} (${model.model_code})`)
 
   return (

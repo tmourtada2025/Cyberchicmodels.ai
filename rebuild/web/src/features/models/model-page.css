@@ -37,6 +37,8 @@
 .mp .mp-hero h1{font-size:clamp(84px,17vw,220px);margin-block:18px 12px}
 .mp .mp-hero.is-l h1{font-size:clamp(84px,11vw,168px)}
 @media (max-width:700px){.mp .mp-hero .ph img{object-position:var(--focus-m)}.mp .mp-hero.is-l h1{font-size:clamp(64px,19vw,120px)}}
+/* mobile photo in the top band (face would sit under the name full-bleed): image stops at 64% and fades out */
+@media (max-width:700px){.mp .mp-hero.is-mtop .ph{bottom:36%}.mp .mp-hero.is-mtop .ph img{-webkit-mask-image:linear-gradient(to bottom,#000 72%,transparent);mask-image:linear-gradient(to bottom,#000 72%,transparent)}}
 .mp .facts{display:flex;flex-wrap:wrap;gap:8px 28px;color:var(--muted);font-size:13px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:28px}
 .mp .facts b{color:var(--fg);font-weight:500}
 .mp .ctas{display:flex;flex-wrap:wrap;gap:12px}
