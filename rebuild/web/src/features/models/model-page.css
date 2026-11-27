@@ -118,3 +118,12 @@
 .mp .mp-hero .wrap.has-intro>.mp-intro{align-self:end}
 }
 @media (max-width:700px){.mp .mp-intro{width:min(62vw,280px);margin:4px 0 24px}.mp .mp-hero.is-right .mp-intro{margin-left:auto}}
+/* Reduced motion: the whole box is a play/pause button; the lime disc shows while paused, and on hover/focus while playing. */
+.mp .mp-intro-play{position:absolute;inset:0;z-index:1;padding:0;border:0;background:transparent;cursor:pointer}
+.mp .mp-intro-play-icon{position:absolute;top:50%;left:50%;width:64px;height:64px;border-radius:50%;background:var(--lime);transform:translate(-50%,-50%);transition:opacity .2s ease}
+.mp .mp-intro-play-icon::after{content:"";position:absolute;top:50%;left:54%;border-style:solid;border-width:10px 0 10px 16px;border-color:transparent transparent transparent var(--ink);transform:translate(-50%,-50%)}
+.mp .mp-intro-play.is-playing .mp-intro-play-icon{opacity:0}
+.mp .mp-intro-play.is-playing .mp-intro-play-icon::after{left:50%;width:16px;height:20px;border:0;border-left:5px solid var(--ink);border-right:5px solid var(--ink);box-sizing:border-box}
+.mp .mp-intro-play.is-playing:hover .mp-intro-play-icon,.mp .mp-intro-play.is-playing:focus-visible .mp-intro-play-icon{opacity:1}
+.mp .mp-intro-play:focus-visible{outline:2px solid var(--lime);outline-offset:-2px}
+.mp .mp-intro-sound{z-index:2}

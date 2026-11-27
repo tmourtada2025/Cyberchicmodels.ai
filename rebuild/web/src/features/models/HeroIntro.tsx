@@ -1,16 +1,24 @@
 import { useEffect, useRef, useState } from 'react'
+import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
 
 type HeroIntroProps = { src: string; poster: string; name: string }
 
 // A model's 9:16 intro film in the page hero. The box is reserved by CSS (aspect-ratio) and shows the
 // poster from first paint. The video gets no src until the box is in view; it then plays muted and
 // loops while in view, and pauses when it leaves. The small button toggles sound.
+// With prefers-reduced-motion: no autoplay. The poster shows a play button; the film loads and plays
+// once only when asked, and the button over the box stops it again.
 export function HeroIntro({ src, poster, name }: HeroIntroProps) {
+  const reduced = usePrefersReducedMotion()
   const box = useRef<HTMLDivElement>(null)
   const video = useRef<HTMLVideoElement>(null)
   const [inView, setInView] = useState(false)
-  const [loaded, setLoaded] = useState(false)
+  const [seen, setSeen] = useState(false)
+  const [started, setStarted] = useState(false)
   const [muted, setMuted] = useState(true)
+
+  const loaded = seen && (!reduced || started)
+  const wants = inView && (!reduced || started)
 
   useEffect(() => {
     const node = box.current
@@ -19,7 +27,8 @@ export function HeroIntro({ src, poster, name }: HeroIntroProps) {
       ([entry]) => {
         const visible = entry.isIntersecting && entry.intersectionRatio >= 0.25
         setInView(visible)
-        if (visible) setLoaded(true)
+        if (visible) setSeen(true)
+        else setStarted(false) // reduced motion: leaving the box ends the requested play
       },
       { threshold: [0, 0.25] },
     )
@@ -27,14 +36,14 @@ export function HeroIntro({ src, poster, name }: HeroIntroProps) {
     return () => io.disconnect()
   }, [])
 
-  // Some WebKit builds stop at the loop point instead of wrapping. While the intro should be playing,
+  // Some WebKit builds stop at the loop point instead of wrapping. While the intro should be looping,
   // an unrequested pause or end restarts it (at most once a second, so a blocked play can't spin).
-  const shouldPlay = useRef(false)
+  const shouldLoop = useRef(false)
   const lastResume = useRef(0)
   const resume = () => {
     const el = video.current
     const now = Date.now()
-    if (!el || !shouldPlay.current || document.hidden || now - lastResume.current < 1000) return
+    if (!el || !shouldLoop.current || document.hidden || now - lastResume.current < 1000) return
     lastResume.current = now
     if (el.ended) el.currentTime = 0
     void el.play().catch(() => {})
@@ -42,22 +51,31 @@ export function HeroIntro({ src, poster, name }: HeroIntroProps) {
 
   useEffect(() => {
     const el = video.current
-    shouldPlay.current = loaded && inView
+    shouldLoop.current = loaded && wants && !reduced
     if (!el || !loaded) return
-    if (inView) {
+    if (wants) {
       el.muted = muted
-      void el.play().catch(() => {})
+      void el.play().catch(() => setStarted(false))
     } else {
       el.pause()
     }
-  }, [inView, loaded, muted])
+  }, [loaded, wants, reduced, muted])
+
+  const onEnded = () => {
+    if (reduced) {
+      setStarted(false)
+      if (video.current) video.current.currentTime = 0
+    } else {
+      resume()
+    }
+  }
 
   const toggleSound = () => {
     const el = video.current
     const next = !muted
     if (el) {
       el.muted = next
-      if (!next && el.paused) void el.play().catch(() => {})
+      if (!next && el.paused && wants) void el.play().catch(() => {})
     }
     setMuted(next)
   }
@@ -70,13 +88,23 @@ export function HeroIntro({ src, poster, name }: HeroIntroProps) {
         poster={poster}
         preload={loaded ? 'auto' : 'none'}
         muted
-        loop
+        loop={!reduced}
         playsInline
         disablePictureInPicture
         onPause={resume}
-        onEnded={resume}
+        onEnded={onEnded}
         aria-label={`${name}, intro film`}
       />
+      {reduced && (
+        <button
+          type="button"
+          className={started ? 'mp-intro-play is-playing' : 'mp-intro-play'}
+          onClick={() => setStarted((s) => !s)}
+          aria-label={started ? `Pause ${name}'s intro film` : `Play ${name}'s intro film`}
+        >
+          <span className="mp-intro-play-icon" aria-hidden="true" />
+        </button>
+      )}
       <button
         type="button"
         className="mp-intro-sound"
