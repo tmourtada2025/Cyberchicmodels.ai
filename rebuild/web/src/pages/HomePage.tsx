@@ -1,4 +1,5 @@
 import { Campaigns } from '../features/home/Campaigns'
+import { ConceptFilm } from '../features/home/ConceptFilm'
 import { FinalCta } from '../features/home/FinalCta'
 import { Hero } from '../features/home/Hero'
 import { ProofBand } from '../features/home/ProofBand'
@@ -24,6 +25,7 @@ export function HomePage() {
       <Hero models={ready ? data.models : []} metrics={metrics} />
       <Ticker />
       <RosterWall {...(ready ? { status: 'ready', models: data.models } : { status: data.status })} />
+      <ConceptFilm />
       <ProofBand />
       <Campaigns {...(ready ? { status: 'ready', campaigns: data.campaigns } : { status: data.status })} />
       <FinalCta />
