@@ -313,10 +313,13 @@
   font-size: clamp(15px, 1.6vw, 18px);
 }
 
-/* Grid: Tizita (16:9) first, then one 9:16 intro per model. Below 1024px Tizita spans the row and the
-   intros sit side by side under it. From 1024px everything is one row of equal height: each column's
-   fr is its film's aspect ratio (16/9 and 9/16), so widths are proportional and heights match exactly
-   (about 61% / 19.5% / 19.5% with two intros). Every box is reserved by aspect-ratio: no layout shift. */
+/* Grid: Tizita (16:9) first, then one column per model intro (9:16 video + name card).
+   Below 1024px: Tizita spans the row; the intro columns sit side by side under it, card under video.
+   From 1024px: one row. Tizita is the tallest item (height H). Each intro video is 3/4 of H, so its
+   width is 0.75 * 9/16 * H = 0.421875 H; Tizita's width is 16/9 H. Using those as the column fr values
+   makes the row fill the container at exactly those proportions. In each intro column the name card
+   takes what's left of H below (or above) the video. Every box is reserved by aspect-ratio or by the
+   row height: no layout shift. */
 .film-grid {
   display: grid;
   gap: var(--card-gap);
@@ -331,19 +334,107 @@
   grid-column: 1 / -1;
 }
 
+.film-intro-cell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--card-gap);
+  min-width: 0;
+}
+
+.film-intro-cell > .film-intro {
+  flex: none;
+}
+
 @media (min-width: 1024px) {
   .film-grid.has-intros {
-    grid-template-columns: minmax(0, 1.7778fr) repeat(var(--intros), minmax(0, 0.5625fr));
+    grid-template-columns: minmax(0, 1.7778fr) repeat(var(--intros), minmax(0, 0.421875fr));
+    align-items: stretch;
   }
 
   .film-grid.has-intros > .film-frame {
     grid-column: auto;
+    align-self: start;
+  }
+
+  /* The intro columns never size the row (contain: size): Tizita alone sets its height. */
+  .film-intro-cell {
+    contain: size;
+  }
+
+  .film-namecard {
+    padding: clamp(8px, 0.9vw, 12px) clamp(10px, 1vw, 14px) clamp(10px, 1.1vw, 16px);
+    gap: clamp(3px, 0.4vw, 6px);
+  }
+
+  .film-namecard-name {
+    font-size: clamp(18px, 1.9vw, 30px);
+  }
+
+  /* The card fills the column's remaining height. 2nd, 4th, ... intro: card on top, video at the bottom. */
+  .film-intro-cell > .film-namecard {
+    flex: 1 1 0;
+    min-height: 0;
+  }
+
+  .film-intro-cell.is-flipped > .film-namecard {
+    order: -1;
   }
 }
 
-.film-intro-cell {
-  margin: 0;
-  min-width: 0;
+/* Name card: links to the model page; data from the models row. */
+.film-namecard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 6px;
+  padding: 12px 14px 16px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg-2);
+  transition: border-color 0.2s ease;
+}
+
+/* Lime bar along the bottom, as on the roster cards' .card-bar. */
+.film-namecard::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--lime);
+}
+
+.film-namecard-name {
+  font-size: clamp(20px, 2vw, 30px);
+  line-height: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.film-namecard-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 10px;
+  font-size: 11px;
+  color: var(--grey);
+}
+
+.film-namecard-view {
+  color: var(--lime);
+}
+
+.film-namecard:hover {
+  border-color: var(--lime);
+}
+
+.film-namecard:focus-visible {
+  outline: 2px solid var(--lime);
+  outline-offset: 3px;
 }
 
 .film-intro {
@@ -386,8 +477,7 @@
   color: var(--bg);
 }
 
-.film-intro-sound:focus-visible,
-.film-intro-cell figcaption a:focus-visible {
+.film-intro-sound:focus-visible {
   outline: 2px solid var(--lime);
   outline-offset: 3px;
 }
@@ -516,9 +606,8 @@
   outline-offset: -2px;
 }
 
-/* Same caption style as the model pages (.mp figcaption): the disclosure and the intro captions. */
-.film-disclosure,
-.film-intro-cell figcaption {
+/* Same caption style as the model pages (.mp figcaption). */
+.film-disclosure {
   margin-top: 12px;
   font-size: 12px;
   font-weight: 600;
@@ -529,14 +618,6 @@
 
 .film-disclosure {
   margin-bottom: 0;
-}
-
-.film-intro-cell figcaption a {
-  transition: color 0.2s ease;
-}
-
-.film-intro-cell figcaption a:hover {
-  color: var(--lime);
 }
 
 .film-cta {

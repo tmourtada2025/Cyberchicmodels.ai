@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
-import { useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useAsync } from '../../hooks/useAsync'
 import { mediaUrl } from '../../lib/media'
 import { loadFilmIntros } from './filmIntros'
@@ -83,16 +83,19 @@ export function ConceptFilm({ pageReady }: { pageReady: boolean }) {
               </button>
             )}
           </div>
-          {list.map((m) => (
-            <figure key={m.slug} className="film-intro-cell">
+          {/* Each intro column: the video plus a name card. From 1024px the columns stagger by roster
+              position: 1st, 3rd, ... video on top; 2nd, 4th, ... name card on top (CSS, .is-flipped). */}
+          {list.map((m, i) => (
+            <div key={m.slug} className={i % 2 === 1 ? 'film-intro-cell is-flipped' : 'film-intro-cell'}>
               <IntroFilm src={mediaUrl(m.intro_video_path)} poster={mediaUrl(m.intro_poster_path)} name={m.name} />
-              <figcaption>
-                {/* Plain link: /m/<slug>/ is a Vercel redirect to /models/<slug>, not a client route. */}
-                <a href={`/m/${m.slug}/`}>
-                  {m.model_code ? `${m.name} · ${m.model_code}` : m.name}
-                </a>
-              </figcaption>
-            </figure>
+              <Link to={`/models/${m.slug}`} className="film-namecard">
+                <span className="display film-namecard-name">{m.name}</span>
+                <span className="label film-namecard-meta">
+                  {m.model_code && <span>{m.model_code}</span>}
+                  <span className="film-namecard-view">View →</span>
+                </span>
+              </Link>
+            </div>
           ))}
         </div>
         <p className="film-disclosure">
