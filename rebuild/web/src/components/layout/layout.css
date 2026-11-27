@@ -181,52 +181,51 @@
 }
 
 .footer-inner {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 12px 32px;
+  display: grid;
+  gap: 14px;
   padding-block: 40px;
 }
 
 .footer-wordmark {
-  margin-right: auto;
+  margin-bottom: 6px;
 }
 
-.footer-disclosure {
+.footer-disclosure,
+.footer-legal {
   margin: 0;
   color: var(--grey);
   font-size: 13px;
 }
 
-.footer-social {
-  display: flex;
-  gap: 8px;
-  align-self: center;
-}
-
-.footer-social a {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
+/* Links: label style (Inter 600 uppercase); the email address keeps its case. */
+.footer-links {
+  margin: 0;
+  font-size: 12px;
   color: var(--grey);
-  transition: color 0.2s, border-color 0.2s;
 }
 
-.footer-social a:hover {
+.footer-links a,
+.footer-legal a {
+  color: var(--white);
+  transition: color 0.2s;
+}
+
+.footer-legal a {
+  font-size: 12px;
+}
+
+.footer-links .footer-email {
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+
+.footer-links a:hover,
+.footer-legal a:hover {
   color: var(--lime);
-  border-color: var(--lime);
 }
 
-.footer-social a:focus-visible {
+.footer-links a:focus-visible,
+.footer-legal a:focus-visible {
   outline: 2px solid var(--lime);
   outline-offset: 3px;
-}
-
-.footer-social svg {
-  width: 18px;
-  height: 18px;
 }

@@ -24,3 +24,19 @@ export async function loadBriefModels(): Promise<{ slug: string; name: string; m
   if (error) throw error
   return data
 }
+
+export type TierFee = { code: string; name: string; price_amount: number | null; price_currency: string | null; price_display: string }
+
+// Active tiers with their floor price, for the /licensing terms table. Prices are DB data, never copy.
+export async function loadTierFees(): Promise<TierFee[]> {
+  const { data, error } = await supabase
+    .from('license_tiers')
+    .select('code, name, price_amount, price_currency, price_display')
+    .eq('is_active', true)
+    .order('display_order')
+  if (error) throw error
+  return (data as { code: string; name: string; price_amount: string | number | null; price_currency: string | null; price_display: string }[]).map((t) => ({
+    ...t,
+    price_amount: t.price_amount == null ? null : Number(t.price_amount),
+  }))
+}

@@ -1,0 +1,21 @@
+/* /privacy and /licensing: long-form legal text on the site-page shell (.sp). */
+.sp-legal .legal-body{max-width:76ch;padding-bottom:clamp(56px,9vw,112px);display:grid;gap:16px;align-content:start}
+.sp-legal .legal-body h2{font-size:clamp(28px,3.4vw,40px);margin-top:28px;border-top:1px solid var(--line);padding-top:24px}
+.sp-legal .legal-body h2:first-child{margin-top:0}
+.sp-legal .legal-body p,.sp-legal .legal-body li{font-size:16px;line-height:1.65;color:var(--fg)}
+.sp-legal .legal-body ul{margin:0;padding-left:1.2em;display:grid;gap:8px}
+.sp-legal .legal-body li::marker{color:var(--lime)}
+.sp-legal .legal-body a{color:var(--lime);text-decoration:underline;text-underline-offset:3px;overflow-wrap:anywhere}
+.sp-legal .legal-intro{max-width:52ch;font-size:clamp(18px,2vw,22px)}
+.sp-legal .legal-table{overflow-x:auto;border:1px solid var(--line);border-radius:16px}
+.sp-legal .legal-table table{border-collapse:collapse;width:100%;min-width:560px;font-size:15px;table-layout:fixed}
+/* Fixed column widths: the fees arriving cannot resize the columns or re-wrap the scope text. */
+.sp-legal .legal-table col.c-tier{width:24%}
+.sp-legal .legal-table col.c-fee{width:24%}
+.sp-legal .legal-table th,.sp-legal .legal-table td{padding:14px 18px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);line-height:1.5}
+.sp-legal .legal-table thead th{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);background:var(--surface)}
+.sp-legal .legal-table tbody th{font-family:var(--display);font-weight:400;font-size:24px;text-transform:uppercase;line-height:1.1;white-space:nowrap}
+.sp-legal .legal-table .fee{white-space:nowrap;font-weight:600}
+.sp-legal .legal-table tbody tr:last-child th,.sp-legal .legal-table tbody tr:last-child td{border-bottom:0}
+.sp-legal .legal-table .is-pending td{color:transparent}
+.sp-legal .legal-cta{margin-top:24px}

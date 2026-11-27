@@ -2,11 +2,13 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { Layout } from './components/layout/Layout'
 import { AboutPage } from './pages/AboutPage'
 import { BriefPage } from './pages/BriefPage'
+import { LicensingPage } from './pages/LicensingPage'
 import { CampaignsPage } from './pages/CampaignsPage'
 import { HomePage } from './pages/HomePage'
 import { ModelProfilePage } from './pages/ModelProfilePage'
 import { ModelsPage } from './pages/ModelsPage'
 import { PlaceholderPage } from './pages/PlaceholderPage'
+import { PrivacyPage } from './pages/PrivacyPage'
 import { ProofPage } from './pages/ProofPage'
 
 export default function App() {
@@ -22,6 +24,8 @@ export default function App() {
           <Route path="proof" element={<ProofPage />} />
           <Route path="about" element={<AboutPage />} />
           <Route path="brief" element={<BriefPage />} />
+          <Route path="privacy" element={<PrivacyPage />} />
+          <Route path="licensing" element={<LicensingPage />} />
           <Route path="*" element={<PlaceholderPage eyebrow="404" title="Page not found" body="There's nothing at this address." />} />
         </Route>
       </Routes>
