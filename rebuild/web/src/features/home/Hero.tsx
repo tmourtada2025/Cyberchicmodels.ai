@@ -4,7 +4,13 @@ import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
 import { mediaUrl } from '../../lib/media'
 import type { RosterModel } from '../../lib/types'
 
-const PHRASES = ['Careers that do.', 'Campaigns that sell.', 'Faces you license.']
+// Each phrase is set on exactly two lines with a deliberate break, so the cycling line has the same
+// height at every width and every phrase fills the reserved slot (no empty line, no reflow).
+const PHRASES: [string, string][] = [
+  ['Faces that', 'never drift.'],
+  ['Campaigns', 'that sell.'],
+  ['Faces', 'you license.'],
+]
 const CYCLE_MS = 2600
 const FADE_MS = 300
 const DRIFT_COLUMNS = 3
@@ -16,7 +22,8 @@ type Metric = { value: number; label: string }
 
 type HeroProps = {
   models: RosterModel[]
-  metrics: Metric[]
+  // null = still loading (placeholder row); [] = nothing to show.
+  metrics: Metric[] | null
 }
 
 // Wall order is models.wall_order when set, else display_order (the roster order). Lets a tile be
@@ -53,7 +60,19 @@ export function Hero({ models, metrics }: HeroProps) {
             Start a brief
           </Link>
         </div>
-        {metrics.length > 0 && (
+        {metrics === null ? (
+          // Loading: hold the row's height with one neutral slot (same elements and sizes, no figures).
+          <div className="metrics" aria-hidden="true" data-pending="">
+            <div className="metric">
+              <span className="display metric-value">
+                <span className="metric-ph is-value">&nbsp;</span>
+              </span>
+              <span className="label metric-label">
+                <span className="metric-ph is-label">&nbsp;</span>
+              </span>
+            </div>
+          </div>
+        ) : metrics.length > 0 && (
           <dl className="metrics">
             {metrics.map((m) => (
               <div key={m.label} className="metric">
@@ -89,10 +108,32 @@ function CyclingLine() {
     }
   }, [reduced])
 
+  const current = reduced ? 0 : index
+
+  // Invisible copies of every phrase share the live phrase's grid cell, so the line is always as tall
+  // as the tallest phrase and the swap never reflows the hero. The live phrase stays one element whose
+  // text changes (a new element per phrase would be re-counted as the page's LCP when it appears).
   return (
     <span className="hero-cycle" aria-live="off">
-      <span className={leaving ? 'is-leaving' : undefined}>{PHRASES[reduced ? 0 : index]}</span>
+      {PHRASES.map((phrase) => (
+        <span key={phrase.join(' ')} className="hero-cycle-sizer" aria-hidden="true">
+          <Phrase lines={phrase} />
+        </span>
+      ))}
+      <span className={leaving ? 'is-leaving' : undefined}>
+        <Phrase lines={PHRASES[current]} />
+      </span>
     </span>
+  )
+}
+
+// Two lines; the space before the break keeps the words apart in the text content.
+function Phrase({ lines }: { lines: [string, string] }) {
+  return (
+    <>
+      {lines[0]} <br />
+      {lines[1]}
+    </>
   )
 }
 
