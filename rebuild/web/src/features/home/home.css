@@ -29,21 +29,16 @@
 
 .hero-cycle > span {
   grid-area: 1 / 1;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.hero-cycle > span.is-leaving {
   opacity: 0;
+  transform: translateY(10px);
+}
+
+.hero-cycle > .hero-cycle-sizer {
   visibility: hidden;
-  transform: translateY(10px);
-  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
-}
-
-.hero-cycle > span.is-current {
-  opacity: 1;
-  visibility: visible;
-  transform: none;
-}
-
-.hero-cycle > span.is-current.is-leaving {
-  opacity: 0;
-  transform: translateY(10px);
 }
 
 .hero-sub {

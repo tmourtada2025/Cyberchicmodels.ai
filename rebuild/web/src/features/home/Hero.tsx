@@ -104,15 +104,17 @@ function CyclingLine() {
 
   const current = reduced ? 0 : index
 
-  // Every phrase is laid out in the same grid cell, so the line is always as tall as the tallest
-  // phrase and the swap never reflows the hero. Only the current one is visible.
+  // Invisible copies of every phrase share the live phrase's grid cell, so the line is always as tall
+  // as the tallest phrase and the swap never reflows the hero. The live phrase stays one element whose
+  // text changes (a new element per phrase would be re-counted as the page's LCP when it appears).
   return (
     <span className="hero-cycle" aria-live="off">
-      {PHRASES.map((phrase, i) => (
-        <span key={phrase} className={i === current ? (leaving ? 'is-current is-leaving' : 'is-current') : undefined}>
+      {PHRASES.map((phrase) => (
+        <span key={phrase} className="hero-cycle-sizer" aria-hidden="true">
           {phrase}
         </span>
       ))}
+      <span className={leaving ? 'is-leaving' : undefined}>{PHRASES[current]}</span>
     </span>
   )
 }
