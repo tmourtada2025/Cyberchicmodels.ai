@@ -101,3 +101,20 @@
 .mp .mail{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:20px;color:var(--muted);font-size:14px}
 .mp .mail code{font-family:var(--body);color:var(--fg);user-select:all;-webkit-user-select:all}
 @media (max-width:760px){.mp .book{grid-template-columns:1fr}}
+/* Hero intro film (models.intro_video_path): 9:16 box reserved by aspect-ratio, poster from first paint.
+   Desktop: right column, bottom-aligned with the CTAs (left column when the hero text is right-aligned).
+   Mobile: in the text flow, right below the name. */
+.mp .mp-intro{grid-area:intro;position:relative;aspect-ratio:9/16;width:min(clamp(200px,20vw,300px),calc((86vh - 200px) * 9 / 16));overflow:hidden;border-radius:12px;background:var(--surface);border:1px solid var(--line)}
+.mp .mp-intro video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.mp .mp-intro-sound{position:absolute;right:10px;bottom:10px;width:40px;height:40px;display:grid;place-items:center;padding:0;border-radius:50%;border:1px solid rgba(247,245,241,.35);background:rgba(13,13,15,.6);color:var(--fg);cursor:pointer}
+.mp .mp-intro-sound[aria-pressed="true"]{background:var(--lime);border-color:var(--lime);color:var(--ink)}
+@media (min-width:701px){
+.mp .mp-hero .wrap.has-intro{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:1fr auto auto auto auto;grid-template-areas:". intro" "eyebrow intro" "name intro" "facts intro" "ctas intro";column-gap:clamp(24px,4vw,56px)}
+.mp .mp-hero.is-right .wrap.has-intro{grid-template-columns:auto minmax(0,1fr);grid-template-areas:"intro ." "intro eyebrow" "intro name" "intro facts" "intro ctas"}
+.mp .mp-hero .wrap.has-intro>.mp-eyebrow{grid-area:eyebrow}
+.mp .mp-hero .wrap.has-intro>h1{grid-area:name}
+.mp .mp-hero .wrap.has-intro>.facts{grid-area:facts}
+.mp .mp-hero .wrap.has-intro>.ctas{grid-area:ctas}
+.mp .mp-hero .wrap.has-intro>.mp-intro{align-self:end}
+}
+@media (max-width:700px){.mp .mp-intro{width:min(62vw,280px);margin:4px 0 24px}.mp .mp-hero.is-right .mp-intro{margin-left:auto}}

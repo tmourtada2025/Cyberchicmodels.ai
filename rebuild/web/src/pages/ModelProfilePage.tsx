@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { useParams } from 'react-router-dom'
 import { EmptyState } from '../components/ui/SectionHead'
 import { BOOKING_EMAIL, ORIGIN } from '../config/site'
+import { HeroIntro } from '../features/models/HeroIntro'
 import { loadModelPage } from '../features/models/loaders'
 import { useAsync } from '../hooks/useAsync'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
@@ -140,6 +141,9 @@ function ModelPageView({ model }: { model: ModelPage }) {
     model.hero_align === 'right' && 'is-right',
     model.hero_mobile_top && 'is-mtop',
   ].filter(Boolean).join(' ')
+  const intro = model.intro_video_path && model.intro_poster_path
+    ? { src: mediaUrl(model.intro_video_path), poster: mediaUrl(model.intro_poster_path) }
+    : null
   const subject = encodeURIComponent(`Brief: ${model.name} (${model.model_code})`)
 
   return (
@@ -151,12 +155,13 @@ function ModelPageView({ model }: { model: ModelPage }) {
             {model.hero_desktop_path && <img src={mediaUrl(model.hero_desktop_path)} alt={model.hero_alt ?? ''} />}
           </picture>
         </div>
-        <div className="wrap">
+        <div className={intro ? 'wrap has-intro' : 'wrap'}>
           <div className="mp-eyebrow">
             {model.model_code}
             {world && ` · ${world.name}`}
           </div>
           <h1>{model.name}</h1>
+          {intro && <HeroIntro src={intro.src} poster={intro.poster} name={model.name} />}
           <div className="facts">
             {model.hero_facts.map((f) => (
               <span key={f.label}>

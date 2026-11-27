@@ -65,6 +65,9 @@ export type ModelPage = {
   hero_align: 'left' | 'right'
   hero_title_scale: 'xl' | 'l'
   hero_mobile_top: boolean
+  // 9:16 hero intro film (media bucket paths); shown only when both are set.
+  intro_video_path: string | null
+  intro_poster_path: string | null
   hero_facts: LabelValue[]
   strip_items: string[]
   story_lead: string | null

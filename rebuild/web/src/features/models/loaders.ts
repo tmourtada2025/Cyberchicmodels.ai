@@ -14,7 +14,7 @@ export async function loadRoster(): Promise<Roster> {
 
 const PAGE_COLUMNS = [
   'id, slug, name, look:ethnicity, model_code, meta_description',
-  'hero_desktop_path, hero_mobile_path, hero_alt, hero_focus, hero_focus_mobile, hero_align, hero_title_scale, hero_mobile_top, hero_facts',
+  'hero_desktop_path, hero_mobile_path, hero_alt, hero_focus, hero_focus_mobile, hero_align, hero_title_scale, hero_mobile_top, hero_facts, intro_video_path, intro_poster_path',
   'strip_items, story_lead, story_body, comp_stats, compcard_path, compcard_pdf_path',
 ].join(', ')
 
