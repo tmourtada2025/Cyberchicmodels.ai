@@ -4,7 +4,7 @@ import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
 import { mediaUrl } from '../../lib/media'
 import type { RosterModel } from '../../lib/types'
 
-const PHRASES = ['Careers that do.', 'Campaigns that sell.', 'Faces you license.']
+const PHRASES = ['Faces that never drift.', 'Campaigns that sell.', 'Faces you license.']
 const CYCLE_MS = 2600
 const FADE_MS = 300
 const DRIFT_COLUMNS = 3
