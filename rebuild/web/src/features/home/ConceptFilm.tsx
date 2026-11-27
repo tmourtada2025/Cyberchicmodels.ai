@@ -1,13 +1,23 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
+import { useLocation } from 'react-router-dom'
+import { useAsync } from '../../hooks/useAsync'
 import { mediaUrl } from '../../lib/media'
+import { loadFilmIntros } from './filmIntros'
+import { IntroFilm } from './IntroFilm'
 
 const FILM = mediaUrl('films/tizita/Tizita_Saba_home_1080.mp4')
 const POSTER = mediaUrl('films/tizita/Tizita_Saba_poster.jpg')
 
-// Saba's concept film. The video has no src until the section nears the viewport,
-// so the 10 MB file is never requested on load; it only starts on a user click (with sound).
-export function ConceptFilm() {
+// The film section: Saba's concept film (Tizita) large, then each published model's 9:16 intro beside it
+// (models.intro_video_path / intro_poster_path, roster order). Tizita has no src until the section nears
+// the viewport and only plays on a click, with sound; the intros play muted while in view (IntroFilm).
+// pageReady: the content above has its final height, so a /#film link can jump here without a shift.
+export function ConceptFilm({ pageReady }: { pageReady: boolean }) {
   const section = useRef<HTMLElement>(null)
+  const intros = useAsync('film-intros', loadFilmIntros)
+  const list = intros.status === 'ready' ? intros.data : []
+  const { hash } = useLocation()
+  const jumped = useRef(false)
   const video = useRef<HTMLVideoElement>(null)
   const [inView, setInView] = useState(() => !('IntersectionObserver' in window))
   const [started, setStarted] = useState(false)
@@ -28,6 +38,15 @@ export function ConceptFilm() {
     return () => io.disconnect()
   }, [])
 
+  // /#film: the browser can't jump on load (the section renders later), so jump once everything above
+  // and the grid itself have settled. Two frames: the final layout is painted first, while the section
+  // is still off-screen, so its move is not seen as a layout shift; then the page scrolls to it.
+  useEffect(() => {
+    if (hash !== '#film' || jumped.current || !pageReady || intros.status === 'loading') return
+    jumped.current = true
+    requestAnimationFrame(() => requestAnimationFrame(() => section.current?.scrollIntoView({ block: 'start' })))
+  }, [hash, pageReady, intros.status])
+
   const play = () => {
     const el = video.current
     if (!el) return
@@ -42,9 +61,12 @@ export function ConceptFilm() {
         <h2 className="display sec-title film-title" id="film-title">
           Tizita
         </h2>
-        <p className="film-line">One face, one session, every frame. Saba (SB01) in a 1970s Addis recording studio.</p>
+        <p className="film-line">One face, one session, every frame. Saba (SB01) in a 1970s Addis Ababa recording studio.</p>
 
-        <figure className="film-figure">
+        <div
+          className={list.length > 0 ? 'film-grid has-intros' : 'film-grid'}
+          style={{ '--intros': list.length } as CSSProperties}
+        >
           <div className="film-frame">
             <video
               ref={video}
@@ -61,11 +83,23 @@ export function ConceptFilm() {
               </button>
             )}
           </div>
-          <figcaption>AI-generated. No real person is depicted. Our own concept work, not a client campaign.</figcaption>
-        </figure>
+          {list.map((m) => (
+            <figure key={m.slug} className="film-intro-cell">
+              <IntroFilm src={mediaUrl(m.intro_video_path)} poster={mediaUrl(m.intro_poster_path)} name={m.name} />
+              <figcaption>
+                {/* Plain link: /m/<slug>/ is a Vercel redirect to /models/<slug>, not a client route. */}
+                <a href={`/m/${m.slug}/`}>
+                  {m.model_code ? `${m.name} · ${m.model_code}` : m.name}
+                </a>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+        <p className="film-disclosure">
+          AI-generated models and music. No real person is depicted. Our own concept work, not a client campaign.
+        </p>
 
         <div className="cta-row film-cta">
-          {/* Plain link: /m/<slug>/ is a Vercel redirect to /models/<slug>, not a client route. */}
           <a href="/m/saba/" className="btn btn-ghost">
             Meet Saba →
           </a>

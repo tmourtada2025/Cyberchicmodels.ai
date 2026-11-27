@@ -313,8 +313,142 @@
   font-size: clamp(15px, 1.6vw, 18px);
 }
 
-.film-figure {
+/* Grid: Tizita (16:9) first, then one 9:16 intro per model. Below 1024px Tizita spans the row and the
+   intros sit side by side under it. From 1024px everything is one row of equal height: each column's
+   fr is its film's aspect ratio (16/9 and 9/16), so widths are proportional and heights match exactly
+   (about 61% / 19.5% / 19.5% with two intros). Every box is reserved by aspect-ratio: no layout shift. */
+.film-grid {
+  display: grid;
+  gap: var(--card-gap);
+  align-items: start;
+}
+
+.film-grid.has-intros {
+  grid-template-columns: repeat(var(--intros), minmax(0, 1fr));
+}
+
+.film-grid.has-intros > .film-frame {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 1024px) {
+  .film-grid.has-intros {
+    grid-template-columns: minmax(0, 1.7778fr) repeat(var(--intros), minmax(0, 0.5625fr));
+  }
+
+  .film-grid.has-intros > .film-frame {
+    grid-column: auto;
+  }
+}
+
+.film-intro-cell {
   margin: 0;
+  min-width: 0;
+}
+
+.film-intro {
+  position: relative;
+  aspect-ratio: 9 / 16;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--bg-2);
+}
+
+.film-intro video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.film-intro-sound {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(247, 245, 241, 0.35);
+  background: rgba(13, 13, 15, 0.6);
+  color: var(--white);
+  cursor: pointer;
+}
+
+.film-intro-sound[aria-pressed='true'] {
+  background: var(--lime);
+  border-color: var(--lime);
+  color: var(--bg);
+}
+
+.film-intro-sound:focus-visible,
+.film-intro-cell figcaption a:focus-visible {
+  outline: 2px solid var(--lime);
+  outline-offset: 3px;
+}
+
+/* Reduced motion: the whole box is a play/pause button; the lime disc shows while paused,
+   and on hover/focus while playing. */
+.film-intro-play {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.film-intro-play-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--lime);
+  transform: translate(-50%, -50%);
+  transition: opacity 0.2s ease;
+}
+
+.film-intro-play-icon::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 54%;
+  border-style: solid;
+  border-width: 9px 0 9px 14px;
+  border-color: transparent transparent transparent var(--bg);
+  transform: translate(-50%, -50%);
+}
+
+.film-intro-play.is-playing .film-intro-play-icon {
+  opacity: 0;
+}
+
+.film-intro-play.is-playing .film-intro-play-icon::after {
+  left: 50%;
+  width: 14px;
+  height: 18px;
+  border: 0;
+  border-left: 5px solid var(--bg);
+  border-right: 5px solid var(--bg);
+  box-sizing: border-box;
+}
+
+.film-intro-play.is-playing:hover .film-intro-play-icon,
+.film-intro-play.is-playing:focus-visible .film-intro-play-icon {
+  opacity: 1;
+}
+
+.film-intro-play:focus-visible {
+  outline: 2px solid var(--lime);
+  outline-offset: -2px;
 }
 
 /* Always 16:9, never cropped to portrait. */
@@ -382,8 +516,9 @@
   outline-offset: -2px;
 }
 
-/* Same caption style as the model pages (.mp figcaption). */
-.film-figure figcaption {
+/* Same caption style as the model pages (.mp figcaption): the disclosure and the intro captions. */
+.film-disclosure,
+.film-intro-cell figcaption {
   margin-top: 12px;
   font-size: 12px;
   font-weight: 600;
@@ -392,11 +527,28 @@
   color: var(--grey);
 }
 
+.film-disclosure {
+  margin-bottom: 0;
+}
+
+.film-intro-cell figcaption a {
+  transition: color 0.2s ease;
+}
+
+.film-intro-cell figcaption a:hover {
+  color: var(--lime);
+}
+
 .film-cta {
   margin-top: clamp(22px, 3vw, 32px);
 }
 
-/* Mobile: edge to edge, still 16:9. */
+/* /#film lands below the sticky nav. */
+#film {
+  scroll-margin-top: 68px;
+}
+
+/* Mobile: Tizita edge to edge, still 16:9. */
 @media (max-width: 760px) {
   .film-frame {
     margin-inline: calc(-1 * var(--pad));

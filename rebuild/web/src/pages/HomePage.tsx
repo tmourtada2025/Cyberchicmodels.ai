@@ -28,7 +28,7 @@ export function HomePage() {
       <Hero models={ready ? data.models : []} metrics={metrics} />
       <Ticker />
       <RosterWall {...(ready ? { status: 'ready', models: data.models } : { status: data.status })} />
-      <ConceptFilm />
+      <ConceptFilm pageReady={data.status !== 'loading'} />
       <ProofBand />
       <Campaigns {...(ready ? { status: 'ready', campaigns: data.campaigns } : { status: data.status })} />
       <FinalCta />
