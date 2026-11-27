@@ -27,8 +27,22 @@ export function HeroIntro({ src, poster, name }: HeroIntroProps) {
     return () => io.disconnect()
   }, [])
 
+  // Some WebKit builds stop at the loop point instead of wrapping. While the intro should be playing,
+  // an unrequested pause or end restarts it (at most once a second, so a blocked play can't spin).
+  const shouldPlay = useRef(false)
+  const lastResume = useRef(0)
+  const resume = () => {
+    const el = video.current
+    const now = Date.now()
+    if (!el || !shouldPlay.current || document.hidden || now - lastResume.current < 1000) return
+    lastResume.current = now
+    if (el.ended) el.currentTime = 0
+    void el.play().catch(() => {})
+  }
+
   useEffect(() => {
     const el = video.current
+    shouldPlay.current = loaded && inView
     if (!el || !loaded) return
     if (inView) {
       el.muted = muted
@@ -59,6 +73,8 @@ export function HeroIntro({ src, poster, name }: HeroIntroProps) {
         loop
         playsInline
         disablePictureInPicture
+        onPause={resume}
+        onEnded={resume}
         aria-label={`${name}, intro film`}
       />
       <button
