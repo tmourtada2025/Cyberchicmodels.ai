@@ -6,7 +6,8 @@ import '../features/site-pages/legal.css'
 
 // Text from legal/site-footer-privacy-licensing-brief.md §2, verbatim except where the owner asked it
 // to describe the actual setup (2026-11-28): briefs stored in our Supabase database (Singapore), email
-// delivered through Resend, no cookies and no analytics. Do not edit the wording here without the owner.
+// delivered through Resend, no cookies and no analytics; and the owner's edits of 2026-11-28 (brief-form
+// fields, "If we contacted you first", email hosting). Do not edit the wording here without the owner.
 export function PrivacyPage() {
   useDocumentTitle('Privacy notice')
   useMetaDescription(
@@ -34,10 +35,15 @@ export function PrivacyPage() {
         <h2>What we collect.</h2>
         <ul>
           <li>
-            <b>Brief form:</b> your name, work email, company, role (if given), and what you write in the brief.
+            <b>Brief form:</b> your name, work email, company, phone (if given), and what you write in the brief: model,
+            licence level, intended use, territory, budget and message.
           </li>
           <li>
             <b>Emails you send us:</b> your name, email address and the content of your message.
+          </li>
+          <li>
+            <b>If we contacted you first:</b> your name, work email, company and role, taken from public business sources
+            such as company websites and professional networks.
           </li>
           <li>
             <b>Technical data:</b> our hosting providers log basic request data (IP address, browser type, time of visit)
@@ -72,6 +78,7 @@ export function PrivacyPage() {
             database there.
           </li>
           <li>Email delivery: Resend, which delivers each brief to our inbox.</li>
+          <li>Email hosting: Namecheap Private Email.</li>
         </ul>
         <p>
           These providers act on our instructions under their data-processing terms. Some are outside the UK and EU. Where
