@@ -4,7 +4,13 @@ import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
 import { mediaUrl } from '../../lib/media'
 import type { RosterModel } from '../../lib/types'
 
-const PHRASES = ['Faces that never drift.', 'Campaigns that sell.', 'Faces you license.']
+// Each phrase is set on exactly two lines with a deliberate break, so the cycling line has the same
+// height at every width and every phrase fills the reserved slot (no empty line, no reflow).
+const PHRASES: [string, string][] = [
+  ['Faces that', 'never drift.'],
+  ['Campaigns', 'that sell.'],
+  ['Faces', 'you license.'],
+]
 const CYCLE_MS = 2600
 const FADE_MS = 300
 const DRIFT_COLUMNS = 3
@@ -110,12 +116,24 @@ function CyclingLine() {
   return (
     <span className="hero-cycle" aria-live="off">
       {PHRASES.map((phrase) => (
-        <span key={phrase} className="hero-cycle-sizer" aria-hidden="true">
-          {phrase}
+        <span key={phrase.join(' ')} className="hero-cycle-sizer" aria-hidden="true">
+          <Phrase lines={phrase} />
         </span>
       ))}
-      <span className={leaving ? 'is-leaving' : undefined}>{PHRASES[current]}</span>
+      <span className={leaving ? 'is-leaving' : undefined}>
+        <Phrase lines={PHRASES[current]} />
+      </span>
     </span>
+  )
+}
+
+// Two lines; the space before the break keeps the words apart in the text content.
+function Phrase({ lines }: { lines: [string, string] }) {
+  return (
+    <>
+      {lines[0]} <br />
+      {lines[1]}
+    </>
   )
 }
 
