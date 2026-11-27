@@ -20,8 +20,8 @@
 
   /* Anton is display-only, >= ~28px (never below ~20px). Small bold text uses the label style.
      Exemption: the wordmark logo is always Anton. */
-  --font-display: 'Anton', Impact, 'Arial Narrow', sans-serif;
-  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Anton', 'Anton Fallback Impact', 'Anton Fallback Roboto', 'Anton Fallback Arial', Impact, 'Arial Narrow', sans-serif;
+  --font-body: 'Inter', 'Inter Fallback Segoe', 'Inter Fallback Roboto', 'Inter Fallback Arial', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --tracking-label: 0.13em;
 
   --fs-hero: clamp(52px, 12vw, 168px);

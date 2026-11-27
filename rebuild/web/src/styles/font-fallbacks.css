@@ -1,0 +1,125 @@
+/* Metric-matched fallbacks for Anton and Inter, so text takes the same space before and after the
+   web fonts swap in and nothing reflows (homepage CLS). size-adjust = width of the real hero and label
+   strings in the web font / in the fallback, measured in Chrome 2026-11-27; ascent/descent copy the web
+   font's metrics. Impact + Segoe UI = Windows, Roboto = Android, Arial = macOS/iOS. A face whose local()
+   font is missing is skipped and the next family in the stack is tried. */
+
+@font-face {
+  font-family: 'Anton Fallback Impact';
+  src: local('Impact');
+  font-weight: 400;
+  size-adjust: 94.73%;
+  ascent-override: 124.17%;
+  descent-override: 34.74%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Anton Fallback Roboto';
+  src: local('Roboto'), local('Roboto-Regular');
+  font-weight: 400;
+  size-adjust: 75.35%;
+  ascent-override: 156.11%;
+  descent-override: 43.68%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Anton Fallback Arial';
+  src: local('Arial'), local('ArialMT');
+  font-weight: 400;
+  size-adjust: 69.35%;
+  ascent-override: 169.61%;
+  descent-override: 47.46%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Inter Fallback Segoe';
+  src: local('Segoe UI'), local('SegoeUI');
+  font-weight: 400;
+  size-adjust: 108.02%;
+  ascent-override: 89.68%;
+  descent-override: 22.33%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Inter Fallback Segoe';
+  src: local('Segoe UI Semibold'), local('SegoeUI-Semibold');
+  font-weight: 600;
+  size-adjust: 107.2%;
+  ascent-override: 90.37%;
+  descent-override: 22.50%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Inter Fallback Segoe';
+  src: local('Segoe UI Bold'), local('SegoeUI-Bold');
+  font-weight: 700;
+  size-adjust: 105.54%;
+  ascent-override: 91.79%;
+  descent-override: 22.85%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Inter Fallback Roboto';
+  src: local('Roboto'), local('Roboto-Regular');
+  font-weight: 400;
+  size-adjust: 107.95%;
+  ascent-override: 89.74%;
+  descent-override: 22.34%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Inter Fallback Roboto';
+  src: local('Roboto Medium'), local('Roboto-Medium');
+  font-weight: 600;
+  size-adjust: 107.23%;
+  ascent-override: 90.34%;
+  descent-override: 22.49%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Inter Fallback Roboto';
+  src: local('Roboto Bold'), local('Roboto-Bold');
+  font-weight: 700;
+  size-adjust: 106.27%;
+  ascent-override: 91.16%;
+  descent-override: 22.70%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Inter Fallback Arial';
+  src: local('Arial'), local('ArialMT');
+  font-weight: 400;
+  size-adjust: 107.33%;
+  ascent-override: 90.26%;
+  descent-override: 22.47%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Inter Fallback Arial';
+  src: local('Arial Bold'), local('Arial-BoldMT');
+  font-weight: 600;
+  size-adjust: 98.45%;
+  ascent-override: 98.40%;
+  descent-override: 24.50%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Inter Fallback Arial';
+  src: local('Arial Bold'), local('Arial-BoldMT');
+  font-weight: 700;
+  size-adjust: 97.65%;
+  ascent-override: 99.21%;
+  descent-override: 24.70%;
+  line-gap-override: 0%;
+}

@@ -16,7 +16,8 @@ type Metric = { value: number; label: string }
 
 type HeroProps = {
   models: RosterModel[]
-  metrics: Metric[]
+  // null = still loading (placeholder row); [] = nothing to show.
+  metrics: Metric[] | null
 }
 
 // Wall order is models.wall_order when set, else display_order (the roster order). Lets a tile be
@@ -53,7 +54,19 @@ export function Hero({ models, metrics }: HeroProps) {
             Start a brief
           </Link>
         </div>
-        {metrics.length > 0 && (
+        {metrics === null ? (
+          // Loading: hold the row's height with one neutral slot (same elements and sizes, no figures).
+          <div className="metrics" aria-hidden="true" data-pending="">
+            <div className="metric">
+              <span className="display metric-value">
+                <span className="metric-ph is-value">&nbsp;</span>
+              </span>
+              <span className="label metric-label">
+                <span className="metric-ph is-label">&nbsp;</span>
+              </span>
+            </div>
+          </div>
+        ) : metrics.length > 0 && (
           <dl className="metrics">
             {metrics.map((m) => (
               <div key={m.label} className="metric">
@@ -89,9 +102,17 @@ function CyclingLine() {
     }
   }, [reduced])
 
+  const current = reduced ? 0 : index
+
+  // Every phrase is laid out in the same grid cell, so the line is always as tall as the tallest
+  // phrase and the swap never reflows the hero. Only the current one is visible.
   return (
     <span className="hero-cycle" aria-live="off">
-      <span className={leaving ? 'is-leaving' : undefined}>{PHRASES[reduced ? 0 : index]}</span>
+      {PHRASES.map((phrase, i) => (
+        <span key={phrase} className={i === current ? (leaving ? 'is-current is-leaving' : 'is-current') : undefined}>
+          {phrase}
+        </span>
+      ))}
     </span>
   )
 }

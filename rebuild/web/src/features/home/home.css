@@ -19,17 +19,29 @@
   margin: 0;
 }
 
+/* All phrases share one grid cell: the slot is the tallest phrase's height at every width. */
 .hero-cycle {
-  display: block;
+  display: grid;
+  justify-items: start;
+  align-items: start;
   color: var(--lime);
 }
 
 .hero-cycle > span {
-  display: inline-block;
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  grid-area: 1 / 1;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
 }
 
-.hero-cycle > span.is-leaving {
+.hero-cycle > span.is-current {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+
+.hero-cycle > span.is-current.is-leaving {
   opacity: 0;
   transform: translateY(10px);
 }
@@ -63,6 +75,26 @@
   margin-top: 8px;
   font-size: 11px;
   color: var(--grey);
+}
+
+/* Loading placeholder: the same boxes as a real metric, drawn as quiet bars. */
+.metric-value,
+.metric-label {
+  display: block;
+}
+
+.metric-ph {
+  display: inline-block;
+  border-radius: 4px;
+  background: var(--line);
+}
+
+.metric-ph.is-value {
+  width: 1.2em;
+}
+
+.metric-ph.is-label {
+  width: 13ch;
 }
 
 /* drifting portrait columns behind the hero */
