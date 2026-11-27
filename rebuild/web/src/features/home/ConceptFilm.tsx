@@ -66,7 +66,7 @@ export function ConceptFilm() {
 
         <div className="cta-row film-cta">
           {/* Plain link: /m/<slug>/ is a Vercel redirect to /models/<slug>, not a client route. */}
-          <a href="/m/saba/" className="btn btn-primary">
+          <a href="/m/saba/" className="btn btn-ghost">
             Meet Saba →
           </a>
         </div>
