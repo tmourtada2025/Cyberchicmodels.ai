@@ -1,27 +1,18 @@
-// submit-brief: emails a /brief form submission to the agent. Nothing is written to the database.
+// submit-brief: stores a /brief form submission in licensing_enquiries, then emails it to the agent.
+// The insert decides success; the email is a notification whose outcome is kept on the row
+// (email_status: sent / failed / not_configured). Logic lives in handler.ts.
+//
 // Secrets (Supabase → Edge Functions → Secrets):
-//   RESEND_API_KEY  required. Resend API key; the sending domain must be verified in Resend.
+//   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY  provided by Supabase. The service role bypasses RLS;
+//                   licensing_enquiries has RLS on and no policies, so anon can neither read nor write it.
+//   RESEND_API_KEY  for the email. If missing, the brief is still stored (email_status = not_configured).
 //   BRIEF_FROM      optional. Default "CyberChic Briefs <briefs@cyberchicmodels.ai>".
 //   BRIEF_TO        optional. Default "agent@cyberchicmodels.ai".
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts'
+import { createClient } from 'npm:@supabase/supabase-js@2'
+import { handleBrief, type Deps, type Mail } from './handler.ts'
 
 const ALLOWED_ORIGINS = [/^https:\/\/(www\.)?cyberchicmodels\.ai$/, /^https:\/\/[a-z0-9-]+\.vercel\.app$/, /^http:\/\/localhost(:\d+)?$/]
-
-const FIELDS = {
-  company_name: 'Company',
-  contact_name: 'Name',
-  contact_email: 'Email',
-  contact_phone: 'Phone',
-  model: 'Model',
-  license_tier: 'License level',
-  intended_use: 'Product and use',
-  territory: 'Territory',
-  budget_range: 'Budget',
-  message: 'Anything else',
-} as const
-
-const MAX_LEN = 4000
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 function cors(origin: string | null): HeadersInit {
   const ok = origin && ALLOWED_ORIGINS.some((re) => re.test(origin))
@@ -33,8 +24,50 @@ function cors(origin: string | null): HeadersInit {
   }
 }
 
-const escape = (s: string) =>
-  s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!)
+const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, {
+  auth: { persistSession: false, autoRefreshToken: false },
+})
+
+async function sendWithResend(key: string, mail: Mail) {
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ from: mail.from, to: [mail.to], reply_to: mail.replyTo, subject: mail.subject, html: mail.html, text: mail.text }),
+  })
+  return res.ok ? ({ ok: true } as const) : ({ ok: false, error: `Resend ${res.status}: ${await res.text()}` } as const)
+}
+
+const resendKey = Deno.env.get('RESEND_API_KEY')
+
+const deps: Deps = {
+  async findModel(slug) {
+    const { data } = await db.from('models').select('id, name').eq('slug', slug).eq('roster_status', 'published').maybeSingle()
+    return data
+  },
+  async findTier(code) {
+    const { data } = await db.from('license_tiers').select('id, name').eq('code', code).eq('is_active', true).maybeSingle()
+    return data
+  },
+  async insertEnquiry(row) {
+    const { data, error } = await db.from('licensing_enquiries').insert(row).select('id').single()
+    if (error) throw error
+    return data
+  },
+  async updateEmailStatus(id, status, error) {
+    const { error: e } = await db
+      .from('licensing_enquiries')
+      .update({ email_status: status, email_error: error, emailed_at: status === 'sent' ? new Date().toISOString() : null })
+      .eq('id', id)
+    if (e) throw e
+  },
+  sendEmail: resendKey ? (mail) => sendWithResend(resendKey, mail) : null,
+  log: (...args) => console.error(...args),
+}
+
+const mailCfg = {
+  from: Deno.env.get('BRIEF_FROM') ?? 'CyberChic Briefs <briefs@cyberchicmodels.ai>',
+  to: Deno.env.get('BRIEF_TO') ?? 'agent@cyberchicmodels.ai',
+}
 
 Deno.serve(async (req) => {
   const headers = { ...cors(req.headers.get('origin')), 'Content-Type': 'application/json' }
@@ -49,50 +82,8 @@ Deno.serve(async (req) => {
   } catch {
     return reply(400, { ok: false, error: 'bad_json' })
   }
+  if (!input || typeof input !== 'object' || Array.isArray(input)) return reply(400, { ok: false, error: 'bad_json' })
 
-  // Spam trap: the form's hidden "website" field is only ever filled by bots. Pretend success.
-  if (typeof input.website === 'string' && input.website.trim()) return reply(200, { ok: true })
-
-  const brief: Record<string, string> = {}
-  for (const key of Object.keys(FIELDS)) {
-    const v = input[key]
-    brief[key] = typeof v === 'string' ? v.trim().slice(0, MAX_LEN) : ''
-  }
-  if (!brief.company_name || !brief.contact_name || !EMAIL.test(brief.contact_email)) {
-    return reply(422, { ok: false, error: 'missing_required' })
-  }
-
-  const key = Deno.env.get('RESEND_API_KEY')
-  if (!key) {
-    console.error('submit-brief: RESEND_API_KEY is not set')
-    return reply(503, { ok: false, error: 'not_configured' })
-  }
-
-  const rows = (Object.entries(FIELDS) as [keyof typeof FIELDS, string][])
-    .filter(([k]) => brief[k])
-    .map(([k, label]) => `<tr><th align="left" style="padding:4px 16px 4px 0;color:#666">${label}</th><td style="padding:4px 0">${escape(brief[k]).replace(/\n/g, '<br>')}</td></tr>`)
-    .join('')
-  const text = (Object.entries(FIELDS) as [keyof typeof FIELDS, string][])
-    .filter(([k]) => brief[k])
-    .map(([k, label]) => `${label}: ${brief[k]}`)
-    .join('\n')
-
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      from: Deno.env.get('BRIEF_FROM') ?? 'CyberChic Briefs <briefs@cyberchicmodels.ai>',
-      to: [Deno.env.get('BRIEF_TO') ?? 'agent@cyberchicmodels.ai'],
-      reply_to: brief.contact_email,
-      subject: `Brief: ${brief.company_name}${brief.model ? ` · ${brief.model}` : ''}`,
-      html: `<h2 style="font-family:sans-serif">New brief from cyberchicmodels.ai/brief</h2><table style="font-family:sans-serif;font-size:14px">${rows}</table>`,
-      text,
-    }),
-  })
-
-  if (!res.ok) {
-    console.error('submit-brief: Resend error', res.status, await res.text())
-    return reply(502, { ok: false, error: 'send_failed' })
-  }
-  return reply(200, { ok: true })
+  const result = await handleBrief(input, deps, mailCfg)
+  return reply(result.status, result.body)
 })
