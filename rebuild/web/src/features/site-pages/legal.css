@@ -1,4 +1,7 @@
 /* /privacy and /licensing: long-form legal text on the site-page shell (.sp). */
+/* Use the site fonts with their metric-matched fallbacks (styles/font-fallbacks.css), so the large titles
+   wrap the same before and after Anton loads: no layout shift. */
+.sp-legal{--display:var(--font-display);--body:var(--font-body)}
 .sp-legal .legal-body{max-width:76ch;padding-bottom:clamp(56px,9vw,112px);display:grid;gap:16px;align-content:start}
 .sp-legal .legal-body h2{font-size:clamp(28px,3.4vw,40px);margin-top:28px;border-top:1px solid var(--line);padding-top:24px}
 .sp-legal .legal-body h2:first-child{margin-top:0}
