@@ -313,8 +313,331 @@
   font-size: clamp(15px, 1.6vw, 18px);
 }
 
-.film-figure {
-  margin: 0;
+/* Grid: Tizita (16:9) first, then one column per model intro (9:16 video + name card).
+   Below 1024px: Tizita spans the row; the intro columns sit side by side under it, card under video.
+   From 1024px: one row. Tizita is the tallest item (height H). Each intro video is 3/4 of H, so its
+   width is 0.75 * 9/16 * H = 0.421875 H; Tizita's width is 16/9 H. Using those as the column fr values
+   makes the row fill the container at exactly those proportions. In each intro column the name card
+   takes what's left of H below (or above) the video. Every box is reserved by aspect-ratio or by the
+   row height: no layout shift. */
+.film-grid {
+  display: grid;
+  gap: var(--card-gap);
+  align-items: start;
+}
+
+.film-grid.has-intros {
+  grid-template-columns: repeat(var(--intros), minmax(0, 1fr));
+}
+
+.film-grid.has-intros > .film-frame {
+  grid-column: 1 / -1;
+}
+
+.film-intro-cell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--card-gap);
+  min-width: 0;
+}
+
+.film-intro-cell > .film-intro {
+  flex: none;
+}
+
+@media (min-width: 1024px) {
+  .film-grid.has-intros {
+    grid-template-columns: minmax(0, 1.7778fr) repeat(var(--intros), minmax(0, 0.421875fr));
+    align-items: stretch;
+  }
+
+  .film-grid.has-intros > .film-frame {
+    grid-column: auto;
+    align-self: start;
+  }
+
+  /* The intro columns never size the row (contain: size): Tizita alone sets its height. */
+  .film-intro-cell {
+    contain: size;
+  }
+
+  .film-namecard {
+    padding: clamp(8px, 0.9vw, 12px) clamp(10px, 1vw, 14px) clamp(10px, 1.1vw, 16px);
+    gap: clamp(3px, 0.4vw, 6px);
+  }
+
+  .film-namecard-name {
+    font-size: clamp(18px, 1.9vw, 30px);
+  }
+
+  /* The card fills the column's remaining height. 2nd, 4th, ... intro: card on top, video at the bottom. */
+  .film-intro-cell > .film-namecard {
+    flex: 1 1 0;
+    min-height: 0;
+  }
+
+  .film-intro-cell.is-flipped > .film-namecard {
+    order: -1;
+  }
+}
+
+/* Name card: links to the model page; data from the models row. */
+.film-namecard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 6px;
+  padding: 12px 14px 16px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg-2);
+  transition: border-color 0.2s ease;
+}
+
+/* Lime bar along the bottom, as on the roster cards' .card-bar. */
+.film-namecard::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--lime);
+}
+
+.film-namecard-name {
+  font-size: clamp(20px, 2vw, 30px);
+  line-height: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.film-namecard-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 10px;
+  font-size: 11px;
+  color: var(--grey);
+}
+
+.film-namecard-view {
+  color: var(--lime);
+}
+
+.film-namecard:hover {
+  border-color: var(--lime);
+}
+
+.film-namecard:focus-visible {
+  outline: 2px solid var(--lime);
+  outline-offset: 3px;
+}
+
+.film-intro {
+  position: relative;
+  aspect-ratio: 9 / 16;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--bg-2);
+}
+
+.film-intro video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.film-intro-sound {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  z-index: 3;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(247, 245, 241, 0.35);
+  background: rgba(13, 13, 15, 0.6);
+  color: var(--white);
+  cursor: pointer;
+}
+
+.film-intro-sound[aria-pressed='true'] {
+  background: var(--lime);
+  border-color: var(--lime);
+  color: var(--bg);
+}
+
+.film-intro-sound:focus-visible {
+  outline: 2px solid var(--lime);
+  outline-offset: 3px;
+}
+
+/* Reduced motion: the whole box is a play/pause button; the lime disc shows while paused,
+   and on hover/focus while playing. */
+/* Reduced motion: a centred play/pause disc. The rest of the tile still opens the lightbox. */
+.film-intro-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 3;
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+}
+
+/* The whole tile opens the lightbox; the expand icon (top right) says so. Mute and play sit above it. */
+.film-intro-open {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: zoom-in;
+}
+
+.film-intro-open:focus-visible {
+  outline: 2px solid var(--lime);
+  outline-offset: -2px;
+  border-radius: var(--radius);
+}
+
+.film-intro-expand {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(247, 245, 241, 0.35);
+  border-radius: 50%;
+  background: rgba(13, 13, 15, 0.6);
+  color: var(--white);
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.film-intro-open:hover .film-intro-expand,
+.film-intro-open:focus-visible .film-intro-expand {
+  border-color: var(--lime);
+  color: var(--lime);
+}
+
+/* Lightbox: fixed over the page (nothing behind it moves); the frame is as large as the screen allows at 9:16. */
+.film-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 56px 16px;
+  background: rgba(8, 8, 10, 0.92);
+}
+
+.film-lightbox-frame {
+  aspect-ratio: 9 / 16;
+  height: min(calc(100vh - 112px), calc((100vw - 32px) * 16 / 9));
+  height: min(calc(100dvh - 112px), calc((100vw - 32px) * 16 / 9));
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: #000;
+}
+
+.film-lightbox-frame video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+.film-lightbox-close {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid rgba(247, 245, 241, 0.35);
+  border-radius: 50%;
+  background: rgba(13, 13, 15, 0.7);
+  color: var(--white);
+  cursor: pointer;
+}
+
+.film-lightbox-close:hover,
+.film-lightbox-close:focus-visible {
+  border-color: var(--lime);
+  color: var(--lime);
+}
+
+.film-lightbox-close:focus-visible {
+  outline: 2px solid var(--lime);
+  outline-offset: 3px;
+}
+
+.film-intro-play-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--lime);
+  transform: translate(-50%, -50%);
+  transition: opacity 0.2s ease;
+}
+
+.film-intro-play-icon::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 54%;
+  border-style: solid;
+  border-width: 9px 0 9px 14px;
+  border-color: transparent transparent transparent var(--bg);
+  transform: translate(-50%, -50%);
+}
+
+.film-intro-play.is-playing .film-intro-play-icon {
+  opacity: 0;
+}
+
+.film-intro-play.is-playing .film-intro-play-icon::after {
+  left: 50%;
+  width: 14px;
+  height: 18px;
+  border: 0;
+  border-left: 5px solid var(--bg);
+  border-right: 5px solid var(--bg);
+  box-sizing: border-box;
+}
+
+.film-intro-play.is-playing:hover .film-intro-play-icon,
+.film-intro-play.is-playing:focus-visible .film-intro-play-icon {
+  opacity: 1;
+}
+
+.film-intro-play:focus-visible {
+  outline: 2px solid var(--lime);
+  outline-offset: -2px;
 }
 
 /* Always 16:9, never cropped to portrait. */
@@ -383,7 +706,7 @@
 }
 
 /* Same caption style as the model pages (.mp figcaption). */
-.film-figure figcaption {
+.film-disclosure {
   margin-top: 12px;
   font-size: 12px;
   font-weight: 600;
@@ -392,11 +715,20 @@
   color: var(--grey);
 }
 
+.film-disclosure {
+  margin-bottom: 0;
+}
+
 .film-cta {
   margin-top: clamp(22px, 3vw, 32px);
 }
 
-/* Mobile: edge to edge, still 16:9. */
+/* /#film lands below the sticky nav. */
+#film {
+  scroll-margin-top: 68px;
+}
+
+/* Mobile: Tizita edge to edge, still 16:9. */
 @media (max-width: 760px) {
   .film-frame {
     margin-inline: calc(-1 * var(--pad));
